@@ -238,19 +238,19 @@ function onload() {
   document.getElementById('ps2-selector').
     addEventListener('change', ps2Changed);
 
-  // Load a file automatically for testing
-  $.ajax({
-    async:true,
-    // url: 'deident.csv',
-    url: 'test.csv',
-    dataType: 'text',
-    success: function(data) 
-    {
-      // dfall = $.csv.toObjects(data);
-      // loadData(data);
-      parseCSV(data);
-    }
-  });
+  // // Load a file automatically for testing
+  // $.ajax({
+  //   async:true,
+  //   // url: 'deident.csv',
+  //   url: 'test.csv',
+  //   dataType: 'text',
+  //   success: function(data) 
+  //   {
+  //     // dfall = $.csv.toObjects(data);
+  //     // loadData(data);
+  //     parseCSV(data);
+  //   }
+  // });
 }
 
 //-----------------------------------------------------------------------------
