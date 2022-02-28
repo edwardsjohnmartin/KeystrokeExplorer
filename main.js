@@ -238,19 +238,29 @@ function onload() {
   document.getElementById('ps2-selector').
     addEventListener('change', ps2Changed);
 
-  // // Load a file automatically for testing
-  // $.ajax({
-  //   async:true,
-  //   // url: 'deident.csv',
-  //   url: 'test.csv',
-  //   dataType: 'text',
-  //   success: function(data) 
-  //   {
-  //     // dfall = $.csv.toObjects(data);
-  //     // loadData(data);
-  //     parseCSV(data);
-  //   }
-  // });
+  loadDefaultCSV();
+}
+
+function loadDefaultCSV() {
+  var request = new XMLHttpRequest();  
+  request.open('GET', 'test.csv', true);
+  request.onreadystatechange = function(){
+    if (request.readyState === 4){
+      if (request.status === 404) {  
+      } else {
+        // Load a file automatically for testing
+        $.ajax({
+          async:true,
+          url: 'test.csv',
+          dataType: 'text',
+          success: function(data) {
+            parseCSV(data);
+          }
+        });
+      }
+    }
+  };
+  request.send();
 }
 
 //-----------------------------------------------------------------------------
