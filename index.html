@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Keystroke playback</title>
+    <link rel="icon" href="./favicon.ico?v=3" />
+    <meta name = "description" content = "EdwardsLab" />
+    <meta name = "Keywords" content = "Computer, Science, John, Edwards" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="../assets/favicon.ico"/>
+    <script src="lib/jquery-3.6.0.min.js"></script>
+    <script src="lib/jquery.csv.js"></script>
+    <script src="lib/papaparse.min.js"></script>
+    <script src="lib/filbert.js"></script>
+    <script src="lib/d3.js"></script>
+    <script src="lib/codemirror.js"></script>
+    <link rel="stylesheet" href="lib/codemirror.css">
+    <script src="lib/codemirror/addon/selection/mark-selection.js"></script>
+    <script src="lib/codemirror/mode/python/python.js"></script>
+    <link rel="stylesheet" href="style.css">
+  </head>
+
+  <body onload="onload()">
+    <textarea id="textarea" name="textarea" rows="30" cols="120">File text</textarea>
+    <!--textarea id="codemirror" name="codemirror" rows="30" cols="120">print("Hello world")</textarea-->
+    <svg width="800" height="200" id="chart">
+      <g transform="translate(0 200) scale(1 -1)">
+        <g id="bars"></g>
+        <g id="barsstart"></g>
+        <g id="barsend"></g>
+        <g id="playbarg"></g>
+      </g>
+    </svg>
+    <svg width="800" height="50" id="timelinesvg">
+      <g transform="translate(0 200) scale(1 -1)">
+        <g id="timeline"></g>
+      </g>
+    </svg>
+    
+    <br>
+    <label for="subjects">SubjectID:</label>
+    <select name="subjects" id="subjects" onchange="subjectChanged()"></select>
+
+    <label for="assignments">AssignmentID:</label>
+    <select name="assignments" id="assignments" onchange="assignmentChanged()"></select>
+
+    <label for="files">File:</label>
+    <select name="files" id="files" onchange="fileChanged()"></select>
+
+    <label for="findString">Search string (use arrows):</label>
+    <input name="findString" id="findString" type="text"></select>
+
+    <text id="compileError">Error compiling</text>
+
+    <text id="loading">Loading...</text>
+
+    <br>
+    <label for="slider">Playback:</label>
+    <input type="range" id="slider" name="slider" min="0" max="10">
+
+    <br>
+    <label for="edit-num">Edit number:</label>
+    <text id="edit-num"></text>
+    <!--br>
+    <label for="event-num">Event number:</label>
+    <text id="event-num"></text-->
+
+    <br>
+    ProgSnap2: <input id="ps2-selector" type="file" accept=".csv, .ps2, .log" change="ps2Changed()"></input>
+    <!--br>
+    <label for="idfilter">SubjectID filter:</label>
+    <input type="text" id="idfilter"></input-->
+                          
+
+    <div>
+      <table>
+        <colgroup>
+          <col span="1" style="width: 4%;">
+          <col span="1" style="width: 7%;">
+          <col span="1" style="width: 7%;">
+          <col span="1" style="width: 7%;">
+          <col span="1" style="width: 23%;">
+          <col span="1" style="width: 23%;">
+          <col span="1" style="width: 4%;">
+          <col span="1" style="width: 13%;">
+          <col span="1" style="width: 12%;">
+        </colgroup>
+
+        <tbody id="table">
+        </tbody>
+      </table>
+    </div>
+
+    <br>
+    Helpful keystrokes:
+    <br>f - move forward one event
+    <br>d - move backward one event
+    <br>F - more forward 10 events
+    <br>D - move backward 10 events
+    <br>g - move forward to next checkpoint event
+    <br>s - move backward to next checkpoint event
+    <br>right arrow - move forward to first snapshot containing the search string
+
+    <script src="./main.js"></script>
+    <script src="./chart.js"></script>
+    <script src="./timeline.js"></script>
+  </body>
+</html>

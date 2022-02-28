@@ -1,0 +1,72 @@
+/* CodeMirror */
+.cm-editor { border: 2px solid blue }
+.cm-editor.cm-focused { border: 2px solid blue }
+.CodeMirror {
+    border: 2px solid blue;
+    font-size: 10px;
+}
+.CodeMirror-focused { border: 2px solid blue }
+/*.CodeMirror-selected  { background-color: blue !important; }
+.CodeMirror-selectedtext { color: white; }*/
+/*.styled-background { background-color: #ff7; }*/
+.styled-background { background-color: lightgreen; }
+
+rect {
+    fill: steelblue;
+    /*stroke: darkgray;*/
+    stroke: steelblue;
+    stroke-width: 1px;
+}
+
+rect#playbar {
+    fill: red;
+    /*stroke: darkgray;*/
+    stroke: red;
+    stroke-width: 1px;
+}
+
+rect#barsstart rect#barsend {
+    fill: red;
+    /*stroke: darkgray;*/
+    stroke: red;
+    stroke-width: 1px;
+}
+
+.barChart {
+    fill: steelblue;
+    stroke: darkgray;
+    stroke-width: 1px;
+}
+
+.lines {
+    stroke: steelblue;
+    fill: none
+}
+
+.areas {
+    stroke: none;
+    fill: steelblue
+}
+
+circle {
+    fill: steelblue;
+}
+
+.frame {
+    fill: none;
+    stroke: black;
+    stroke-width: 2px;
+}
+table {
+    border: none;
+    border-collapse: collapse;
+    /*width: 800px;*/
+    width: 100%;
+}
+td {
+    text-align:center;
+    /*white-space: nowrap;*/
+}
+textarea { width:95%; }
+tr.selected { background-color:powderblue; }
+#compileError { background-color:red; }
