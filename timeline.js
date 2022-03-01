@@ -68,9 +68,9 @@ Timeline.prototype.create = function(df) {
   d3.select('#timelinechartgroup')
     .attr("transform", `translate(0 ${chartHeight}) scale(1 -1)`);
 
-  let existing = d3.select('#timeline').selectAll('rect').data(df.slice(0,-1));
-  let enter = existing.enter().append('rect');
-  existing.merge(enter)
+  let update = d3.select('#timeline').selectAll('rect').data(df.slice(0,-1));
+  let enter = update.enter().append('rect');
+  update.merge(enter)
     .attr('x', (d,i) => d.timelinex)
     .attr('width', (d,i) => d.timelineWidth)
     .attr('y', (d,i) => 0)
@@ -78,6 +78,7 @@ Timeline.prototype.create = function(df) {
     .style('fill', (d,i) => blockColor(i))
     .style('stroke', (d,i) => blockColor(i))
   ;
+  update.exit().remove();
 }
 
 Timeline.prototype.updatePlaybar = function(value) {
@@ -87,12 +88,12 @@ Timeline.prototype.updatePlaybar = function(value) {
   // this.playbar = [value];
   this.playbar = [df[value].timelinex];
 
-  let existing = d3.select('#timelineplaybarg').selectAll('rect')
+  let update = d3.select('#timelineplaybarg').selectAll('rect')
       .data(this.playbar);
-  let enter = existing.enter();
+  let enter = update.enter();
   enter = enter
     .append('rect');
-  existing.merge(enter)
+  update.merge(enter)
     .attr('id', 'timelineplaybar')
     .attr('x', d => d)
     .attr('width', 0.5)
@@ -100,6 +101,7 @@ Timeline.prototype.updatePlaybar = function(value) {
     .attr('height', chartHeight)
     .style('stroke', '#EDBB99')
   ;
+  update.exit().remove();
 }
 
 // // Get the index of a change at event i

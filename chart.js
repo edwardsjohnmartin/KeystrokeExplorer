@@ -110,9 +110,9 @@ Chart.prototype.create = function(df) {
 
   // Bars
   {
-    let existing = d3.select('#bars').selectAll('rect').data(this.allData);
-    let enter = existing.enter().append('rect');
-    existing.merge(enter)
+    let update = d3.select('#bars').selectAll('rect').data(this.allData);
+    let enter = update.enter().append('rect');
+    update.merge(enter)
       .attr('x', (d,i) => i*width)//yaxisWidth+xScale(d.year))
       .attr('width', width)//xScale.bandwidth())
       .attr('y', d => (this.end-d.end)*f)
@@ -126,13 +126,14 @@ Chart.prototype.create = function(df) {
         d3.select(this).style("stroke", "steelblue");
       })
     ;
+    update.exit().remove();
   }
 
   // Start bars
   {
-    let existing = d3.select('#barsstart').selectAll('rect').data(this.allData);
-    let enter = existing.enter().append('rect');
-    existing.merge(enter)
+    let update = d3.select('#barsstart').selectAll('rect').data(this.allData);
+    let enter = update.enter().append('rect');
+    update.merge(enter)
       .attr('x', (d,i) => i*width)//yaxisWidth+xScale(d.year))
       .attr('width', width)//xScale.bandwidth())
       .attr('y', d => (this.end-d.start)*f)
@@ -140,13 +141,14 @@ Chart.prototype.create = function(df) {
       .style('stroke-width', '0.5')
       .attr('height', d=>0.5)
     ;
+    update.exit().remove();
   }
 
   // End bars
   {
-    let existing = d3.select('#barsend').selectAll('rect').data(this.allData);
-    let enter = existing.enter().append('rect');
-    existing.merge(enter)
+    let update = d3.select('#barsend').selectAll('rect').data(this.allData);
+    let enter = update.enter().append('rect');
+    update.merge(enter)
       .attr('x', (d,i) => i*width)
       .attr('width', width)
       .attr('y', d => (this.end-d.end)*f)
@@ -154,6 +156,7 @@ Chart.prototype.create = function(df) {
       .style('stroke-width', '0.5')
       .attr('height', 0.5)
     ;
+    update.exit().remove();
   }
 }
 
@@ -164,12 +167,12 @@ Chart.prototype.updatePlaybar = function(value) {
   // this.playbar = [slider.value-100];
   this.playbar = [value];
 
-  let existing = d3.select('#playbarg').selectAll('rect')
+  let update = d3.select('#playbarg').selectAll('rect')
       .data(this.playbar);
-  let enter = existing.enter();
+  let enter = update.enter();
   enter = enter
     .append('rect');
-  existing.merge(enter)
+  update.merge(enter)
     .attr('id', 'playbar')
     .attr('x', 0)
     .attr('width', chartWidth)
@@ -177,6 +180,7 @@ Chart.prototype.updatePlaybar = function(value) {
     .attr('height', 0.5)
     .style('stroke', '#EDBB99')
   ;
+  update.exit().remove();
 }
 
 // Get the index of a change at event i
