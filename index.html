@@ -25,6 +25,8 @@
   <body onload="onload()">
     <div>
       <br>
+      ProgSnap2: <input id="ps2-selector" type="file" accept=".csv, .ps2, .log" change="ps2Changed()"></input>
+      <br>
       <label for="subjects">SubjectID:</label>
       <select name="subjects" id="subjects" onchange="subjectChanged()"></select>
 
@@ -47,8 +49,6 @@
 
       <!--label for="edit-num">Edit number:</label-->
       <text id="edit-num"></text>
-      <br>
-      ProgSnap2: <input id="ps2-selector" type="file" accept=".csv, .ps2, .log" change="ps2Changed()"></input>
       <br>
     </div>
 

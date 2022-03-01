@@ -177,8 +177,9 @@ Chart.prototype.updatePlaybar = function(value) {
     .attr('x', 0)
     .attr('width', chartWidth)
     .attr('y', d => (this.end-d)*f)
-    .attr('height', 0.5)
+    .attr('height', 1.5)
     .style('stroke', '#EDBB99')
+    .style('fill', '#EDBB99')
   ;
   update.exit().remove();
 }

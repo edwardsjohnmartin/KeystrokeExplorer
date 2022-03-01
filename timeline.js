@@ -96,10 +96,11 @@ Timeline.prototype.updatePlaybar = function(value) {
   update.merge(enter)
     .attr('id', 'timelineplaybar')
     .attr('x', d => d)
-    .attr('width', 0.5)
+    .attr('width', 2.5)
     .attr('y', 0)
     .attr('height', chartHeight)
     .style('stroke', '#EDBB99')
+    .style('fill', '#EDBB99')
   ;
   update.exit().remove();
 }
