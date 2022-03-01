@@ -105,6 +105,9 @@ Chart.prototype.create = function(df) {
   const f = chartHeight/(this.end == 0?1:this.end);
   let chart = this;
 
+  d3.select('#cpchartgroup')
+    .attr("transform", `translate(0 ${chartHeight}) scale(1 -1)`);
+
   // Bars
   {
     let existing = d3.select('#bars').selectAll('rect').data(this.allData);

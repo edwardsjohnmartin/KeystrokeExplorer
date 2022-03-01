@@ -1,16 +1,65 @@
+/***********************************************
 /* CodeMirror */
+/***********************************************/
 .cm-editor { border: 2px solid blue }
 .cm-editor.cm-focused { border: 2px solid blue }
 .CodeMirror {
     border: 2px solid blue;
     font-size: 10px;
+/*    height: auto;*/
+    height: 600px;
 }
 .CodeMirror-focused { border: 2px solid blue }
 /*.CodeMirror-selected  { background-color: blue !important; }
 .CodeMirror-selectedtext { color: white; }*/
 /*.styled-background { background-color: #ff7; }*/
 .styled-background { background-color: lightgreen; }
+.line-highlight { background-color: lightgreen; }
 
+/***********************************************
+/* Tabs
+/***********************************************/
+/* Style the tab */
+.tab {
+    overflow: hidden;
+    border: 1px solid #ccc;
+    background-color: #f1f1f1;
+}
+
+/* Style the buttons that are used to open the tab content */
+.tab button {
+    background-color: inherit;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    /*padding: 14px 16px;*/
+    padding: 6px 8px;
+    transition: 0.3s;
+}
+
+/* Change background color of buttons on hover */
+.tab button:hover {
+    background-color: #ddd;
+}
+
+/* Create an active/current tablink class */
+.tab button.active {
+    background-color: #ccc;
+}
+
+/* Style the tab content */
+.tabcontent {
+    display: none;
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    border-top: none;
+    height: 560px;
+}
+
+/***********************************************
+/* CodeProcess chart
+/***********************************************/
 rect {
     fill: steelblue;
     /*stroke: darkgray;*/
@@ -19,6 +68,13 @@ rect {
 }
 
 rect#playbar {
+    fill: red;
+    /*stroke: darkgray;*/
+    stroke: red;
+    stroke-width: 1px;
+}
+
+rect#timelineplaybar {
     fill: red;
     /*stroke: darkgray;*/
     stroke: red;
@@ -57,16 +113,45 @@ circle {
     stroke: black;
     stroke-width: 2px;
 }
-table {
+
+/***********************************************
+/* CSV
+/***********************************************/
+table.csv {
     border: none;
     border-collapse: collapse;
     /*width: 800px;*/
     width: 100%;
+    font-size: 8px;
+    font-family: "monospace", monospace;
+    text-align:center;
 }
-td {
+td.csv {
     text-align:center;
     /*white-space: nowrap;*/
 }
-textarea { width:95%; }
+
+
+textarea { width: 100%; }
+table.page {
+    width: 100%;
+    height: 600px;
+}
+tr.page {
+}
+td.page {
+    text-align: left;
+}
+
+td#tdcode {
+    width: 50%;
+}
+td#tdtabs {
+    width: 50%;
+}
+
+.chart { width: 100%; }
+#chart { height: 200px; }
+#timelinesvg { height: 30px; }
 tr.selected { background-color:powderblue; }
 #compileError { background-color:red; }

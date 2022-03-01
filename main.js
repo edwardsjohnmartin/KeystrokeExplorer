@@ -15,7 +15,8 @@ var slider = document.getElementById('slider');
 var editNumWidget = document.getElementById('edit-num');
 var eventNumWidget = null;//document.getElementById('event-num');
 var textarea = document.getElementById('textarea');
-editNumWidget.innerHTML = slider.value; // Display the default slider value
+// Display the default slider value
+editNumWidget.innerHTML = slider.value + '/' + slider.max;
 
 var findStringWidget = document.getElementById('findString');
 
@@ -199,7 +200,12 @@ function onKeyPress(event) {
   } else if (event.key == inc10) {
     slider.value = +slider.value + 10;
     sliderChanged(slider);
+  } else if (event.key == 'x') {
+    test();
   }
+}
+
+function test() {
 }
 
 //-----------------------------------------------------------------------------
@@ -222,8 +228,9 @@ function onKeyDown(event) {
 // onload
 //-----------------------------------------------------------------------------
 function onload() {
-  // let textarea2 = document.getElementById('codemirror');
-  // var myCodeMirror = CodeMirror.fromTextArea(textarea, {
+  // Get the tab with id="defaultOpen" and click on it
+  document.getElementById("defaultOpen").click();
+
   textarea = CodeMirror.fromTextArea(textarea, {
     mode: "python",
     lineNumbers: true,
@@ -231,7 +238,8 @@ function onload() {
     readOnly: true,
     styleSelectedText: true,
   });
-
+  // textarea.setSize(500, 300);
+  
   document.addEventListener("keydown", onKeyDown);
   document.addEventListener("keypress", onKeyPress);
 
@@ -380,7 +388,7 @@ function fileChanged() {
   slider.max = df.length-1;
   slider.value = slider.max;
   // slider.value = 0;
-  editNumWidget.innerHTML = slider.value;
+  editNumWidget.innerHTML = slider.value + '/' + slider.max;
   reconstruct(df);
   loadingWidget.style.visibility = 'hidden';
 
@@ -390,17 +398,18 @@ function fileChanged() {
 
   timeline = new Timeline();
   timeline.create(df);
-  // timeline.updatePlaybar(slider.value);
+  timeline.updatePlaybar(slider.value);
 }
 
 //-----------------------------------------------------------------------------
 // sliderChanged
 //-----------------------------------------------------------------------------
 function sliderChanged(slider) {
-  editNumWidget.innerHTML = slider.value;//this.value;
+  editNumWidget.innerHTML = slider.value + '/' + slider.max;
   reconstruct(df);
 
   chart.updatePlaybar(slider.value);
+  timeline.updatePlaybar(slider.value);
 }
 
 //-----------------------------------------------------------------------------
@@ -470,6 +479,18 @@ function findString(toFind) {
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
+function jumpToLine(i) { 
+  textarea.scrollIntoView({line: i, ch: 0}, margin=400);
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+function jumpToCh(i, lines) {
+  jumpToLine(getLineCh(i, lines).line);
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 function getLineCh(i, lines) {
   let j = 0;
   let j_ = 0;
@@ -479,6 +500,7 @@ function getLineCh(i, lines) {
     j += lines[line].length+1;
     line++;
   }
+  if (line == 0) line = 1;
   let ch = i - j_;
   return {line: line-1, ch: ch};
 }
@@ -500,6 +522,27 @@ function markText(start, end) {
 }
 
 //-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+let lineLastMark = null;
+function lineMarkText(start, end) {
+  if (lineLastMark) lineLastMark.clear();
+
+  let s = textarea.getValue();
+  let lines = s.split('\n');
+  let a = getLineCh(start, lines);
+  let b = getLineCh(end, lines);
+
+  a.ch = 0;
+  b.line = a.line+1;
+  b.ch = 0;
+  
+  lineLastMarkStart = a;
+  lineLastMarkEnd = b;
+  
+  lineLastMark = textarea.markText(a, b, {className: "line-highlight"});
+}
+
+//-----------------------------------------------------------------------------
 // reconstruct
 // Reconstruct the file.
 //-----------------------------------------------------------------------------
@@ -515,11 +558,13 @@ function reconstruct(df) {
   let head = null;
 
   let s = '';
+  let lastChange = -1;
   // Reconstruct the file
   if (df.length > 0) {
     for (let i = 0; i <= slider.value; ++i) {
       let row = df[i];
       let j = +row.SourceLocation;
+      lastChange = j;
       if (row.DeleteText && row.DeleteText.length > 0) {
         s = s.slice(0,j) + s.slice(j+row.DeleteText.length);
       }
@@ -538,6 +583,9 @@ function reconstruct(df) {
   // textarea.value = s;
   textarea.setValue(s);
   
+  jumpToCh(lastChange, s.split('\n'));
+  lineMarkText(lastChange, lastChange+1);
+
   try {
     filbert.parse(s);
     errorWidget.style.visibility = 'hidden';
@@ -572,19 +620,19 @@ function reconstruct(df) {
   const n = 5;
   let start = eventNum >= n ? eventNum-n : 0;
   let end = eventNum <= dfall.length-n ? eventNum+n : dfall.length;
-  const m = 15; // Number of characters to show on each side of ellipses in abbreviated string
+  const m = 8; // Number of characters to show on each side of ellipses in abbreviated string
   for (let i = start; i < end; ++i) {
     let row = dfall[i];
     let selected = i == eventNum ? 'class=selected' : '';
     let insert = row.InsertText.length<20 ? row.InsertText :
         `<b>${row.InsertText.slice(0,m)}...${row.InsertText.slice(-m)}[${row.InsertText.length}]</b>`;
     insert = insert.replace(' ', '&bull;');
-    let del = row.DeleteText.length<20 ? row.DeleteText :
+    let del = row.DeleteText.length<10 ? row.DeleteText :
         `<b>${row.DeleteText.slice(0,m)}...${row.DeleteText.slice(-m)}[${row.DeleteText.length}]</b>`;
     del = del.replace(' ', '&bull;');
     let last = row.Session;
     last = row.EditType;
-    s += `<tr ${selected}> <td>${row.AssignmentID}</td> <td>${row['CodeStateSection']}</td> <td>${row.EventIdx}</td> <td>${row.EventType}</td> <td>${insert}</td> <td>${del}</td> <td>${row.SourceLocation}</td> <td>${row.ClientTimestamp}</td> <td>${last}</td>\n`;
+    s += `<tr ${selected}> <td class="csv">${row.AssignmentID}</td> <td class="csv">${row['CodeStateSection']}</td> <td class="csv">${row.EventIdx}</td> <td class="csv">${row.EventType}</td> <td class="csv">${insert}</td> <td class="csv">${del}</td> <td class="csv">${row.SourceLocation}</td> <td class="csv">${row.ClientTimestamp}</td> <td class="csv">${last}</td>\n`;
   }
 
   table.innerHTML = s;
@@ -753,3 +801,27 @@ function readTwoChunks(chunkIdx) {
   fr.readAsText(slice);
 }
 
+//-----------------------------------------------------------------------------
+// Tabs
+//-----------------------------------------------------------------------------
+function changeTabs(evt, tabName) {
+  // Declare all variables
+  var i, tabcontent, tablinks;
+
+  // Get all elements with class="tabcontent" and hide them
+  tabcontent = document.getElementsByClassName("tabcontent");
+  for (i = 0; i < tabcontent.length; i++) {
+    tabcontent[i].style.display = "none";
+  }
+
+  // Get all elements with class="tablinks" and remove the class "active"
+  tablinks = document.getElementsByClassName("tablinks");
+  for (i = 0; i < tablinks.length; i++) {
+    tablinks[i].className = tablinks[i].className.replace(" active", "");
+  }
+
+  // Show the current tab, and add an "active" class to the button that
+  // opened the tab
+  document.getElementById(tabName).style.display = "block";
+  evt.currentTarget.className += " active";
+}
