@@ -158,6 +158,22 @@ Chart.prototype.create = function(df) {
     ;
     update.exit().remove();
   }
+
+  // Compilable
+  {
+    let update = d3.select('#compilable').selectAll('rect').data(df);
+    let enter = update.enter().append('rect');
+    update.merge(enter)
+      .attr('x', 0)
+      .attr('width', 0.5)
+      .attr('y', (d,i) => (this.end-i)*f)
+      .attr('height', 0.5)
+      .style('stroke', d => d.compilable ? 'lightgreen' : 'red')
+      .style('fill', d => d.compilable ? 'lightgreen' : 'red')
+      .style('stroke-width', '3.5')
+    ;
+    update.exit().remove();
+  }
 }
 
 Chart.prototype.updatePlaybar = function(value) {

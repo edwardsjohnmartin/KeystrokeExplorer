@@ -14,7 +14,7 @@ var table = document.getElementById('table');
 var slider = document.getElementById('slider');
 var editNumWidget = document.getElementById('edit-num');
 var eventNumWidget = null;//document.getElementById('event-num');
-var textarea = document.getElementById('textarea');
+var codeWidget = document.getElementById('textarea');
 // Display the default slider value
 editNumWidget.innerHTML = slider.value + '/' + slider.max;
 
@@ -231,7 +231,7 @@ function onload() {
   // Get the tab with id="defaultOpen" and click on it
   document.getElementById("defaultOpen").click();
 
-  textarea = CodeMirror.fromTextArea(textarea, {
+  codeWidget = CodeMirror.fromTextArea(codeWidget, {
     mode: "python",
     lineNumbers: true,
     lineWrapping: true,
@@ -373,6 +373,32 @@ function updateFileWidget() {
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
+function storeCompilable(df) {
+  let s = '';
+  let lastChange = -1;
+  // Reconstruct the file
+  for (let i = 0; i < df.length; ++i) {
+    let row = df[i];
+    let j = +row.SourceLocation;
+    lastChange = j;
+    if (row.DeleteText && row.DeleteText.length > 0) {
+      s = s.slice(0,j) + s.slice(j+row.DeleteText.length);
+    }
+    if (row.InsertText && row.InsertText.length > 0) {
+      s = s.slice(0,j) + row.InsertText + s.slice(j);
+    }
+
+    try {
+      filbert.parse(s);
+      df[i].compilable = true;
+    } catch(e) {
+      df[i].compilable = false;
+    }
+  }
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 function fileChanged() {
   file = filesWidget.value;
   if (!updatedfall()) return;
@@ -391,6 +417,8 @@ function fileChanged() {
   editNumWidget.innerHTML = slider.value + '/' + slider.max;
   reconstruct(df);
   loadingWidget.style.visibility = 'hidden';
+
+  storeCompilable(df);
 
   chart = new Chart();
   chart.create(df);
@@ -480,7 +508,7 @@ function findString(toFind) {
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 function jumpToLine(i) { 
-  textarea.scrollIntoView({line: i, ch: 0}, margin=400);
+  codeWidget.scrollIntoView({line: i, ch: 0}, margin=400);
 }
 
 //-----------------------------------------------------------------------------
@@ -511,14 +539,14 @@ let lastMark = null;
 function markText(start, end) {
   if (lastMark) lastMark.clear();
 
-  let s = textarea.getValue();
+  let s = codeWidget.getValue();
   let lines = s.split('\n');
   let a = getLineCh(start, lines);
   let b = getLineCh(end, lines);
   lastMarkStart = a;
   lastMarkEnd = b;
   
-  lastMark = textarea.markText(a, b, {className: "styled-background"});
+  lastMark = codeWidget.markText(a, b, {className: "styled-background"});
 }
 
 //-----------------------------------------------------------------------------
@@ -527,7 +555,7 @@ let lineLastMark = null;
 function lineMarkText(start, end) {
   if (lineLastMark) lineLastMark.clear();
 
-  let s = textarea.getValue();
+  let s = codeWidget.getValue();
   let lines = s.split('\n');
   let a = getLineCh(start, lines);
   let b = getLineCh(end, lines);
@@ -539,17 +567,19 @@ function lineMarkText(start, end) {
   lineLastMarkStart = a;
   lineLastMarkEnd = b;
   
-  lineLastMark = textarea.markText(a, b, {className: "line-highlight"});
+  lineLastMark = codeWidget.markText(a, b, {className: "line-highlight"});
 }
 
 //-----------------------------------------------------------------------------
 // reconstruct
 // Reconstruct the file.
 //-----------------------------------------------------------------------------
+let curIndex = -1;
+let curReconstruction = '';
 function reconstruct(df) {
   table.innerHTML = '';
-  // textarea.value = '';
-  textarea.setValue('');
+  // codeWidget.value = '';
+  codeWidget.setValue('');
 
   if (df.length == 0) {
     return;
@@ -561,7 +591,16 @@ function reconstruct(df) {
   let lastChange = -1;
   // Reconstruct the file
   if (df.length > 0) {
-    for (let i = 0; i <= slider.value; ++i) {
+    let rstart = 0;
+    if (curIndex < slider.value) {
+      rstart = curIndex+1;
+      s = curReconstruction;
+    }
+    curIndex = +slider.value;
+    // console.log('rstart', rstart);
+    // console.log('curIndex', curIndex);
+    // for (let i = 0; i <= slider.value; ++i) {
+    for (let i = rstart; i <= curIndex; ++i) {
       let row = df[i];
       let j = +row.SourceLocation;
       lastChange = j;
@@ -574,14 +613,9 @@ function reconstruct(df) {
     }
   }
 
-  // let split = s.split('\n');
-  // let t = '';
-  // for (let i=0; i < split.length; ++i) {
-  //   t = t + (i+1).toString().padEnd(3) + ' ' + split[i] + '\n';
-  // }
-  // textarea.value = t;
-  // textarea.value = s;
-  textarea.setValue(s);
+  curReconstruction = s;
+
+  codeWidget.setValue(s);
   
   jumpToCh(lastChange, s.split('\n'));
   lineMarkText(lastChange, lastChange+1);

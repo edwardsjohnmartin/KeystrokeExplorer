@@ -151,7 +151,17 @@ td#tdtabs {
 }
 
 .chart { width: 100%; }
-#chart { height: 200px; }
+/*#Charts { width: 100%; }*/
+#compilable {
+    float: left;
+    width:10px;
+    height: 200px;
+}
+#chart {
+    float: none;
+    overflow: hidden;
+    height: 200px;
+}
 #timelinesvg { height: 30px; }
 tr.selected { background-color:powderblue; }
 #compileError { background-color:red; }
