@@ -51,11 +51,17 @@
 /* Style the tab content */
 .tabcontent {
     display: none;
-    padding: 6px 12px;
+/*    padding: 6px 12px;
     border: 1px solid #ccc;
-    border-top: none;
+    border-top: none; */
     height: 560px;
 }
+/*.dgrid-header .dojoDndTarget .dgrid-cell {
+    display: table-cell;
+}*/
+/*.dgrid-header .dojoDndTarget .dgrid-cell {
+    display: block;
+}*/
 
 /***********************************************
 /* CodeProcess chart
@@ -117,9 +123,9 @@ circle {
 /***********************************************
 /* CSV
 /***********************************************/
-/*.dgrid-slected-row {
+.dgrid-selected-row {
     background: #F2F5F9;
-}*/
+}
 
 table.csv {
     border: none;

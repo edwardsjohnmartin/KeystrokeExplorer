@@ -10,7 +10,7 @@ var subjectsWidget = document.getElementById('subjects');
 var assignmentsWidget = document.getElementById('assignments');
 var filesWidget = document.getElementById('files');
 
-var table = document.getElementById('table');
+// var table = document.getElementById('table');
 var slider = document.getElementById('slider');
 var editNumWidget = document.getElementById('edit-num');
 var eventNumWidget = null;//document.getElementById('event-num');
@@ -654,8 +654,8 @@ function lineMarkText(start, end) {
 let curIndex = -1;
 let curReconstruction = '';
 function reconstruct(df) {
-  table.innerHTML = '';
-  // codeWidget.value = '';
+  // table.innerHTML = '';
+
   codeWidget.setValue('');
 
   if (df.length == 0) {
@@ -715,42 +715,42 @@ function reconstruct(df) {
     eventNumWidget.innerHTML = eventNum;
   }
 
-  // Update the table
-  s = ''+
-    '<tr>'+
-    ' <th>Assn</th>'+
-    ' <th>File</th>'+
-    ' <th>Event</th>'+
-    ' <th>EventType</th>'+
-    ' <th>InsertText</th>'+
-    ' <th>DeleteText</th>'+
-    ' <th>i</th>'+
-    ' <th>Time</th>'+
-    ' <th>EditType</th>';
-    // ' <th>X-Session</th>';
+  // // Update the table
+  // s = ''+
+  //   '<tr>'+
+  //   ' <th>Assn</th>'+
+  //   ' <th>File</th>'+
+  //   ' <th>Event</th>'+
+  //   ' <th>EventType</th>'+
+  //   ' <th>InsertText</th>'+
+  //   ' <th>DeleteText</th>'+
+  //   ' <th>i</th>'+
+  //   ' <th>Time</th>'+
+  //   ' <th>EditType</th>';
+  //   // ' <th>X-Session</th>';
   const n = 5;
   let start = eventNum >= n ? eventNum-n : 0;
   let end = eventNum <= dfall.length-n ? eventNum+n : dfall.length;
 
   // console.log('update');
-  spreadsheet.update(dfall.slice(start, end));
+  spreadsheet.update(dfall.slice(start, end), eventNum);
 
-  const m = 8; // Number of characters to show on each side of ellipses in abbreviated string
-  for (let i = start; i < end; ++i) {
-    let row = dfall[i];
-    let selected = i == eventNum ? 'class=selected' : '';
-    let insert = row.InsertText.length<20 ? row.InsertText :
-        `<b>${row.InsertText.slice(0,m)}...${row.InsertText.slice(-m)}[${row.InsertText.length}]</b>`;
-    insert = insert.replace(' ', '&bull;');
-    let del = row.DeleteText.length<10 ? row.DeleteText :
-        `<b>${row.DeleteText.slice(0,m)}...${row.DeleteText.slice(-m)}[${row.DeleteText.length}]</b>`;
-    del = del.replace(' ', '&bull;');
-    let last = row.Session;
-    last = row.EditType;
-    s += `<tr ${selected}> <td class="csv">${row.AssignmentID}</td> <td class="csv">${row['CodeStateSection']}</td> <td class="csv">${row.EventIdx}</td> <td class="csv">${row.EventType}</td> <td class="csv">${insert}</td> <td class="csv">${del}</td> <td class="csv">${row.SourceLocation}</td> <td class="csv">${row.ClientTimestamp}</td> <td class="csv">${last}</td>\n`;
-  }
+  // const m = 8; // Number of characters to show on each side of ellipses in abbreviated string
+  // for (let i = start; i < end; ++i) {
+  //   let row = dfall[i];
+  //   let selected = i == eventNum ? 'class=selected' : '';
+  //   let insert = row.InsertText.length<20 ? row.InsertText :
+  //       `<b>${row.InsertText.slice(0,m)}...${row.InsertText.slice(-m)}[${row.InsertText.length}]</b>`;
+  //   insert = insert.replace(' ', '&bull;');
+  //   let del = row.DeleteText.length<10 ? row.DeleteText :
+  //       `<b>${row.DeleteText.slice(0,m)}...${row.DeleteText.slice(-m)}[${row.DeleteText.length}]</b>`;
+  //   del = del.replace(' ', '&bull;');
+  //   let last = row.Session;
+  //   last = row.EditType;
+  //   s += `<tr ${selected}> <td class="csv">${row.AssignmentID}</td> <td class="csv">${row['CodeStateSection']}</td> <td class="csv">${row.EventIdx}</td> <td class="csv">${row.EventType}</td> <td class="csv">${insert}</td> <td class="csv">${del}</td> <td class="csv">${row.SourceLocation}</td> <td class="csv">${row.ClientTimestamp}</td> <td class="csv">${last}</td>\n`;
+  // }
 
-  table.innerHTML = s;
+  // table.innerHTML = s;
 }
 
 //-----------------------------------------------------------------------------
@@ -927,6 +927,7 @@ function changeTabs(evt, tabName) {
   tabcontent = document.getElementsByClassName("tabcontent");
   for (i = 0; i < tabcontent.length; i++) {
     tabcontent[i].style.display = "none";
+    // tabcontent[i].style.visibility = "hidden";
   }
 
   // Get all elements with class="tablinks" and remove the class "active"
@@ -938,5 +939,6 @@ function changeTabs(evt, tabName) {
   // Show the current tab, and add an "active" class to the button that
   // opened the tab
   document.getElementById(tabName).style.display = "block";
+  // document.getElementById(tabName).style.visibility = "visible";
   evt.currentTarget.className += " active";
 }
