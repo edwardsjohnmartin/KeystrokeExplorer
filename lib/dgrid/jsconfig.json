@@ -1,0 +1,19 @@
+{
+	// See https://go.microsoft.com/fwlink/?LinkId=759670
+	// for the documentation about the jsconfig.json format
+	"compilerOptions": {
+		"target": "es5",
+		"module": "amd",
+		"allowSyntheticDefaultImports": true
+	},
+	"exclude": [
+		".git",
+		"css",
+		"demos",
+		"doc",
+		"extensions/nls",
+		"html-report",
+		"node_modules",
+		"test"
+	]
+}

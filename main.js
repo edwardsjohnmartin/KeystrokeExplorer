@@ -49,6 +49,8 @@ let df = null;
 let editNum2rowNum = null;
 let file = null;
 
+let spreadsheet = null;
+
 function add(subject, assignment, file) {
   if (!subject2assignments2files.has(subject)) {
     subject2assignments2files.set(subject, new Map());
@@ -192,6 +194,7 @@ function onKeyPress(event) {
     slider.value = +slider.value - 1;
     sliderChanged(slider);
   } else if (event.key == inc) {
+    // changeSlider(+slider.value + 1);
     slider.value = +slider.value + 1;
     sliderChanged(slider);
   } else if (event.key == dec10) {
@@ -200,6 +203,8 @@ function onKeyPress(event) {
   } else if (event.key == inc10) {
     slider.value = +slider.value + 10;
     sliderChanged(slider);
+  } else if (event.key == ' ') {
+    togglePlay();
   } else if (event.key == 'x') {
     test();
   }
@@ -228,6 +233,8 @@ function onKeyDown(event) {
 // onload
 //-----------------------------------------------------------------------------
 function onload() {
+  spreadsheet = new Spreadsheet();
+  
   // Get the tab with id="defaultOpen" and click on it
   document.getElementById("defaultOpen").click();
 
@@ -404,6 +411,9 @@ function fileChanged() {
   if (!updatedfall()) return;
   loadingWidget.style.visibility = 'visible';
 
+  // console.log('reset');
+  spreadsheet.reset(dfall);
+
   // df = dfAssign.filter(row => row['CodeStateSection'] == file);
   df = dfall.filter(row => {
     return row.SubjectID == subject &&
@@ -433,12 +443,79 @@ function fileChanged() {
 // sliderChanged
 //-----------------------------------------------------------------------------
 function sliderChanged(slider) {
+  // requestAnimationFrame(tick);
   editNumWidget.innerHTML = slider.value + '/' + slider.max;
   reconstruct(df);
 
   chart.updatePlaybar(slider.value);
   timeline.updatePlaybar(slider.value);
 }
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+let play = false;
+function togglePlay() {
+  play = !play;
+  if (play) {
+    tick(0);
+  }
+}
+
+// let drawing = false;
+// function changeSlider(newValue) {
+//   if (!drawing) {
+//     slider.value = newValue;
+//     requestAnimationFrame(tick);
+//   }
+// }
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+let lastTimestamp = -1;
+function tick(timestamp) {
+  if (play) {
+    slider.value = +slider.value + 1;
+    sliderChanged(slider);
+    let i = +slider.value;
+    if (i < df.length - 1) {
+      let delay = df[i+1].ClientTimestamp - df[i].ClientTimestamp;
+      delay = delay/10;
+      if (delay < 1000/60) {
+        delay = 1000/60;
+      } else if (delay > 5000) {
+        delay = 5000;
+      }
+      console.log(delay);
+      setTimeout(() => { requestAnimationFrame(tick); }, delay);
+    }
+  }
+
+  // if (animate) {
+  //   ticks++;
+  //   requestAnimationFrame(tick);
+  //   var animSpeed = 500;
+
+  //   var start = new Date().getTime();
+  //   var once = true;
+  //   // while (once || !showAnimation) {
+  //   // while (once || !document.getElementById("showAnimation").checked) {
+  //   once = false;
+  //   for (var i = 0; i < animSpeed; ++i) {
+  //     doStep();
+  //   }
+
+  //   var stop = new Date().getTime();
+  //   tickElapsedTime += (stop-start);
+  //   if (ticks == ticksPerUpdate) {
+  //     var stepsPerSec = (animSpeed*ticksPerUpdate / tickElapsedTime) * 1000;
+  //     logger.setDebugValue("fps", (stepsPerSec / 500).toFixed(1));
+  //     tickElapsedTime = 0;
+  //     ticks = 0;
+  //   }
+
+  //   render();
+  // }
+}
+
 
 //-----------------------------------------------------------------------------
 // sliderChanged
@@ -654,6 +731,10 @@ function reconstruct(df) {
   const n = 5;
   let start = eventNum >= n ? eventNum-n : 0;
   let end = eventNum <= dfall.length-n ? eventNum+n : dfall.length;
+
+  // console.log('update');
+  spreadsheet.update(dfall.slice(start, end));
+
   const m = 8; // Number of characters to show on each side of ellipses in abbreviated string
   for (let i = start; i < end; ++i) {
     let row = dfall[i];

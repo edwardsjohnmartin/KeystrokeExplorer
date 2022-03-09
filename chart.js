@@ -36,6 +36,13 @@ Chart.prototype.newRow = function(row, i) {
       if (!this.head) {
         this.arr = [c];
         this.head = c;
+      } else if (this.arr.length == 0) {
+        // All characters in the file were deleted
+        let last = this.head;
+        while (last.next != null) last = last.next;
+        last.next = c;
+        c.prev = last;
+        this.arr.push(c);
       } else if (j+k == this.arr.length) {
         let last = this.arr[this.arr.length-1];
         last.next = c;

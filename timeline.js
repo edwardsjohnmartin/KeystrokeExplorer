@@ -14,6 +14,7 @@ Timeline.prototype.create = function(df) {
     this.end = df[df.length-1].ClientTimestamp;
   } else {
     d3.select('#timeline').selectAll('*').remove();
+    this.df = [];
     return;
   }
 
@@ -82,11 +83,15 @@ Timeline.prototype.create = function(df) {
 }
 
 Timeline.prototype.updatePlaybar = function(value) {
+  if (this.df.length == 0) return;
+  value = +value;
+  // console.log(this.df.length, value);
+
   const chartWidth = document.getElementById('timelinesvg').clientWidth;
   const chartHeight = document.getElementById('timelinesvg').clientHeight;
   const f = chartHeight/(this.end == 0?1:this.end);
   // this.playbar = [value];
-  this.playbar = [df[value].timelinex];
+  this.playbar = [this.df[value].timelinex];
 
   let update = d3.select('#timelineplaybarg').selectAll('rect')
       .data(this.playbar);

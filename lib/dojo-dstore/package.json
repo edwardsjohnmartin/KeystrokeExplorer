@@ -1,0 +1,57 @@
+{
+  "_from": "dojo-dstore",
+  "_id": "dojo-dstore@1.2.1",
+  "_inBundle": false,
+  "_integrity": "sha512-xOgHXNGEdRn+cNvHK6Mf9gU07YPy8MXwZ74Nd7rKVMFxu0/uZOThGljWBdU3bJvhRMzI4IPVTTAOXv/FGGKC4g==",
+  "_location": "/dojo-dstore",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "dojo-dstore",
+    "name": "dojo-dstore",
+    "escapedName": "dojo-dstore",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/dojo-dstore/-/dojo-dstore-1.2.1.tgz",
+  "_shasum": "8b12c2f69552bc20ccc8c5ee2eb5656c95486406",
+  "_spec": "dojo-dstore",
+  "_where": "/Users/edwards/Downloads",
+  "author": {
+    "name": "Kris Zyp"
+  },
+  "bugs": {
+    "url": "https://github.com/SitePen/dstore/issues"
+  },
+  "bundleDependencies": false,
+  "dependencies": {
+    "@types/dojo": "^1.9.0",
+    "dojo": "^1.9.0"
+  },
+  "deprecated": false,
+  "description": "A data collection infrastructure",
+  "devDependencies": {
+    "intern-geezer": "^2",
+    "rql": "~0.3.3"
+  },
+  "directories": {
+    "lib": "."
+  },
+  "dojoBuild": "package.js",
+  "homepage": "https://github.com/SitePen/dstore#readme",
+  "license": "BSD-3-Clause",
+  "main": "./Store",
+  "name": "dojo-dstore",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SitePen/dstore.git"
+  },
+  "types": "./typings/dstore.d.ts",
+  "version": "1.2.1"
+}

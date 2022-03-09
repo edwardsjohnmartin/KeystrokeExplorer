@@ -117,6 +117,10 @@ circle {
 /***********************************************
 /* CSV
 /***********************************************/
+/*.dgrid-slected-row {
+    background: #F2F5F9;
+}*/
+
 table.csv {
     border: none;
     border-collapse: collapse;

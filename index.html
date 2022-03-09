@@ -17,12 +17,26 @@
     <script src="lib/codemirror/addon/selection/mark-selection.js"></script>
     <script src="lib/codemirror/mode/python/python.js"></script>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="lib/dgrid/css/dgrid.css">
+
+    <script src="lib/dojo/dojo.js"
+        data-dojo-config="async: false"></script>
+    <!--script src="lib/dojo/_base/declare.js"></script>
+    <script src="lib/dgrid/OnDemandGrid.js"></script-->
+    <!--script src="lib/dgrid/extensions/ColumnHider.js"></script>
+    <script src="lib/dgrid/extensions/ColumnResizer.js"></script-->
   </head>
 
   <!-----------------------------------------------------------------------
   <!-- Body --
   <!----------------------------------------------------------------------->
   <body onload="onload()">
+    <!-- this configuration assumes that the dgrid package is located
+         in the filesystem as a sibling to the dojo package -->
+    <!--script src="lib/dojo/dojo.js"
+        data-dojo-config="async: false"></script-->
+    <!--script src="./test.js"></script-->
+
     <div>
       <br>
       ProgSnap2: <input id="ps2-selector" type="file" accept=".csv, .ps2, .log" change="ps2Changed()"></input>
@@ -66,7 +80,8 @@
     <!----------------------------------------------------------------------->
     <div class="tab">
       <button class="tablinks" onclick="changeTabs(event, 'Charts')" id="defaultOpen">Charts</button>
-      <button class="tablinks" onclick="changeTabs(event, 'CSV')">CSV</button>
+      <!--button class="tablinks" onclick="changeTabs(event, 'CSV')">CSV</button-->
+      <button class="tablinks" onclick="changeTabs(event, 'grid')">CSV</button>
       <button class="tablinks" onclick="changeTabs(event, 'Help')">Help</button>
     </div>
 
@@ -95,6 +110,7 @@
       </svg>
     </div>
 
+    <div id="grid" class="tabcontent"></div>
     <div id="CSV" class="tabcontent">
       <div>
         <table class="csv">
@@ -132,5 +148,6 @@
     <script src="./main.js"></script>
     <script src="./chart.js"></script>
     <script src="./timeline.js"></script>
+    <script src="./spreadsheet.js"></script>
   </body>
 </html>
