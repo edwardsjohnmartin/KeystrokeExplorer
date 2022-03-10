@@ -1,2 +1,4 @@
 .DS_Store
 test.csv
+.ipynb_checkpoints
+data-processing/keystrokes.csv

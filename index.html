@@ -8,40 +8,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" href="../assets/favicon.ico"/>
 
-    <!--link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/luckysheet@latest/dist/plugins/css/pluginsCss.css' />
-    <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/luckysheet@latest/dist/plugins/plugins.css' />
-    <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/luckysheet@latest/dist/css/luckysheet.css' />
-    <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/luckysheet@latest/dist/assets/iconfont/iconfont.css' />
-    <script src="https://cdn.jsdelivr.net/npm/luckysheet@latest/dist/plugins/js/plugin.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/luckysheet@latest/dist/luckysheet.umd.js"></script-->
-
-
-
     <script src="lib/jquery-3.6.0.min.js"></script>
     <script src="lib/jquery.csv.js"></script>
+    
     <script src="lib/papaparse.min.js"></script>
-    <script src="lib/filbert.js"></script>
     <script src="lib/d3.js"></script>
     <script src="lib/codemirror.js"></script>
+    
+    <!--script src="lib/filbert.js"></script-->
+
     <link rel="stylesheet" href="lib/codemirror.css">
     <script src="lib/codemirror/addon/selection/mark-selection.js"></script>
     <script src="lib/codemirror/mode/python/python.js"></script>
-    <!--link rel="stylesheet" href="lib/dgrid/css/dgrid.css"-->
 
     <link rel="stylesheet" href="lib/frappe-datatable.css">
     <script src="lib/sortable.js"></script>
     <script src="lib/frappe-datatable.js"></script>
-    <!--link rel="stylesheet" href="lib/backgrid.css">
-    <script src="lib/backbone.js"></script>
-    <script src="lib/underscore.js"></script>
-    <script src="lib/backgrid.js"></script-->
 
-    <!--script src="lib/dojo/dojo.js"
-        data-dojo-config="async: false"></script-->
-    <!--script src="lib/dojo/_base/declare.js"></script>
-    <script src="lib/dgrid/OnDemandGrid.js"></script-->
-    <!--script src="lib/dgrid/extensions/ColumnHider.js"></script>
-    <script src="lib/dgrid/extensions/ColumnResizer.js"></script-->
+    <script src="./lib/skulpt.min.js" type="text/javascript"></script>
+    <script src="./lib/skulpt-stdlib.js" type="text/javascript"></script>
 
     <link rel="stylesheet" href="style.css">
   </head>
@@ -50,12 +35,6 @@
   <!-- Body --
   <!----------------------------------------------------------------------->
   <body onload="onload()">
-    <!-- this configuration assumes that the dgrid package is located
-         in the filesystem as a sibling to the dojo package -->
-    <!--script src="lib/dojo/dojo.js"
-        data-dojo-config="async: false"></script-->
-    <!--script src="./test.js"></script-->
-
     <div>
       <br>
       ProgSnap2: <input id="ps2-selector" type="file" accept=".csv, .ps2, .log" change="ps2Changed()"></input>
@@ -130,28 +109,6 @@
     </div>
 
     <div id="grid" class="tabcontent"></div>
-    <!--div id="datatable"></div-->
-
-    <!--div id="CSV" class="tabcontent">
-      <div>
-        <table class="csv">
-          <colgroup>
-            <col span="1" style="width: 4%;">
-            <col span="1" style="width: 7%;">
-            <col span="1" style="width: 7%;">
-            <col span="1" style="width: 7%;">
-            <col span="1" style="width: 23%;">
-            <col span="1" style="width: 23%;">
-            <col span="1" style="width: 4%;">
-            <col span="1" style="width: 13%;">
-            <col span="1" style="width: 12%;">
-          </colgroup>
-
-          <tbody id="table">
-          </tbody>
-        </table>
-      </div>
-    </div-->
 
     <div id="Help" class="tabcontent">
       <br>
@@ -170,5 +127,7 @@
     <script src="./chart.js"></script>
     <script src="./timeline.js"></script>
     <script src="./spreadsheet.js"></script>
-  </body>
+    <script src="./compile.js"></script>
+
+</body>
 </html>

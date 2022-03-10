@@ -395,12 +395,14 @@ function storeCompilable(df) {
       s = s.slice(0,j) + row.InsertText + s.slice(j);
     }
 
-    try {
-      filbert.parse(s);
-      df[i].compilable = true;
-    } catch(e) {
-      df[i].compilable = false;
-    }
+    let errorLineNum = compile(s);
+    df[i].compilable = (errorLineNum == null);
+    // try {
+    //   filbert.parse(s);
+    //   df[i].compilable = true;
+    // } catch(e) {
+    //   df[i].compilable = false;
+    // }
   }
 }
 
@@ -697,18 +699,26 @@ function reconstruct(df) {
   jumpToCh(lastChange, s.split('\n'));
   lineMarkText(lastChange, lastChange+1);
 
-  try {
-    filbert.parse(s);
+  let errorLineNum = compile(s);
+  if (errorLineNum == null) {
     errorWidget.style.visibility = 'hidden';
-  } catch(e) {
-    // console.log(e.loc);
-    if (e.loc) {
-      errorWidget.innerHTML = `Error on line ${e.loc.line}`;
-    } else {
-      errorWidget.innerHTML = e.toString();
-    }
+  } else {
+    errorWidget.innerHTML = `Error on line ${errorLineNum}`;
     errorWidget.style.visibility = 'visible';
   }
+  
+  // try {
+  //   filbert.parse(s);
+  //   errorWidget.style.visibility = 'hidden';
+  // } catch(e) {
+  //   // console.log(e.loc);
+  //   if (e.loc) {
+  //     errorWidget.innerHTML = `Error on line ${e.loc.line}`;
+  //   } else {
+  //     errorWidget.innerHTML = e.toString();
+  //   }
+  //   errorWidget.style.visibility = 'visible';
+  // }
 
   eventNum = df[slider.value].EventIdx;
   if (eventNumWidget != null) {
@@ -719,7 +729,6 @@ function reconstruct(df) {
   let start = eventNum >= n ? eventNum-n : 0;
   let end = eventNum <= dfall.length-n ? eventNum+n : dfall.length;
 
-  // spreadsheet.update(dfall.slice(start, end), eventNum);
   spreadsheet.update(dfall.slice(start, end), eventNum-start);
 }
 
@@ -897,7 +906,6 @@ function changeTabs(evt, tabName) {
   tabcontent = document.getElementsByClassName("tabcontent");
   for (i = 0; i < tabcontent.length; i++) {
     tabcontent[i].style.display = "none";
-    // tabcontent[i].style.visibility = "hidden";
   }
 
   // Get all elements with class="tablinks" and remove the class "active"
@@ -909,6 +917,5 @@ function changeTabs(evt, tabName) {
   // Show the current tab, and add an "active" class to the button that
   // opened the tab
   document.getElementById(tabName).style.display = "block";
-  // document.getElementById(tabName).style.visibility = "visible";
   evt.currentTarget.className += " active";
 }

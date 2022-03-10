@@ -8,12 +8,10 @@ let selectedID = '';
 Spreadsheet.prototype.update = function(df, sid) {
   let visiblecols = ['EventType', 'EditType', 'InsertText', 'DeleteText'];
   let data = [];
-  // let selIdx = -1;
   let selIdx = sid;
   for (let i = 0; i < df.length; ++i) {
     let row = df[i];
     data.push([row.EventType, row.EditType, row.InsertText, row.DeleteText]);
-    // if (row.EventIdx == sid) selIdx = i;
   }
   this.datatable.refresh(data);
   this.datatable.style.removeStyle(`.dt-cell--row-${this.lastSelIdx}`);
