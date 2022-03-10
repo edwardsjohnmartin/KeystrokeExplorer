@@ -6,12 +6,16 @@ let sgrid = null;
 let selectedID = '';
 
 Spreadsheet.prototype.update = function(df, sid) {
-  let visiblecols = ['EventType', 'EditType', 'InsertText', 'DeleteText'];
   let data = [];
   let selIdx = sid;
   for (let i = 0; i < df.length; ++i) {
     let row = df[i];
-    data.push([row.EventType, row.EditType, row.InsertText, row.DeleteText]);
+    // data.push([row.EventType, row.EditType, row.InsertText, row.DeleteText]);
+    let d = [];
+    this.visiblecols.forEach(p => {
+      d.push(row[p]);
+    });
+    data.push(d);
   }
   this.datatable.refresh(data);
   this.datatable.style.removeStyle(`.dt-cell--row-${this.lastSelIdx}`);
@@ -22,27 +26,32 @@ Spreadsheet.prototype.update = function(df, sid) {
 }
 
 Spreadsheet.prototype.reset = function(df) {
-  let vc = ['EventType', 'EditType', 'InsertText', 'DeleteText'];
-  let visiblecols = [];
-  vc.forEach(name =>
-    visiblecols.push({
-    name: name,
-    id: name,
-    editable: false,
-    // resizable: false,
-    sortable: false,
-    focusable: false,
-    dropdown: false,
+  let ignore = new Set(['EventID', 'SubjectID', 'AssignmentID',
+                        'CodeStateSection', 'ToolInstances', 'CodeStateID',
+                        'EventIdx']);
+  this.visiblecols = Object.getOwnPropertyNames(df[0]).filter(
+    x => x != '' && !ignore.has(x));
+  let cols = [];
+  this.visiblecols.forEach(name => {
+    cols.push({
+      name: name,
+      id: name,
+      editable: false,
+      // resizable: false,
+      sortable: false,
+      focusable: false,
+      dropdown: false,
       // format: (value) => {
       //   // console.log(value);
       //   // return value.fontcolor('blue');
       //   // return value.fontsize(.8).fontfamily('monospace');
       //   return value.fontsize(.8);
       // }
-    }));
+    })
+  });
   
   this.datatable = new DataTable('#grid', {
-    columns: visiblecols,
+    columns: cols,
     serialNoColumn: false,
     // dynamicRowHeight: true,
     cellHeight: 15,
