@@ -35,61 +35,98 @@
   <!-- Body --
   <!----------------------------------------------------------------------->
   <body onload="onload()">
-    <div>
-      <br>
-      ProgSnap2: <input id="ps2-selector" type="file" accept=".csv, .ps2, .log" change="ps2Changed()"></input>
-      <br>
-      <label for="subjects">SubjectID:</label>
-      <select name="subjects" id="subjects" onchange="subjectChanged()"></select>
+    <main>
+      <!-------------- Header -------------->
+      <header>
+        <div>
+          <br>
+          ProgSnap2: <input id="ps2-selector" type="file" accept=".csv, .ps2, .log" change="ps2Changed()"></input>
+          <br>
+          <label for="subjects">SubjectID:</label>
+          <select name="subjects" id="subjects" onchange="subjectChanged()"></select>
 
-      <label for="assignments">AssignmentID:</label>
-      <select name="assignments" id="assignments" onchange="assignmentChanged()"></select>
+          <label for="assignments">AssignmentID:</label>
+          <select name="assignments" id="assignments" onchange="assignmentChanged()"></select>
 
-      <label for="files">File:</label>
-      <select name="files" id="files" onchange="fileChanged()"></select>
+          <label for="files">File:</label>
+          <select name="files" id="files" onchange="fileChanged()"></select>
 
-      <label for="findString">Search string (use arrows):</label>
-      <input name="findString" id="findString" type="text"></input>
+          <label for="findString">Search string (use arrows):</label>
+          <input name="findString" id="findString" type="text"></input>
 
-      <text id="compileError">Error compiling</text>
+          <text id="compileError">Error compiling</text>
 
-      <text id="loading">Loading...</text>
+          <text id="loading">Loading...</text>
 
-      <br>
-      <label for="slider">Playback:</label>
-      <input type="range" id="slider" name="slider" min="0" max="10">
+          <br>
+          <label for="slider">Playback:</label>
+          <input type="range" id="slider" name="slider" min="0" max="10">
 
-      <!--label for="edit-num">Edit number:</label-->
-      <text id="edit-num"></text>
-      <br>
-    </div>
+          <text id="edit-num"></text>
+          <br>
+        </div>
+      </header>
 
+      <!-------------- Code -------------->
+      <code>
+        <textarea id="textarea" name="textarea">File text</textarea>
+      </code>
+
+      <!-------------- Chart -------------->
+      <cpchart>
+        <div id="Charts" class="tabcontent_">
+          <svg class="chart" id="chart">
+            <g id="cpchartgroup">
+              <g id="bars"></g>
+              <g id="barsstart"></g>
+              <g id="barsend"></g>
+              <g id="compilable"></g>
+              <g id="playbarg"></g>
+            </g>
+          </svg>
+        </div>
+      </cpchart>
+      <tchart>
+        <div>
+          <br>
+          <svg class="chart" id="timelinesvg">
+            <g id="timelinechartgroup">
+              <g id="timeline"></g>
+              <g id="timelineplaybarg"></g>
+            </g>
+          </svg>
+        </div>
+      </tchart>
+
+      <!-------------- CSV -------------->
+      <csv>
+        <div id="grid" class="tabcontent_"></div>
+      </csv>
+    </main>
+
+
+    <script>
+      /*
     <table class="page">
       <tr class="page">
         <td class="page" id="tdcode">
     <!-----------------------------------------------------------------------
     <!-- Code window --
     <!----------------------------------------------------------------------->
-    <textarea id="textarea" name="textarea">File text</textarea>
+    <!--textarea id="textarea" name="textarea">File text</textarea-->
         </td>
         <td class="page" id="tdtabs">
     <!-----------------------------------------------------------------------
     <!-- Tabs --
     <!----------------------------------------------------------------------->
-    <div class="tab">
+    <!--div class="tab">
       <button class="tablinks" onclick="changeTabs(event, 'Charts')" id="defaultOpen">Charts</button>
-      <!--button class="tablinks" onclick="changeTabs(event, 'CSV')">CSV</button-->
       <button class="tablinks" onclick="changeTabs(event, 'grid')">CSV</button>
       <button class="tablinks" onclick="changeTabs(event, 'Help')">Help</button>
-    </div>
+    </div-->
 
     <!-- Tab content -->
     <div id="Charts" class="tabcontent">
-      <!--svg id="compilable">
-        <g id="compilablegroup">
-          <g id="compilablebars"></g>
-        </g>
-      </svg-->
       <svg class="chart" id="chart">
         <g id="cpchartgroup">
           <g id="bars"></g>
@@ -100,15 +137,15 @@
         </g>
       </svg>
       <br>
-      <svg class="chart" id="timelinesvg">
+      <!--svg class="chart" id="timelinesvg">
         <g id="timelinechartgroup">
           <g id="timeline"></g>
           <g id="timelineplaybarg"></g>
         </g>
-      </svg>
+      </svg-->
     </div>
 
-    <div id="grid" class="tabcontent"></div>
+    <!--div id="grid" class="tabcontent"></div-->
 
     <div id="Help" class="tabcontent">
       <br>
@@ -122,7 +159,9 @@
       <br>right arrow - move forward to first snapshot containing the search string
     </div>
     </td>
-
+*/
+    </script>
+    
     <script src="./main.js"></script>
     <script src="./chart.js"></script>
     <script src="./timeline.js"></script>

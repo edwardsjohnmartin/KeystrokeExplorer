@@ -1,5 +1,75 @@
 :root {
     --ke-selected-color: #bbffbb;
+    --test-border: 3px dotted blue;
+    --test-border: none;
+}
+
+body {
+    margin: 10px;
+    height: 100%;
+}
+
+main {
+    display: grid;
+    border: var(--test-border);
+    padding: 3px;
+    grid-gap: 3px;
+    
+    grid-template: 
+    /*"nav head" min-content
+    "nav main" 1fr
+        / min-content 1fr;*/
+    "header header" min-content
+    "code cpchart" min-content
+    "code tchart" min-content
+    "code csv" 1fr
+/*        / min-content 1fr;*/
+        / 1fr 1fr;
+}
+
+header {
+    grid-area: header;
+    border: var(--test-border);
+    overflow: auto;
+/*    resize: horizontal;*/
+    
+    min-width: 120px;
+    max-width: 50vw;
+}
+
+code {
+    grid-area: code;
+    border: var(--test-border);
+    overflow: auto;
+/*    resize: horizontal;*/
+    
+    min-width: 400px;
+    max-width: 80vw;
+}
+
+cpchart {
+    grid-area: cpchart;
+    border: var(--test-border);
+    overflow: auto;
+/*    resize: vertical;
+    
+    min-height: min-content;
+    max-height: 200px;*/
+}
+
+tchart {
+    grid-area: tchart;
+    border: var(--test-border);
+    overflow: auto;
+/*    resize: vertical;
+    
+    min-height: min-content;
+    max-height: 200px;*/
+}
+
+csv {
+    grid-area: csv;
+    border: var(--test-border);
 }
 
 /***********************************************
@@ -55,10 +125,7 @@
 
 /* Style the tab content */
 .tabcontent {
-    display: none;
-/*    padding: 6px 12px;
-    border: 1px solid #ccc;
-    border-top: none; */
+/*    display: none;*/
     height: 560px;
 }
 /*.dgrid-header .dojoDndTarget .dgrid-cell {
