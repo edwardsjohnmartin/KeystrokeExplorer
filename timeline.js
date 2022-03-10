@@ -19,6 +19,8 @@ Timeline.prototype.create = function(df) {
   }
 
   const chartWidth = document.getElementById('timelinesvg').clientWidth;
+  if (chartWidth == 0) return;
+
   const chartHeight = document.getElementById('timelinesvg').clientHeight;
   const f = chartWidth/(this.end-this.start);
 

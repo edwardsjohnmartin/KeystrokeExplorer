@@ -1,3 +1,7 @@
+:root {
+    --ke-selected-color: #bbffbb;
+}
+
 /***********************************************
 /* CodeMirror */
 /***********************************************/
@@ -14,7 +18,8 @@
 .CodeMirror-selectedtext { color: white; }*/
 /*.styled-background { background-color: #ff7; }*/
 .styled-background { background-color: lightgreen; }
-.line-highlight { background-color: lightgreen; }
+/*.line-highlight { background-color: lightgreen; }*/
+.line-highlight { background-color: var(--ke-selected-color); }
 
 /***********************************************
 /* Tabs
@@ -123,6 +128,23 @@ circle {
 /***********************************************
 /* CSV
 /***********************************************/
+.dt-cell {
+    font-size: 9px;
+}
+
+.dt-cell__content {
+/*    padding: 0.5rem;*/
+/*    padding: var(--dt-spacer-2);*/
+    padding: 0.05rem;/*var(--dt-spacer-1);*/
+    border: 2px solid transparent;
+    border: 1px solid transparent;
+/*    border: var(--dt-focus-border-width) solid transparent;
+    height: 30%;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;*/
+}
+
 .dgrid-selected-row {
     background: #F2F5F9;
 }
