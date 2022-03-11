@@ -82,6 +82,31 @@ Timeline.prototype.create = function(df) {
     .style('stroke', (d,i) => blockColor(i))
   ;
   update.exit().remove();
+
+
+  //------------------------------------------------------------
+  // Okay, we've rendered the chart. Now convert it to an image
+  // for performance.
+  //------------------------------------------------------------
+  svgAsPngUri(document.getElementById("timelinesvg"), "chart.png").then(uri => {
+    d3.select('#timeline').selectAll('*').remove();
+
+    const chartWidth = document.getElementById('timelinesvg').clientWidth;
+    const chartHeight = document.getElementById('timelinesvg').clientHeight;
+    let enter = d3.select('#timelinechartgroup')
+        .selectAll('image')
+        .data([uri])
+        .enter()
+        .append("svg:image")
+        .attr("transform", `translate(0 ${chartHeight}) scale(1 -1)`)
+        .attr('x', 0)
+        .attr('y', 0)
+        .attr('width', chartWidth)
+        .attr('height', chartHeight)
+        .attr("xlink:href", uri)
+    ;
+  });
+
 }
 
 Timeline.prototype.updatePlaybar = function(value) {

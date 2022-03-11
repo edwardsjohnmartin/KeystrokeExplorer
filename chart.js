@@ -77,6 +77,9 @@ Chart.prototype.newRow = function(row, i) {
 }
 
 Chart.prototype.create = function(df) {
+  // Remove the cached image
+  d3.select('#cpimage').selectAll('*').remove();
+  
   if (df.length > 0) {
     for (let i = 0; i < df.length; ++i) {
       let row = df[i];
@@ -181,6 +184,34 @@ Chart.prototype.create = function(df) {
     ;
     update.exit().remove();
   }
+
+  //------------------------------------------------------------
+  // Okay, we've rendered the chart. Now convert it to an image
+  // for performance.
+  //------------------------------------------------------------
+  svgAsPngUri(document.getElementById("chart"), "chart.png").then(uri => {
+    d3.select('#bars').selectAll('*').remove();
+    d3.select('#barsstart').selectAll('*').remove();
+    d3.select('#barsend').selectAll('*').remove();
+    d3.select('#compilable').selectAll('*').remove();
+
+    const chartWidth = document.getElementById('chart').clientWidth;
+    const chartHeight = document.getElementById('chart').clientHeight;
+    let enter = d3.select('#cpimage')
+        .selectAll('image')
+        .data([uri])
+        .enter()
+        .append("svg:image")
+        .attr("transform", `translate(0 ${chartHeight}) scale(1 -1)`)
+        .attr('x', 0)
+        .attr('y', 0)
+        .attr('width', chartWidth)
+        .attr('height', chartHeight)
+        .attr("xlink:href", uri)
+    ;
+  });
+
+
 }
 
 Chart.prototype.updatePlaybar = function(value) {

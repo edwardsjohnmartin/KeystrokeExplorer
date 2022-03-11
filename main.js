@@ -240,7 +240,13 @@ function onload() {
 
   codeWidget = CodeMirror.fromTextArea(codeWidget, {
     mode: "python",
-    lineNumbers: true,
+    // Enabling line numbers is a problem. Each time we call setValue()
+    // on the widget 4 elements get added, per this code:
+    //   document.querySelectorAll('div.CodeMirror-measure *').length
+    // I don't know why CodeMirror does this -- I imagine it's a bug.
+    // Anyway, it slows down the UI significantly as the user navigates more
+    // and more.
+    // lineNumbers: true,
     lineWrapping: true,
     readOnly: true,
     styleSelectedText: true,
@@ -597,6 +603,7 @@ function jumpToCh(i, lines) {
 }
 
 //-----------------------------------------------------------------------------
+// i is the index of the character in a linearized representation of the code.
 //-----------------------------------------------------------------------------
 function getLineCh(i, lines) {
   let j = 0;
@@ -619,6 +626,7 @@ function markText(start, end) {
   if (lastMark) lastMark.clear();
 
   let s = codeWidget.getValue();
+  // let s = codeWidget.value;
   let lines = s.split('\n');
   let a = getLineCh(start, lines);
   let b = getLineCh(end, lines);
@@ -635,6 +643,7 @@ function lineMarkText(start, end) {
   if (lineLastMark) lineLastMark.clear();
 
   let s = codeWidget.getValue();
+  // let s = codeWidget.vaue;
   let lines = s.split('\n');
   let a = getLineCh(start, lines);
   let b = getLineCh(end, lines);
@@ -649,6 +658,19 @@ function lineMarkText(start, end) {
   lineLastMark = codeWidget.markText(a, b, {className: "line-highlight"});
 }
 
+// s is the current text
+function replace(s, j, insertText, deleteText) {
+  insertText = insertText ? insertText : '';
+  deleteText = deleteText ? deleteText : '';
+  s = s.slice(0,j) + insertText + s.slice(j+deleteText.length);
+  return s;
+  // let s = codeWidget.getValue();
+
+  // let lines = s.split('\n');
+  // let a = getLineCh(start, lines);
+  // let b = getLineCh(end, lines);
+}
+
 //-----------------------------------------------------------------------------
 // reconstruct
 // Reconstruct the file.
@@ -659,6 +681,7 @@ function reconstruct(df) {
   // table.innerHTML = '';
 
   codeWidget.setValue('');
+  // codeWidget.value = '';
 
   if (df.length == 0) {
     return;
@@ -666,35 +689,63 @@ function reconstruct(df) {
 
   let head = null;
 
-  let s = '';
+  let s = curReconstruction;
   let lastChange = -1;
   // Reconstruct the file
-  if (df.length > 0) {
+  let newIndex = +slider.value;
+  if (df.length > 0 && newIndex != curIndex) {
     let rstart = 0;
-    if (curIndex < slider.value) {
+    // Moving forward
+    if (curIndex < newIndex) {
       rstart = curIndex+1;
       s = curReconstruction;
-    }
-    curIndex = +slider.value;
-    // console.log('rstart', rstart);
-    // console.log('curIndex', curIndex);
-    // for (let i = 0; i <= slider.value; ++i) {
-    for (let i = rstart; i <= curIndex; ++i) {
-      let row = df[i];
-      let j = +row.SourceLocation;
-      lastChange = j;
-      if (row.DeleteText && row.DeleteText.length > 0) {
-        s = s.slice(0,j) + s.slice(j+row.DeleteText.length);
-      }
-      if (row.InsertText && row.InsertText.length > 0) {
-        s = s.slice(0,j) + row.InsertText + s.slice(j);
+    } else {
+      // Moving backward. See if going backward or starting from
+      // scratch would be more efficient.
+      if (newIndex < curIndex - newIndex) {
+        // Start from scratch
+        rstart = 0;
+        s = '';
+      } else {
+        // Move backward
+        rstart = curIndex;
+        s = curReconstruction;
       }
     }
+    if (newIndex >= rstart) {
+      // Move forward
+      for (let i = rstart; i <= newIndex; ++i) {
+        let row = df[i];
+        let j = +row.SourceLocation;
+        lastChange = j;
+        s = replace(s, j, row.InsertText, row.DeleteText);
+      }
+    } else {
+      // Move backward
+      for (let i = rstart; i > newIndex; --i) {
+        let row = df[i];
+        let j = +row.SourceLocation;
+        lastChange = j;
+        s = replace(s, j, row.DeleteText, row.InsertText);
+      }
+    }
+    curIndex = newIndex;
   }
 
   curReconstruction = s;
 
+
+  // doc.replaceRange(replacement: string, from: {line, ch}, to: {line, ch}, ?origin: string)
+  //   Replace the part of the document between from and to with the given string. from and to must be {line, ch} objects. to can be left off to simply insert the string at position from. When origin is given, it will be passed on to "change" events, and its first letter will be used to determine whether this change can be merged with previous history events, in the way described for selection origins.
+    // console.log(codeWidget.doc);
+
+  // Set the value, but do not scroll to the top.
+  // var scrollInfo = codeWidget.getScrollInfo();
   codeWidget.setValue(s);
+  // codeWidget.scrollTo(scrollInfo.left, scrollInfo.top);
+  
+  // console.log(document.querySelectorAll('body *').length);
+  // codeWidget.value = s;
   
   jumpToCh(lastChange, s.split('\n'));
   lineMarkText(lastChange, lastChange+1);
@@ -707,28 +758,15 @@ function reconstruct(df) {
     errorWidget.style.visibility = 'visible';
   }
   
-  // try {
-  //   filbert.parse(s);
-  //   errorWidget.style.visibility = 'hidden';
-  // } catch(e) {
-  //   // console.log(e.loc);
-  //   if (e.loc) {
-  //     errorWidget.innerHTML = `Error on line ${e.loc.line}`;
-  //   } else {
-  //     errorWidget.innerHTML = e.toString();
-  //   }
-  //   errorWidget.style.visibility = 'visible';
-  // }
-
   eventNum = df[slider.value].EventIdx;
   if (eventNumWidget != null) {
     eventNumWidget.innerHTML = eventNum;
   }
-
   const n = 5;
   let start = eventNum >= n ? eventNum-n : 0;
   let end = eventNum <= dfall.length-n ? eventNum+n : dfall.length;
 
+  // TODO replace spreadsheet -- it's really slow.
   spreadsheet.update(dfall.slice(start, end), eventNum-start);
 }
 
