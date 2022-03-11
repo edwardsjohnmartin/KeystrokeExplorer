@@ -592,15 +592,8 @@ function findString(toFind) {
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-function jumpToLine(i) { 
-  // codeWidget.scrollIntoView({line: i, ch: 0}, margin=400);
-}
-
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-function jumpToCh(i) {//, lines) {
-  // jumpToLine(getLineCh(i, lines).line);
-  jumpToLine(codeWidget.doc.posFromIndex(i));
+function jumpToCh(i) {
+  // codeWidget.setCursor(codeWidget.doc.posFromIndex(i));
 }
 
 // //-----------------------------------------------------------------------------
@@ -723,6 +716,7 @@ function reconstruct(df) {
         // Start from scratch
         rstart = 0;
         s = '';
+        codeWidget.setValue('');
       } else {
         // Move backward
         rstart = curIndex;
@@ -770,8 +764,8 @@ function reconstruct(df) {
   let start = eventNum >= n ? eventNum-n : 0;
   let end = eventNum <= dfall.length-n ? eventNum+n : dfall.length;
 
-  // TODO replace spreadsheet -- it's really slow.
-  spreadsheet.update(dfall.slice(start, end), eventNum-start);
+  // // TODO replace spreadsheet -- it's really slow.
+  // spreadsheet.update(dfall.slice(start, end), eventNum-start);
 }
 
 //-----------------------------------------------------------------------------
