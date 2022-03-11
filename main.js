@@ -593,31 +593,32 @@ function findString(toFind) {
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 function jumpToLine(i) { 
-  codeWidget.scrollIntoView({line: i, ch: 0}, margin=400);
+  // codeWidget.scrollIntoView({line: i, ch: 0}, margin=400);
 }
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-function jumpToCh(i, lines) {
-  jumpToLine(getLineCh(i, lines).line);
+function jumpToCh(i) {//, lines) {
+  // jumpToLine(getLineCh(i, lines).line);
+  jumpToLine(codeWidget.doc.posFromIndex(i));
 }
 
-//-----------------------------------------------------------------------------
-// i is the index of the character in a linearized representation of the code.
-//-----------------------------------------------------------------------------
-function getLineCh(i, lines) {
-  let j = 0;
-  let j_ = 0;
-  let line = 0;
-  while (j < i) {
-    j_ = j;
-    j += lines[line].length+1;
-    line++;
-  }
-  if (line == 0) line = 1;
-  let ch = i - j_;
-  return {line: line-1, ch: ch};
-}
+// //-----------------------------------------------------------------------------
+// // i is the index of the character in a linearized representation of the code.
+// //-----------------------------------------------------------------------------
+// function getLineCh(i, lines) {
+//   let j = 0;
+//   let j_ = 0;
+//   let line = 0;
+//   while (j < i) {
+//     j_ = j;
+//     j += lines[line].length+1;
+//     line++;
+//   }
+//   if (line == 0) line = 1;
+//   let ch = i - j_;
+//   return {line: line-1, ch: ch};
+// }
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -625,11 +626,14 @@ let lastMark = null;
 function markText(start, end) {
   if (lastMark) lastMark.clear();
 
-  let s = codeWidget.getValue();
-  // let s = codeWidget.value;
-  let lines = s.split('\n');
-  let a = getLineCh(start, lines);
-  let b = getLineCh(end, lines);
+  // let s = codeWidget.getValue();
+  // // let s = codeWidget.value;
+  // let lines = s.split('\n');
+  // let a = getLineCh(start, lines);
+  // let b = getLineCh(end, lines);
+  let a = codeWidget.doc.posFromIndex(start);
+  let b = codeWidget.doc.posFromIndex(end);
+
   lastMarkStart = a;
   lastMarkEnd = b;
   
@@ -642,11 +646,13 @@ let lineLastMark = null;
 function lineMarkText(start, end) {
   if (lineLastMark) lineLastMark.clear();
 
-  let s = codeWidget.getValue();
-  // let s = codeWidget.vaue;
-  let lines = s.split('\n');
-  let a = getLineCh(start, lines);
-  let b = getLineCh(end, lines);
+  // let s = codeWidget.getValue();
+  // // let s = codeWidget.vaue;
+  // let lines = s.split('\n');
+  // let a = getLineCh(start, lines);
+  // let b = getLineCh(end, lines);
+  let a = codeWidget.doc.posFromIndex(start);
+  let b = codeWidget.doc.posFromIndex(end);
 
   a.ch = 0;
   b.line = a.line+1;
@@ -660,15 +666,26 @@ function lineMarkText(start, end) {
 
 // s is the current text
 function replace(s, j, insertText, deleteText) {
+  // let lines = s.split('\n');
   insertText = insertText ? insertText : '';
   deleteText = deleteText ? deleteText : '';
   s = s.slice(0,j) + insertText + s.slice(j+deleteText.length);
-  return s;
-  // let s = codeWidget.getValue();
 
-  // let lines = s.split('\n');
-  // let a = getLineCh(start, lines);
-  // let b = getLineCh(end, lines);
+  // let a = codeWidget.doc.posFromIndex(start);
+  // let b = codeWidget.doc.posFromIndex(end);
+  // let lines = codeWidget.getValue().split('\n');
+  // let a = getLineCh(j, lines);
+  let a = codeWidget.doc.posFromIndex(j);
+  if (deleteText.length > 0) {
+    // let b = getLineCh(j + deleteText.length, lines);
+    let b = codeWidget.doc.posFromIndex(j+deleteText.length);
+    codeWidget.doc.replaceRange(insertText, a, b);
+  } else {
+    codeWidget.doc.replaceRange(insertText, a);
+  }
+  // doc.replaceRange(replacement: string, from: {line, ch}, to: {line, ch}, ?origin: string)
+
+  return s;
 }
 
 //-----------------------------------------------------------------------------
@@ -680,7 +697,7 @@ let curReconstruction = '';
 function reconstruct(df) {
   // table.innerHTML = '';
 
-  codeWidget.setValue('');
+  // codeWidget.setValue('');
   // codeWidget.value = '';
 
   if (df.length == 0) {
@@ -734,20 +751,7 @@ function reconstruct(df) {
 
   curReconstruction = s;
 
-
-  // doc.replaceRange(replacement: string, from: {line, ch}, to: {line, ch}, ?origin: string)
-  //   Replace the part of the document between from and to with the given string. from and to must be {line, ch} objects. to can be left off to simply insert the string at position from. When origin is given, it will be passed on to "change" events, and its first letter will be used to determine whether this change can be merged with previous history events, in the way described for selection origins.
-    // console.log(codeWidget.doc);
-
-  // Set the value, but do not scroll to the top.
-  // var scrollInfo = codeWidget.getScrollInfo();
-  codeWidget.setValue(s);
-  // codeWidget.scrollTo(scrollInfo.left, scrollInfo.top);
-  
-  // console.log(document.querySelectorAll('body *').length);
-  // codeWidget.value = s;
-  
-  jumpToCh(lastChange, s.split('\n'));
+  jumpToCh(lastChange);
   lineMarkText(lastChange, lastChange+1);
 
   let errorLineNum = compile(s);
