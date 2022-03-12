@@ -51,7 +51,7 @@ let file = null;
 
 let spreadsheet = null;
 
-function add(subject, assignment, file) {
+function addEntry(subject, assignment, file) {
   if (!subject2assignments2files.has(subject)) {
     subject2assignments2files.set(subject, new Map());
   }
@@ -61,6 +61,10 @@ function add(subject, assignment, file) {
   }
   let files = assignments2files.get(assignment);
   files.add(file);
+}
+
+function clearEntries() {
+  subject2assignments2files = new Map();
 }
 
 //-----------------------------------------------------------------------------
@@ -92,9 +96,9 @@ function updatedfall() {
 // removeAllChildNodes
 //-----------------------------------------------------------------------------
 function removeAllChildNodes(parent) {
-    while (parent.firstChild) {
-        parent.removeChild(parent.firstChild);
-    }
+  while (parent.firstChild) {
+    parent.removeChild(parent.firstChild);
+  }
 }
 
 //-----------------------------------------------------------------------------
@@ -310,6 +314,7 @@ function updateSubjectWidget() {
 
   // console.log(subjects);
 
+  // console.log('updateSubjectWidget');
   removeAllChildNodes(subjectsWidget);
   // subjects = Array.from(subjects).sort()
   // subjects.forEach(file => {
@@ -788,8 +793,9 @@ function parseCSV(data) {
     return a.ClientTimestamp - b.ClientTimestamp;
   });
 
+  clearEntries();
   dfall.forEach(row => {
-    add(row.SubjectID, row.AssignmentID, row.CodeStateSection);
+    addEntry(row.SubjectID, row.AssignmentID, row.CodeStateSection);
   });
 
   prepdfall();
@@ -855,14 +861,16 @@ function readAllChunks(file, callback) {
       } else {
         key2chunks[curKey] = [chunkOffsets.length-1];
       }
-      add(rows[0].SubjectID, rows[0].AssignmentID, rows[0].CodeStateSection);
+
+      clearEntries();
+      addEntry(rows[0].SubjectID, rows[0].AssignmentID, rows[0].CodeStateSection);
       
       rows.forEach(row => {
         let key = row.SubjectID+row.AssignmentID+row.CodeStateSection;
         if (key != curKey) {
           key2chunks[key] = [chunkOffsets.length-1];
           curKey = key;
-          add(row.SubjectID, row.AssignmentID, row.CodeStateSection);
+          addEntry(row.SubjectID, row.AssignmentID, row.CodeStateSection);
         }
       });
       chunkOffsets.push(cursor);

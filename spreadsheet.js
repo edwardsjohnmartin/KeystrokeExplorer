@@ -46,7 +46,11 @@ Spreadsheet.prototype.update = function(df, sid) {
 Spreadsheet.prototype.reset = function(df) {
   let ignore = new Set(['EventID', 'SubjectID', 'AssignmentID',
                         'CodeStateSection', 'ToolInstances', 'CodeStateID',
-                        'EventIdx']);
+                        'EventIdx',
+                        // 2019 data
+                        'X-RunInput', 'X-RunOutput', 'X-RunHasError',
+                        'X-RunUserTerminated', 'X-RawAssignmentID', 'X-Term',
+                       ]);
   this.visiblecols = Object.getOwnPropertyNames(df[0]).filter(
     x => x != '' && !ignore.has(x));
 
