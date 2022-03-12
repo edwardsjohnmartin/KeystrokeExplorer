@@ -593,7 +593,7 @@ function findString(toFind) {
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 function jumpToCh(i) {
-  // codeWidget.setCursor(codeWidget.doc.posFromIndex(i));
+  codeWidget.setCursor(codeWidget.doc.posFromIndex(i));
 }
 
 // //-----------------------------------------------------------------------------
@@ -764,8 +764,8 @@ function reconstruct(df) {
   let start = eventNum >= n ? eventNum-n : 0;
   let end = eventNum <= dfall.length-n ? eventNum+n : dfall.length;
 
-  // // TODO replace spreadsheet -- it's really slow.
-  // spreadsheet.update(dfall.slice(start, end), eventNum-start);
+  // TODO replace spreadsheet -- it's really slow.
+  spreadsheet.update(dfall.slice(start, end), eventNum-start);
 }
 
 //-----------------------------------------------------------------------------

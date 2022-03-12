@@ -221,13 +221,22 @@ table.csv {
     border-collapse: collapse;
     /*width: 800px;*/
     width: 100%;
-    font-size: 8px;
+    font-size: 9px;
     font-family: "monospace", monospace;
     text-align:center;
+    text-overflow: ellipsis;
+    table-layout: fixed;
 }
 td.csv {
     text-align:center;
     /*white-space: nowrap;*/
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+tr.selected {
+    background-color: var(--ke-selected-color);
 }
 
 
