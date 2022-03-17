@@ -438,7 +438,7 @@ function fileChanged() {
   slider.value = slider.max;
   // slider.value = 0;
   editNumWidget.innerHTML = slider.value + '/' + slider.max;
-  reconstruct(df);
+  reconstruct(df, true);
   loadingWidget.style.visibility = 'hidden';
 
   storeCompilable(df);
@@ -458,7 +458,7 @@ function fileChanged() {
 function sliderChanged(slider) {
   // requestAnimationFrame(tick);
   editNumWidget.innerHTML = slider.value + '/' + slider.max;
-  reconstruct(df);
+  reconstruct(df, false);
 
   chart.updatePlaybar(slider.value);
   timeline.updatePlaybar(slider.value);
@@ -692,7 +692,7 @@ function replace(s, j, insertText, deleteText) {
 //-----------------------------------------------------------------------------
 let curIndex = -1;
 let curReconstruction = '';
-function reconstruct(df) {
+function reconstruct(df, fromScratch) {
   // table.innerHTML = '';
 
   // codeWidget.setValue('');
@@ -702,6 +702,11 @@ function reconstruct(df) {
     return;
   }
 
+  if (fromScratch) {
+    curIndex = -1;
+    curReconstruction = '';
+  }
+
   let head = null;
 
   let s = curReconstruction;
@@ -709,6 +714,7 @@ function reconstruct(df) {
   // Reconstruct the file
   let newIndex = +slider.value;
   if (df.length > 0 && newIndex != curIndex) {
+    // Setup
     let rstart = 0;
     // Moving forward
     if (curIndex < newIndex) {
@@ -721,13 +727,15 @@ function reconstruct(df) {
         // Start from scratch
         rstart = 0;
         s = '';
-        codeWidget.setValue('');
       } else {
         // Move backward
         rstart = curIndex;
         s = curReconstruction;
       }
     }
+    codeWidget.setValue(s);
+
+    // Loop and do reconstruction
     if (newIndex >= rstart) {
       // Move forward
       for (let i = rstart; i <= newIndex; ++i) {
@@ -749,6 +757,10 @@ function reconstruct(df) {
   }
 
   curReconstruction = s;
+
+  // console.log('**********************************************************');
+  // console.log('Code\n', s);
+  // console.log('Code2\n', codeWidget.getValue());
 
   jumpToCh(lastChange);
   lineMarkText(lastChange, lastChange+1);
