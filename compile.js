@@ -24,7 +24,7 @@ function compile(prog) {
     // Error in the compiler
     if (e.traceback == null || e.traceback.length == 0) {
       console.log('ERROR');
-      console.log(prog);
+      // console.log(prog);
       console.log(e);
       return -1;
     }

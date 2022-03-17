@@ -93,7 +93,7 @@ Timeline.prototype.create = function(df) {
 
     const chartWidth = document.getElementById('timelinesvg').clientWidth;
     const chartHeight = document.getElementById('timelinesvg').clientHeight;
-    let enter = d3.select('#timelinechartgroup')
+    let enter = d3.select('#timelineimage')
         .selectAll('image')
         .data([uri])
         .enter()
