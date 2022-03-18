@@ -263,7 +263,7 @@ function onload() {
   document.getElementById('ps2-selector').
     addEventListener('change', ps2Changed);
 
-  loadDefaultCSV();
+  // loadDefaultCSV();
 }
 
 function loadDefaultCSV() {
