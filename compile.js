@@ -23,7 +23,7 @@ function compile(prog) {
   } catch(e) {
     // Error in the compiler
     if (e.traceback == null || e.traceback.length == 0) {
-      console.log('ERROR');
+      console.log('Warning: error while checking Python code for compile errors');
       // console.log(prog);
       console.log(e);
       return -1;
