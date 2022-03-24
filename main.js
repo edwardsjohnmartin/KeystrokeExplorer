@@ -790,7 +790,13 @@ function reconstruct(df, fromScratch) {
 // Given a string (data), parse the CSV. Assumes the header is in data.
 //-----------------------------------------------------------------------------
 function parseCSV(data) {
-  dfall = $.csv.toObjects(data);
+  temp = $.csv.toObjects(data);
+  if (temp.length == 0) {
+    window.alert('Empty csv file.')
+    return;
+  }
+
+  dfall = temp;
 
   // Sort the original file
   dfall.sort((a,b) => {
