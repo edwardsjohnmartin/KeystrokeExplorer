@@ -239,6 +239,10 @@ tr.selected {
     background-color: var(--ke-selected-color);
 }
 
+tr.disabled {
+    color: gray;
+}
+
 
 textarea { width: 100%; }
 table.page {

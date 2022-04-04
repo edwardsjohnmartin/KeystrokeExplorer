@@ -17,11 +17,19 @@ Spreadsheet.prototype.update = function(df, sid) {
     data.push(d);
   }
 
+  let s = df[sid].SubjectID;
+  let a = df[sid].AssignmentID;
+  let f = df[sid].CodeStateSection;
+
   let i = 0;
   let html = '';
   data.forEach(row => {
     if (i == sid) {
       html += '<tr class=\"selected\">';
+    } else if (df[i].SubjectID != s ||
+               df[i].AssignmentID != a ||
+               df[i].CodeStateSection != f) {
+      html += '<tr class=\"disabled\">';
     } else {
       html += '<tr>';
     }
@@ -44,13 +52,17 @@ Spreadsheet.prototype.update = function(df, sid) {
 }
 
 Spreadsheet.prototype.reset = function(df) {
-  let ignore = new Set(['EventID', 'SubjectID', 'AssignmentID',
-                        'CodeStateSection', 'ToolInstances', 'CodeStateID',
-                        'EventIdx',
-                        // 2019 data
-                        'X-RunInput', 'X-RunOutput', 'X-RunHasError',
-                        'X-RunUserTerminated', 'X-RawAssignmentID', 'X-Term',
-                       ]);
+  let ignore = new Set([
+    // 'EventID',
+    'SubjectID', 'AssignmentID',
+    'CodeStateSection', 'ToolInstances', 'CodeStateID',
+    'EventIdx',
+    'X-Compilable',
+    // 2019 data
+    'X-RunInput', 'X-RunOutput', 'X-RunHasError',
+    'X-RunUserTerminated', 'X-RawAssignmentID', 'X-Term',
+    'timelinex', 'timelineWidth', 'elapsed', 'compilable'
+  ]);
   this.visiblecols = Object.getOwnPropertyNames(df[0]).filter(
     x => x != '' && !ignore.has(x));
 

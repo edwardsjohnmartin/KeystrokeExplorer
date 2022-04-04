@@ -31,6 +31,7 @@ let csvFile = null;
 let key2chunks = {};
 // The chunks that are in memory
 let chunksInMemory = new Set();
+let firstChunkInMemory = -1;
 // If a file is smaller than 16 Mb then go ahead and read it entirely into
 // memory.
 const SMALL_FILE_SIZE = 2**24;
@@ -86,6 +87,10 @@ function updatedfall() {
   if (chunksInMemory.has(chunks[0]) &&
       (chunks.length==1 || chunksInMemory.has(chunks[1])))
     return true;
+
+  // // Already in the first chunk. (Reread if it's in the second
+  // // chunk to ensure that we have it in its entirety.)
+  // if (firstChunkInMemory == chunks[0]) return true;
 
   // Read in chunks
   readTwoChunks(chunks[0]);
@@ -160,12 +165,13 @@ function incFile(inc) {
 function onKeyPress(event) {
   // console.log(event.key);
 
-  let inc = 'f'
-  let dec = 'd'
-  let inc10 = 'F'
-  let dec10 = 'D'
-  let incCheck = 'g'
-  let decCheck = 's'
+  let inc = 'f';
+  let dec = 'd';
+  let inc10 = 'F';
+  let dec10 = 'D';
+  let incCheck = 'g';
+  let decCheck = 's';
+  let stringSearch = 'S';
   
   if (event.key == incCheck) {
     if (slider.value == slider.max) {
@@ -209,6 +215,12 @@ function onKeyPress(event) {
     sliderChanged(slider);
   } else if (event.key == ' ') {
     togglePlay();
+  } else if (event.key == stringSearch) {
+    let i = findString(findStringWidget.value);
+    if (i > -1) {
+      slider.value = i;
+      sliderChanged(slider);
+    }
   } else if (event.key == 'x') {
     test();
   }
@@ -224,12 +236,9 @@ function onKeyDown(event) {
   // console.log(event.key);
 
   if (event.key == 'ArrowRight') {
-    let i = findString(findStringWidget.value);
-    if (i > -1) {
-      slider.value = i;
-      sliderChanged(slider);
-      return;
-    }
+    incFile(1);
+  } else if (event.key == 'ArrowLeft') {
+    incFile(0);
   }    
 }
 
@@ -320,6 +329,8 @@ function updateSubjectWidget() {
   // subjects.forEach(file => {
   // console.log(subject2assignments2files.keys());
   // subject2assignments2files.keys().forEach(s => {
+  // console.log('1');
+  // console.log(subject2assignments2files);
   for (const s of subject2assignments2files.keys()) {
       var element = document.createElement("option");
     element.innerText = s;
@@ -391,57 +402,56 @@ function updateFileWidget() {
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-function storeCompilable(df) {
-  let s = '';
-  let lastChange = -1;
-  // Reconstruct the file
-  for (let i = 0; i < df.length; ++i) {
-    let row = df[i];
-    let j = +row.SourceLocation;
-    lastChange = j;
-    if (row.DeleteText && row.DeleteText.length > 0) {
-      s = s.slice(0,j) + s.slice(j+row.DeleteText.length);
-    }
-    if (row.InsertText && row.InsertText.length > 0) {
-      s = s.slice(0,j) + row.InsertText + s.slice(j);
-    }
+// function storeCompilable(df) {
+//   let s = '';
+//   let lastChange = -1;
+//   // Reconstruct the file
+//   for (let i = 0; i < df.length; ++i) {
+//     let row = df[i];
+//     let j = +row.SourceLocation;
+//     lastChange = j;
+//     if (row.DeleteText && row.DeleteText.length > 0) {
+//       s = s.slice(0,j) + s.slice(j+row.DeleteText.length);
+//     }
+//     if (row.InsertText && row.InsertText.length > 0) {
+//       s = s.slice(0,j) + row.InsertText + s.slice(j);
+//     }
 
-    let errorLineNum = compile(s);
-    df[i].compilable = (errorLineNum == null);
-    // try {
-    //   filbert.parse(s);
-    //   df[i].compilable = true;
-    // } catch(e) {
-    //   df[i].compilable = false;
-    // }
-  }
-}
+//     let errorLineNum = compile(s);
+//     df[i].compilable = (errorLineNum == null);
+//     // try {
+//     //   filbert.parse(s);
+//     //   df[i].compilable = true;
+//     // } catch(e) {
+//     //   df[i].compilable = false;
+//     // }
+//   }
+// }
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 function fileChanged() {
+  // let t = [];
+  // t.push(performance.now()); //****************
+
   file = filesWidget.value;
   if (!updatedfall()) return;
   loadingWidget.style.visibility = 'visible';
 
-  // console.log('reset');
   spreadsheet.reset(dfall);
 
-  // df = dfAssign.filter(row => row['CodeStateSection'] == file);
   df = dfall.filter(row => {
     return row.SubjectID == subject &&
       row.AssignmentID == assignment &&
       row.CodeStateSection == file &&
       row.EventType == 'File.Edit';
   });
+
   slider.max = df.length-1;
   slider.value = slider.max;
-  // slider.value = 0;
   editNumWidget.innerHTML = slider.value + '/' + slider.max;
   reconstruct(df, true);
   loadingWidget.style.visibility = 'hidden';
-
-  storeCompilable(df);
 
   chart = new Chart();
   chart.create(df);
@@ -450,6 +460,13 @@ function fileChanged() {
   timeline = new Timeline();
   timeline.create(df);
   timeline.updatePlaybar(slider.value);
+
+  // t.push(performance.now()); //****************
+  // console.log('timings');
+  // for (let i = 1; i < t.length; ++i) {
+  //   console.log(`${((t[i]-t[i-1])/1000).toFixed(1)}`);
+  // }
+
 }
 
 //-----------------------------------------------------------------------------
@@ -457,6 +474,7 @@ function fileChanged() {
 //-----------------------------------------------------------------------------
 function sliderChanged(slider) {
   // requestAnimationFrame(tick);
+
   editNumWidget.innerHTML = slider.value + '/' + slider.max;
   reconstruct(df, false);
 
@@ -758,10 +776,6 @@ function reconstruct(df, fromScratch) {
 
   curReconstruction = s;
 
-  // console.log('**********************************************************');
-  // console.log('Code\n', s);
-  // console.log('Code2\n', codeWidget.getValue());
-
   jumpToCh(lastChange);
   lineMarkText(lastChange, lastChange+1);
 
@@ -781,7 +795,6 @@ function reconstruct(df, fromScratch) {
   let start = eventNum >= n ? eventNum-n : 0;
   let end = eventNum <= dfall.length-n ? eventNum+n : dfall.length;
 
-  // TODO replace spreadsheet -- it's really slow.
   spreadsheet.update(dfall.slice(start, end), eventNum-start);
 }
 
@@ -858,6 +871,7 @@ let chunkOffsets = [0];
 //-----------------------------------------------------------------------------
 function readAllChunks(file, callback) {
   header = null;
+  clearEntries();
   Papa.parse(file, {
     header: true,
     worker: false,
@@ -880,7 +894,7 @@ function readAllChunks(file, callback) {
         key2chunks[curKey] = [chunkOffsets.length-1];
       }
 
-      clearEntries();
+      // clearEntries();
       addEntry(rows[0].SubjectID, rows[0].AssignmentID, rows[0].CodeStateSection);
       
       rows.forEach(row => {
@@ -889,13 +903,14 @@ function readAllChunks(file, callback) {
           key2chunks[key] = [chunkOffsets.length-1];
           curKey = key;
           addEntry(row.SubjectID, row.AssignmentID, row.CodeStateSection);
+          // console.log(subject2assignments2files.keys());
         }
       });
       chunkOffsets.push(cursor);
     },
     complete: function() {
       console.log('completed reading chunks');
-      console.log(subject2assignments2files);
+      // console.log(subject2assignments2files);
       // readTwoChunks(0);
       updateSubjectWidget();
     }
@@ -941,6 +956,7 @@ function readTwoChunks(chunkIdx) {
     console.log(`Read chunk in ${(Date.now() - istart)/1000.0} seconds`);
 
     chunksInMemory = new Set([chunkIdx, chunkIdx+1]);
+    firstChunkInMemory = chunkIdx;
     // updateSubjectWidget();
     fileChanged();
   };

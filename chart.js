@@ -170,7 +170,7 @@ Chart.prototype.create = function(df) {
   }
 
   // Compilable
-  {
+  if (df[0]['X-Compilable']) {
     let update = d3.select('#compilable').selectAll('rect').data(df);
     let enter = update.enter().append('rect');
     update.merge(enter)
@@ -178,11 +178,15 @@ Chart.prototype.create = function(df) {
       .attr('width', 0.5)
       .attr('y', (d,i) => (this.end-i)*f)
       .attr('height', 0.5)
-      .style('stroke', d => d.compilable ? 'lightgreen' : 'red')
-      .style('fill', d => d.compilable ? 'lightgreen' : 'red')
+      // .style('stroke', d => d.compilable ? 'lightgreen' : 'red')
+      // .style('fill', d => d.compilable ? 'lightgreen' : 'red')
+      .style('stroke', d => d['X-Compilable']==1 ? 'lightgreen' : 'red')
+      .style('fill', d => d['X-Compilable']==1 ? 'lightgreen' : 'red')
       .style('stroke-width', '3.5')
     ;
     update.exit().remove();
+  } else {
+    console.log('Compilation information is not available');
   }
 
   //------------------------------------------------------------
@@ -210,7 +214,6 @@ Chart.prototype.create = function(df) {
         .attr("xlink:href", uri)
     ;
   });
-
 
 }
 
