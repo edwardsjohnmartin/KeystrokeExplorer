@@ -272,12 +272,12 @@ function onload() {
   document.getElementById('ps2-selector').
     addEventListener('change', ps2Changed);
 
-  // loadDefaultCSV();
+  loadDefaultCSV();
 }
 
 function loadDefaultCSV() {
   var request = new XMLHttpRequest();  
-  request.open('GET', 'test.csv', true);
+  request.open('GET', './sample.csv', true);
   request.onreadystatechange = function(){
     if (request.readyState === 4){
       if (request.status === 404) {  
@@ -285,7 +285,7 @@ function loadDefaultCSV() {
         // Load a file automatically for testing
         $.ajax({
           async:true,
-          url: 'test.csv',
+          url: './sample.csv',
           dataType: 'text',
           success: function(data) {
             parseCSV(data);
