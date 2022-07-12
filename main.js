@@ -18,6 +18,23 @@ var codeWidget = document.getElementById('textarea');
 // Display the default slider value
 editNumWidget.innerHTML = slider.value + '/' + slider.max;
 
+var visualizationWidget = document.getElementById('visual');
+var viztypeWidget = document.getElementById('viztype');
+var cpc = document.getElementById("Charts");
+var scatter = document.getElementById("Scatters");
+var scatterWidgets = document.getElementById("scatterWidgets");
+var depths = document.getElementById("Depths");
+var depthWidgets = document.getElementById("depthWidgets");
+var tast = document.getElementById("TAST");
+var tastWidgets = document.getElementById("tastWidgets");
+cpc.style.display = 'block';
+scatter.style.display = 'none';
+scatterWidgets.style.display = 'none';
+depths.style.display = 'none';
+depthWidgets.style.display = 'none';
+tast.style.display = 'none';
+tastWidgets.style.display = 'none';
+
 var findStringWidget = document.getElementById('findString');
 
 var chart = null;
@@ -346,6 +363,7 @@ function subjectChanged() {
   subject = subjectsWidget.value;
   // dfSubject = dfall.filter(row => row.EventType == 'File.Edit' && row['SubjectID'] == subject);
   updateAssignmentWidget();
+  updateGraphs();
 }
 
 //-----------------------------------------------------------------------------
@@ -375,10 +393,69 @@ function assignmentChanged() {
   assignment = assignmentsWidget.value;
   // dfAssign = dfSubject.filter(row => row['AssignmentID'] == assignment);
   updateFileWidget();
+  updateGraphs();
 }
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
+function visualizationChanged() {
+  var vizType = viztypeWidget.options[viztypeWidget.selectedIndex].value
+  //var displaySetting = cpc.style.display;
+  if (vizType == 'Scatter') {
+      // cpc is visible. hide it
+      cpc.style.display = 'none';
+      // scatter is hidden. show it
+      scatter.style.display = 'block';
+      scatterWidgets.style.display = 'block';
+      depths.style.display = 'none';
+      depthWidgets.style.display = 'none';
+      tast.style.display = 'none';
+      tastWidgets.style.display = 'none';
+  }
+  else if (vizType == 'CPC'){
+      // cpc is hidden. show it
+      cpc.style.display = 'block';
+      // cpc is visible. hide it
+      scatter.style.display = 'none';
+      scatterWidgets.style.display = 'none';
+      depths.style.display = 'none';
+      depthWidgets.style.display = 'none';
+      tast.style.display = 'none';
+      tastWidgets.style.display = 'none';
+  }
+  else if (vizType == 'Depth'){
+      cpc.style.display = 'none';
+      scatter.style.display = 'none';
+      scatterWidgets.style.display = 'none';
+      depths.style.display = 'block';
+      depthWidgets.style.display = 'block';
+      tast.style.display = 'none';
+      tastWidgets.style.display = 'none';
+  }
+  else if (vizType == 'TAST'){
+      cpc.style.display = 'none';
+      scatter.style.display = 'none';
+      scatterWidgets.style.display = 'none';
+      depths.style.display = 'none';
+      depthWidgets.style.display = 'none';
+      tast.style.display = 'block';
+      tastWidgets.style.display = 'block';
+  }
+  updateGraphs();
+  // dfAssign = dfSubject.filter(row => row['AssignmentID'] == assignment);
+  // updateFileWidget();
+}
+
+function updateGraphs(){
+  updateScatter();
+  //updateDepth();
+  //updateTAST();
+  console.log("update");
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+
 function updateFileWidget() {
   // let files = new Set();
   // dfAssign.forEach(row => {

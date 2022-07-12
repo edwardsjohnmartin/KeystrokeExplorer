@@ -19,20 +19,32 @@ main {
     /*"nav head" min-content
     "nav main" 1fr
         / min-content 1fr;*/
-    "header header" min-content
+    "headerleft headerright" min-content
     "code cpchart" min-content
     "code tchart" min-content
+    "code depths" min-content
+    "code tast" min-content
     "code csv" 1fr
 /*        / min-content 1fr;*/
         / 1fr 1fr;
 }
 
 header {
-    grid-area: header;
+    grid-area: headerleft;
     border: var(--test-border);
     overflow: auto;
 /*    resize: horizontal;*/
     
+    min-width: 120px;
+    max-width: 50vw;
+}
+
+dropdown {
+    grid-area: headerright;
+    border: var(--test-border);
+    overflow: auto;
+/*    resize: horizontal;*/
+
     min-width: 120px;
     max-width: 50vw;
 }
@@ -55,6 +67,47 @@ cpchart {
     
     min-height: min-content;
     max-height: 200px;*/
+}
+
+depths {
+    grid-area: cpchart;
+    border: var(--test-border);
+    overflow: auto;
+/*    resize: vertical;
+
+    min-height: min-content;
+    max-height: 200px;*/
+}
+
+tast {
+    grid-area: cpchart;
+    border: var(--test-border);
+    overflow: auto;
+/*    resize: vertical;
+
+    min-height: min-content;
+    max-height: 200px;*/
+}
+
+.tooltip {
+    position: absolute;
+    font-size: 12px;
+    width:  auto;
+    height: auto;
+    pointer-events: none;
+    background-color: white;
+}
+
+#Charts {
+    display: block;
+}
+
+#Scatters {
+    display: none;
+}
+
+#scatterWidgets {
+    display: none;
 }
 
 tchart {

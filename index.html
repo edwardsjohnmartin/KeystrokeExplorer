@@ -14,7 +14,9 @@
     <script src="lib/papaparse.min.js"></script>
     <script src="lib/d3.js"></script>
     <script src="lib/codemirror.js"></script>
-    
+
+    <script src="https://unpkg.com/@hpcc-js/wasm@0.3.11/dist/index.min.js"></script>
+    <script src="https://unpkg.com/d3-graphviz@3.0.5/build/d3-graphviz.js"></script>
     <!--script src="lib/filbert.js"></script-->
 
     <link rel="stylesheet" href="lib/codemirror.css">
@@ -25,11 +27,10 @@
     <script src="lib/sortable.js"></script>
     <script src="lib/frappe-datatable.js"></script-->
 
-    <script src="./lib/skulpt.min.js" type="text/javascript"></script>
-    <script src="./lib/skulpt-stdlib.js" type="text/javascript"></script>
+    <script src="lib/skulpt.min.js" type="text/javascript"></script>
+    <script src="lib/skulpt-stdlib.js" type="text/javascript"></script>
 
-    <script src="./lib/saveSvgAsPng.js" type="text/javascript"></script>
-
+    <script src="lib/saveSvgAsPng.js" type="text/javascript"></script>
     <link rel="stylesheet" href="style.css">
   </head>
 
@@ -39,7 +40,7 @@
   <body onload="onload()">
     <main>
       <!-------------- Header -------------->
-      <header>
+      <headerleft>
         <div>
           <br>
           ProgSnap2: <input id="ps2-selector" type="file" accept=".csv, .ps2, .log" change="ps2Changed()"></input>
@@ -67,12 +68,90 @@
           <text id="edit-num"></text>
           <br>
         </div>
-      </header>
+      </headerleft>
 
       <!-------------- Code -------------->
       <code>
         <textarea id="textarea" name="textarea">File text</textarea>
       </code>
+
+      <!-------------- Scatter Dropdown Menu -------------->
+      <headerright>
+        <label for="viztype">Visualization:</label>
+          <select name="viztype" id="viztype">
+            <option value="CPC">CPC</option>
+            <option value="Scatter">Scatter</option>
+            <option value="Depth">Depth</option>
+            <option value="TAST">TAST</option>
+          </select>
+        <button name="visual" id="visual" onclick="visualizationChanged()">Switch Visualization</button>
+        <div id="scatterWidgets">
+          <label for="x-axis">X Axis</label>
+          <select name="x axis" id="x-axis" onchange="updateGraphs()">
+            <!-- <option value="deleted nodes">deleted nodes</option> -->
+            <option value="height">height</option>
+            <option value="grades">grades</option>
+            <option value="tree depth skew">tree depth skew</option>
+            <option value="number of nodes">number of nodes</option>
+            <!--<option value="tree width">tree width</option> -->
+            <!-- <option value="tree height">tree height</option> -->
+          </select>
+
+          <label for="y-axis">Y Axis</label>
+          <select name="y axis" id="y-axis" onchange="updateGraphs()">
+            <!-- <option value="deleted nodes">deleted nodes</option> -->
+            <option value="height">height</option>
+            <option value="grades">grades</option>
+            <option value="tree depth skew">tree depth skew</option>
+            <option value="number of nodes">number of nodes</option>
+            <!--<option value="tree width">tree width</option> -->
+            <!-- <option value="tree height">tree height</option> -->
+          </select>
+
+          <button name="updatescatter" id="updatescatter" onclick="updateScatter()">Update Scatter</button>
+          <p id="testcomm"></p>
+          <label for="correlation coefficient">Correlation Coefficient: </label>
+          <p id="correlation coefficient">n/a</p>
+        </div>
+        <div id="depthWidgets">
+          <button name="updatedepth" id="updatedepth" onclick="updateDepth()">Update Depth</button>
+          <select name="student select" id="depth student select" onchange="updateDepth()">
+            <option value="Student1">Student1</option>
+            <option value="Student2">Student2</option>
+            <option value="Student3">Student3</option>
+            <option value="Student4">Student4</option>
+            <option value="Student5">Student5</option>
+            <option value="Student6">Student6</option>
+            <option value="Student7">Student7</option>
+            <option value="Student8">Student8</option>
+            <option value="Student9">Student9</option>
+            <option value="Student10">Student10</option>
+            <option value="Student11">Student11</option>
+            <option value="Student12">Student12</option>
+            <option value="Student13">Student13</option>
+            <option value="Student14">Student14</option>
+            <option value="Student15">Student15</option>
+            <option value="Student16">Student16</option>
+            <option value="Student17">Student17</option>
+            <option value="Student18">Student18</option>
+            <option value="Student19">Student19</option>
+            <option value="Student20">Student20</option>
+          </select>
+          <select name="assign select" id="depth assign select" onchange="updateDepth()">
+            <option value="Assign6">Assign6</option>
+            <option value="Assign7">Assign7</option>
+            <option value="Assign8">Assign8</option>
+            <option value="Assign9">Assign9</option>
+            <option value="Assign11">Assign11</option>
+            <option value="Assign12">Assign12</option>
+            <option value="Assign13">Assign13</option>
+          </select>
+        </div>
+        <div id="tastWidgets">
+          <button name="updatetast" id="updatetast" onclick="updateTAST()">Update TAST</button>
+        </div>
+      </headerright>
+
 
       <!-------------- Chart -------------->
       <cpchart>
@@ -88,7 +167,20 @@
             </g>
           </svg>
         </div>
+        <div id="Scatters">
+          <svg id="scattersvg" width="700" height="350"></svg>
+        </div>
       </cpchart>
+      <depths>
+        <div id="Depths">
+          <svg id="depthsvg" width="700" height="350"></svg>
+        </div>
+      </depths>
+      <tast>
+        <div id="TAST">
+          <svg id="tastsvg" width="700" height="350"></svg>
+        </div>
+      </tast>
       <tchart>
         <div>
           <br>
@@ -182,11 +274,14 @@
 */
     </script>
     
-    <script src="./main.js?5"></script>
-    <script src="./chart.js?2"></script>
-    <script src="./timeline.js?2"></script>
-    <script src="./spreadsheet.js?3"></script>
-    <script src="./compile.js?3"></script>
+    <script src="main.js?5"></script>
+    <script src="chart.js?2"></script>
+    <script src="scatter.js?3"></script>
+    <script src="depthgraph.js?3"></script>
+    <script src="TAST.js?3"></script>
+    <script src="timeline.js?2"></script>
+    <script src="spreadsheet.js?3"></script>
+    <script src="compile.js?3"></script>
 
 </body>
 </html>
