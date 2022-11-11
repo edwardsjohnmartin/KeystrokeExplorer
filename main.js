@@ -15,6 +15,7 @@ var slider = document.getElementById('slider');
 var editNumWidget = document.getElementById('edit-num');
 var eventNumWidget = null;//document.getElementById('event-num');
 var codeWidget = document.getElementById('textarea');
+var astWidget = document.getElementById('ast_chart');
 // Display the default slider value
 editNumWidget.innerHTML = slider.value + '/' + slider.max;
 
@@ -227,6 +228,7 @@ function onKeyPress(event) {
 }
 
 function test() {
+  debugger
 }
 
 //-----------------------------------------------------------------------------
@@ -782,6 +784,14 @@ function reconstruct(df, fromScratch) {
   let errorLineNum = compile(s);
   if (errorLineNum == null) {
     errorWidget.style.visibility = 'hidden';
+    if(typeof brythonListener === "function") {
+      ast = get_ast(s)
+      ast_vis = Tree(ast, {
+        label: d => d.name,
+    })
+      removeAllChildNodes(astWidget)
+      astWidget.append(ast_vis)
+    }
   } else {
     errorWidget.innerHTML = `Error on line ${errorLineNum}`;
     errorWidget.style.visibility = 'visible';
