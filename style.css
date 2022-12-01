@@ -19,10 +19,15 @@ main {
     /*"nav head" min-content
     "nav main" 1fr
         / min-content 1fr;*/
-    "header header" min-content
+    /* "header header" min-content
     "code cpchart" min-content
     "code tchart" min-content
     "code csv" 1fr
+ */
+    "header header header" min-content
+    "code astchart cpchart" min-content
+    "code astchart tchart" min-content
+    "code astchart csv" 1fr
 /*        / min-content 1fr;*/
         / 1fr 1fr;
 }
@@ -51,6 +56,7 @@ cpchart {
     grid-area: cpchart;
     border: var(--test-border);
     overflow: auto;
+    min-width: 120px;
 /*    resize: vertical;
     
     min-height: min-content;
@@ -70,6 +76,12 @@ tchart {
 csv {
     grid-area: csv;
     border: var(--test-border);
+}
+
+astchart {
+    grid-area: astchart;
+    border: var(--test-border);
+    overflow: auto;
 }
 
 /***********************************************
