@@ -787,7 +787,7 @@ function reconstruct(df, fromScratch) {
     if(typeof brythonListener === "function") {
       ast = get_ast(s)
       ast_vis = Tree(ast, {
-        label: d => d.name,
+        label: d => d.ast_node_type,
     })
       removeAllChildNodes(astWidget)
       astWidget.append(ast_vis)

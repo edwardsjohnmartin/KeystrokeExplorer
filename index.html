@@ -199,7 +199,6 @@
     <script type="text/python" src="brython_ast.py"></script>
     <script onload="brython()">
       function get_ast(python_program) {
-        console.log('running function get ast')
         ast = brythonListener(python_program)
         parsed_ast = JSON.parse(ast)
         return parsed_ast
