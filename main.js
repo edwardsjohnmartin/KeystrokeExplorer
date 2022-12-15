@@ -788,6 +788,13 @@ function reconstruct(df, fromScratch) {
       ast = get_ast(s)
       ast_vis = Tree(ast, {
         label: d => d.ast_node_type,
+        title: d => { 
+          title_text = d
+          if (title_text.hasOwnProperty('children')) {
+            delete title_text['children']
+          }
+          return JSON.stringify(title_text); 
+        },
     })
       removeAllChildNodes(astWidget)
       astWidget.append(ast_vis)
