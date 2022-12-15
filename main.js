@@ -661,7 +661,7 @@ function markText(start, end) {
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 let lineLastMark = null;
-function lineMarkText(start, end) {
+function lineMarkText(start, end, className) {
   if (lineLastMark) lineLastMark.clear();
 
   // let s = codeWidget.getValue();
@@ -679,7 +679,7 @@ function lineMarkText(start, end) {
   lineLastMarkStart = a;
   lineLastMarkEnd = b;
   
-  lineLastMark = codeWidget.markText(a, b, {className: "line-highlight"});
+  lineLastMark = codeWidget.markText(a, b, {className: className});
 }
 
 // s is the current text
@@ -779,7 +779,9 @@ function reconstruct(df, fromScratch) {
   curReconstruction = s;
 
   jumpToCh(lastChange);
-  lineMarkText(lastChange, lastChange+1);
+  lineMarkText(lastChange, lastChange+1, "line-highlight");
+
+  let lastAstLineMark = null
 
   let errorLineNum = compile(s);
   if (errorLineNum == null) {
@@ -795,6 +797,14 @@ function reconstruct(df, fromScratch) {
           }
           return JSON.stringify(title_text); 
         },
+        nodeOnClick: d => {
+          if(d.data.hasOwnProperty('lineno') && d.data.hasOwnProperty('col_offset')) {
+            lineno = d.data['lineno']
+            col_offset = d.data['col_offset']
+            startIndex = codeWidget.doc.indexFromPos({ line: lineno - 1, ch: col_offset})
+            lineMarkText(startIndex, startIndex+1, "ast-line-highlight")
+          }
+        }
     })
       removeAllChildNodes(astWidget)
       astWidget.append(ast_vis)

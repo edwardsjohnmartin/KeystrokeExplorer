@@ -102,6 +102,7 @@ astchart {
 .styled-background { background-color: lightgreen; }
 /*.line-highlight { background-color: lightgreen; }*/
 .line-highlight { background-color: var(--ke-selected-color); }
+.ast-line-highlight { background-color: purple; }
 
 /***********************************************
 /* Tabs
