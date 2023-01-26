@@ -16,6 +16,7 @@ var editNumWidget = document.getElementById('edit-num');
 var eventNumWidget = null;//document.getElementById('event-num');
 var codeWidget = document.getElementById('textarea');
 var astWidget = document.getElementById('ast_chart');
+var astNodeCountWidget = document.getElementById('ast_node_count_chart');
 // Display the default slider value
 editNumWidget.innerHTML = slider.value + '/' + slider.max;
 
@@ -458,6 +459,9 @@ function fileChanged() {
   chart = new Chart();
   chart.create(df);
   chart.updatePlaybar(slider.value);
+
+  astNodeCountChart = new AstNodeCountChart();
+  astNodeCountChart.create(df);
 
   timeline = new Timeline();
   timeline.create(df);

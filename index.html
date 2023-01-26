@@ -85,7 +85,12 @@
         <div id="ast_chart"></div>
       </astchart>
 
-      <!-------------- Chart -------------->
+      <!-------------- Number of AST Nodes Chart -------------->
+      <numastchart>
+        <div id="ast_node_count_chart"></div>
+      </numastchart>
+
+      <!-------------- Timeline Chart -------------->
       <cpchart>
         <div id="Charts" class="tabcontent_">
           <svg class="chart" id="chart">
@@ -198,6 +203,7 @@
     <script src="./timeline.js?2"></script>
     <script src="./spreadsheet.js?3"></script>
     <script src="./compile.js?3"></script>
+    <script src="./ast_node_count_chart.js?5"></script>
     <script type="text/python" src="brython_ast.py"></script>
     <script onload="brython()">
       function get_ast(python_program) {

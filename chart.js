@@ -16,6 +16,12 @@ Chart = function() {
   this.end = -1;
 }
 
+/**
+ * Update the chart with a new event.
+ * @param {object} row one event from the source data. Can include
+ *   multiple characters of added or deleted code.
+ * @param {Number} i the index of the event
+ */
 Chart.prototype.newRow = function(row, i) {
   this.end = i;
   let j = +row.SourceLocation;
