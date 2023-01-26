@@ -1,5 +1,32 @@
+let lastAstNodeCount = 0
+
+function calcNumAstNodesHelper(jsonObj){
+    if(!jsonObj) {
+        return 0
+    }
+    sum = 1
+    jsonObj['children'].forEach(child => {
+        sum += calcNumAstNodesHelper(child)
+    })
+    return sum
+}
+
 function calcNumAstNodes(code) {
-    return code.length
+    const errorLineNum = compile(code);
+    if(errorLineNum == null && typeof brythonListener === "function") {
+        try {
+            ast = get_ast(code)
+        } catch {
+            console.log(code)
+            return lastAstNodeCount
+        }
+        numNodes = calcNumAstNodesHelper(ast)
+        lastAstNodeCount = numNodes
+        return numNodes
+    } else {
+        return lastAstNodeCount
+        // return code.length
+    }
 }
 
 class CodeStateTracker {
@@ -48,7 +75,82 @@ class AstNodeCountChart {
             this.newRow(row, i)
         });
 
+        const formatted = this.astNodeCounts.map((e, i) => {
+            return {
+                x: i,
+                y: e
+            }
+        })
+
         console.log(this.astNodeCounts)
+        displayAstNodeCountChart(formatted)
     }
 
 }
+
+function displayAstNodeCountChart(data) {
+    const margin = {top: 10, right: 30, bottom: 30, left: 60}
+    const chartHeight = 400;
+    const chartWidth = 400;
+
+
+    const allYs = data.map(d => d.y)
+    const maxY = Math.max(allYs)
+    console.log('maxY: ', maxY)
+
+    const svg = d3.select("#ast_node_count_chart")
+        .append("svg")
+        .attr("width", chartWidth + margin.left + margin.right)
+        .attr("height", chartHeight + margin.top + margin.bottom)
+
+    const xScale = d3.scaleLinear().domain([0, data.length]).range([margin.left, chartWidth + margin.left]);
+    const yScale = d3.scaleLinear().domain([0, 200]).range([chartHeight + margin.top, margin.bottom]);
+
+    const line = d3.line()
+        .x(function(d) { return xScale(d.x); }) 
+        .y(function(d) { return yScale(d.y); }) 
+        .curve(d3.curveMonotoneX)
+        
+    svg.append("path")
+        .datum(data) 
+        .attr("class", "line") 
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+        .attr("d", line)
+        .style("fill", "none")
+        .style("stroke", "#03fc77")
+        .style("stroke-width", "2");
+
+    svg.append("g")
+        .attr("transform", "translate(0," + chartHeight + ")")
+        .call(d3.axisBottom(xScale));
+        
+    svg.append("g")
+        .attr("transform", "translate(" + margin.left + "," + 0 + ")")
+        .call(d3.axisLeft(yScale));
+
+    svg.append('text')
+        .attr('x', chartWidth/2 + 100)
+        .attr('y', 100)
+        .attr('text-anchor', 'middle')
+        .style('font-family', 'Helvetica')
+        .style('font-size', 16)
+        .text('Number of nodes in Abstract Syntax Tree');
+        
+    // X label
+    svg.append('text')
+        .attr('x', chartWidth/2 + 100)
+        .attr('y', chartHeight - 15 + 150)
+        .attr('text-anchor', 'middle')
+        .style('font-family', 'Helvetica')
+        .style('font-size', 12)
+        .text('Event Index');
+        
+    // Y label
+    svg.append('text')
+        .attr('text-anchor', 'middle')
+        .attr('transform', 'translate(60,' + chartHeight + ')rotate(-90)')
+        .style('font-family', 'Helvetica')
+        .style('font-size', 12)
+        .text('Node Count');
+}
+
