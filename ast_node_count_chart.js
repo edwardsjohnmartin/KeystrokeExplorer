@@ -89,7 +89,7 @@ class AstNodeCountChart {
 }
 
 function displayAstNodeCountChart(data) {
-    const margin = {top: 10, right: 30, bottom: 30, left: 60}
+    const margin = {top: 10, right: 30, bottom: 50, left: 60}
     const chartHeight = 400;
     const chartWidth = 400;
 
@@ -103,8 +103,8 @@ function displayAstNodeCountChart(data) {
         .attr("width", chartWidth + margin.left + margin.right)
         .attr("height", chartHeight + margin.top + margin.bottom)
 
-    const xScale = d3.scaleLinear().domain([0, data.length]).range([margin.left, chartWidth + margin.left]);
-    const yScale = d3.scaleLinear().domain([0, 200]).range([chartHeight + margin.top, margin.bottom]);
+    const xScale = d3.scaleLinear().domain([0, data.length]).range([0, chartWidth]);
+    const yScale = d3.scaleLinear().domain([0, 200]).range([chartHeight, 0]);
 
     const line = d3.line()
         .x(function(d) { return xScale(d.x); }) 
@@ -120,17 +120,20 @@ function displayAstNodeCountChart(data) {
         .style("stroke", "#03fc77")
         .style("stroke-width", "2");
 
+    // bottom axis and ticks
     svg.append("g")
-        .attr("transform", "translate(0," + chartHeight + ")")
+        .attr("transform", `translate(${margin.left}, ${chartHeight + margin.top})`)
         .call(d3.axisBottom(xScale));
         
+    // left axis and ticks
     svg.append("g")
-        .attr("transform", "translate(" + margin.left + "," + 0 + ")")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
         .call(d3.axisLeft(yScale));
 
+    // Chart Title
     svg.append('text')
-        .attr('x', chartWidth/2 + 100)
-        .attr('y', 100)
+        .attr('x', chartWidth/2 + margin.left)
+        .attr('y', 20)
         .attr('text-anchor', 'middle')
         .style('font-family', 'Helvetica')
         .style('font-size', 16)
@@ -138,8 +141,8 @@ function displayAstNodeCountChart(data) {
         
     // X label
     svg.append('text')
-        .attr('x', chartWidth/2 + 100)
-        .attr('y', chartHeight - 15 + 150)
+        .attr('x', chartWidth/2 + margin.left)
+        .attr('y', chartHeight + margin.top + margin.bottom - 12)
         .attr('text-anchor', 'middle')
         .style('font-family', 'Helvetica')
         .style('font-size', 12)
@@ -148,7 +151,7 @@ function displayAstNodeCountChart(data) {
     // Y label
     svg.append('text')
         .attr('text-anchor', 'middle')
-        .attr('transform', 'translate(60,' + chartHeight + ')rotate(-90)')
+        .attr('transform', 'translate(15,' + chartHeight / 2 + ')rotate(-90)')
         .style('font-family', 'Helvetica')
         .style('font-size', 12)
         .text('Node Count');
