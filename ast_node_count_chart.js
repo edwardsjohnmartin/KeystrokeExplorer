@@ -1,23 +1,36 @@
 let lastAstNodeCount = 0
 
-function calcNumAstNodesHelper(jsonObj){
-    if(!jsonObj) {
+/**
+ * Recursively calculate how many nodes are in the abstract syntax tree
+ * @param {object} astNode A node in the abstract syntax tree.
+ * @returns Number of nodes under this particular node.
+ */
+function calcNumAstNodesHelper(astNode){
+    if(!astNode) {
         return 0
     }
     sum = 1
-    jsonObj['children'].forEach(child => {
+    astNode['children'].forEach(child => {
         sum += calcNumAstNodesHelper(child)
     })
     return sum
 }
 
+/**
+ * Calculate how many abstract syntax tree nodes there are for a piece of code.
+ * If the code does not compile, will return the same value as the previous run.
+ * 
+ * @param {string} code the block of code to consider
+ * @returns the number of abstract syntax tree nodes in the given code
+ */
 function calcNumAstNodes(code) {
     const errorLineNum = compile(code);
-    if(errorLineNum == null && typeof brythonListener === "function") {
+    if(errorLineNum == null) {
         try {
             ast = get_ast(code)
         } catch {
-            console.log(code)
+            // TODO figure out why some code chunks throw an error even though the code compiles
+            // console.log(code)
             return lastAstNodeCount
         }
         numNodes = calcNumAstNodesHelper(ast)
@@ -25,7 +38,6 @@ function calcNumAstNodes(code) {
         return numNodes
     } else {
         return lastAstNodeCount
-        // return code.length
     }
 }
 
@@ -124,11 +136,6 @@ function displayAstNodeCountChart(data) {
     const chartHeight = 400;
     const chartWidth = 400;
 
-
-    const allYs = data.map(d => d.y)
-    const maxY = Math.max(allYs)
-    console.log('maxY: ', maxY)
-
     const svg = d3.select("#ast_node_count_chart")
         .append("svg")
         .attr("width", chartWidth + margin.left + margin.right)
@@ -142,6 +149,7 @@ function displayAstNodeCountChart(data) {
         .y(function(d) { return yScale(d.y); }) 
         .curve(d3.curveMonotoneX)
         
+    // line
     svg.append("path")
         .datum(data) 
         .attr("class", "line") 
