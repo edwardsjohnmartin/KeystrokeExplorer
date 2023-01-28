@@ -245,6 +245,10 @@ function onKeyDown(event) {
   }    
 }
 
+function test1() {
+  console.log('hover');
+}
+
 //-----------------------------------------------------------------------------
 // onload
 //-----------------------------------------------------------------------------
@@ -268,6 +272,8 @@ function onload() {
     styleSelectedText: true,
   });
   // textarea.setSize(500, 300);
+  document.getElementsByClassName('CodeMirror')[0].onmouseenter=test1();
+  document.getElementsByClassName('CodeMirror')[0].onmouseexit=test1();
   
   document.addEventListener("keydown", onKeyDown);
   document.addEventListener("keypress", onKeyPress);
@@ -456,12 +462,15 @@ function fileChanged() {
   reconstruct(df, true);
   loadingWidget.style.visibility = 'hidden';
 
+  asts = new ASTs();
+  asts.create(df);
+
   chart = new Chart();
   chart.create(df);
   chart.updatePlaybar(slider.value);
 
   astNodeCountChart = new AstNodeCountChart();
-  astNodeCountChart.create(df);
+  astNodeCountChart.create(asts);
 
   timeline = new Timeline();
   timeline.create(df);
@@ -801,7 +810,9 @@ function reconstruct(df, fromScratch) {
           }
           return JSON.stringify(title_text); 
         },
-        nodeOnClick: d => {
+        // nodeOnClick: d => {
+        nodeOnHover: d => {
+          console.log(d.data['lineno'], d.data['col_offset']);
           if(d.data.hasOwnProperty('lineno') && d.data.hasOwnProperty('col_offset')) {
             lineno = d.data['lineno']
             col_offset = d.data['col_offset']
@@ -809,9 +820,9 @@ function reconstruct(df, fromScratch) {
             lineMarkText(startIndex, startIndex+1, "ast-line-highlight")
           }
         }
-    })
-      removeAllChildNodes(astWidget)
-      astWidget.append(ast_vis)
+      });
+      removeAllChildNodes(astWidget);
+      astWidget.append(ast_vis);
     }
   } else {
     errorWidget.innerHTML = `Error on line ${errorLineNum}`;
