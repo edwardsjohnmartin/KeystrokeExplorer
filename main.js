@@ -234,11 +234,62 @@ function test() {
 //-----------------------------------------------------------------------------
 function onKeyDown(event) {
   // console.log(event.key);
+  console.log(event);
 
   if (event.key == 'ArrowRight') {
-    incFile(1);
+    // incFile(1);
+    if (event.shiftKey) {
+      slider.value = +slider.value + 10;
+    } else {
+      slider.value = +slider.value + 1;
+    }
+    sliderChanged(slider);
   } else if (event.key == 'ArrowLeft') {
-    incFile(0);
+    // incFile(0);
+    if (event.shiftKey) {
+      slider.value = +slider.value - 10;
+    } else {
+      slider.value = +slider.value - 1;
+    }
+    sliderChanged(slider);
+  } else if (event.key == 'ArrowUp') {
+    var elems = document.querySelectorAll('.CodeMirror');
+    for (i = 0; i < elems.length; i++) {
+      if (elems[i].style.fontSize) {
+        var s = parseInt(elems[i].style.fontSize.replace("px", ""));
+      } else {
+        var s = 12;
+      }
+      // } if (s != max) {
+        s += 1;
+      // }
+      elems[i].style.fontSize = s + "px"
+    }
+
+    // console.log(codeWidget.getTextArea().style.fontSize = "6px");
+    // codeWidget.getTextArea().style.fontSize = "6px";
+    // let s = parseInt(codeWidget.style.fontSize.replace("px", ""));
+    // s += 1;
+    // codeWindow.style.fontSize = s + "px"
+  } else if (event.key == 'ArrowDown') {
+    var elems = document.querySelectorAll('.CodeMirror');
+    for (i = 0; i < elems.length; i++) {
+      if (elems[i].style.fontSize) {
+        var s = parseInt(elems[i].style.fontSize.replace("px", ""));
+      } else {
+        var s = 12;
+      }
+      // } if (s != max) {
+        s -= 1;
+      // }
+      elems[i].style.fontSize = s + "px"
+    }
+
+    // console.log(codeWidget.getTextArea().style.fontSize = "6px");
+    // codeWidget.getTextArea().style.fontSize = "6px";
+    // let s = parseInt(codeWidget.style.fontSize.replace("px", ""));
+    // s += 1;
+    // codeWindow.style.fontSize = s + "px"
   }    
 }
 
