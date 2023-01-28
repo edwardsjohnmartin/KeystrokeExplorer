@@ -29,11 +29,17 @@ function calcNumAstNodes(code) {
     }
 }
 
+/**
+ * Helper class to keep track of the state of code over time
+ */
 class CodeStateTracker {
     constructor() {
         this.currentCodeState = ''
     }
 
+    /**
+     * Update the code by the change from one edit event 
+     */
     updateCode(editEvent, i) {
         const codeAdded = editEvent['InsertText']
         const codeRemoved = editEvent['DeleteText']
@@ -57,37 +63,62 @@ class CodeStateTracker {
     }
 }
 
+/**
+ * This class builds a chart of the number of nodes in the abstract syntax tree over a
+ * sequence of events.
+ */
 class AstNodeCountChart {
     constructor() {
         this.astNodeCounts = []
         this.codeStateTracker = new CodeStateTracker()
     }
 
+    /**
+     * Apply one additional event to the saved code state and calculate how many ast
+     * nodes there are after the event is applied
+     * 
+     * @param {object} row one event from the file
+     * @param {number} i the index of the row event
+     */
     newRow(row, i) {
         this.codeStateTracker.updateCode(row, i)
         this.astNodeCounts[i] = calcNumAstNodes(this.codeStateTracker.currentCodeState)
     }
 
-    create(df) {
-        console.log('Creating a new ast node count chart with a data frame!')
+    /**
+     * Create a visualization of how many nodes are in the abstract syntax tree over time
+     * @param {Array of objects} df An array of all event objects for this file
+     */
+    create(df, attemptsCounter = 0) {
 
-        df.forEach((row, i) => {
-            this.newRow(row, i)
-        });
+        // Since brython is required to build the AST, we have to wait for it to be loaded
+        // before creating this visualization. There are probably better ways to do this.
+        if(typeof brythonListener !== "function") {
+            console.log('Waiting for the brython listener to be defined')
+            window.setTimeout(() => this.create(df, attemptsCounter++), 100 * attemptsCounter);
+        } else {
+            df.forEach((row, i) => {
+                this.newRow(row, i)
+            });
 
-        const formatted = this.astNodeCounts.map((e, i) => {
-            return {
-                x: i,
-                y: e
-            }
-        })
+            const formatted = this.astNodeCounts.map((e, i) => {
+                return {
+                    x: i,
+                    y: e
+                }
+            })
 
-        console.log(this.astNodeCounts)
-        displayAstNodeCountChart(formatted)
+            displayAstNodeCountChart(formatted)
+        }
     }
 
 }
 
+/**
+ * Display the actual visualization
+ * @param {array of objects} data An array of points to display in the chart. Each 
+ *   element of the data should have an x and a y.
+ */
 function displayAstNodeCountChart(data) {
     const margin = {top: 10, right: 30, bottom: 50, left: 60}
     const chartHeight = 400;
