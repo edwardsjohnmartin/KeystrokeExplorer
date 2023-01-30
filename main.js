@@ -25,6 +25,8 @@ var findStringWidget = document.getElementById('findString');
 var chart = null;
 var timeline = null;
 
+var asts = null;
+
 //-----------------------------------------------------------------------------
 // File-in-memory variables
 //-----------------------------------------------------------------------------
@@ -462,8 +464,9 @@ function fileChanged() {
   reconstruct(df, true);
   loadingWidget.style.visibility = 'hidden';
 
-  asts = new ASTs();
-  asts.create(df);
+  console.log('creating asts');
+  asts = createAsts(df);
+  updateAst();
 
   chart = new Chart();
   chart.create(df);
@@ -726,6 +729,7 @@ function replace(s, j, insertText, deleteText) {
 let curIndex = -1;
 let curReconstruction = '';
 function reconstruct(df, fromScratch) {
+  console.log('reconstructing');
   // table.innerHTML = '';
 
   // codeWidget.setValue('');
@@ -799,31 +803,7 @@ function reconstruct(df, fromScratch) {
   let errorLineNum = compile(s);
   if (errorLineNum == null) {
     errorWidget.style.visibility = 'hidden';
-    if(typeof brythonListener === "function") {
-      ast = get_ast(s)
-      ast_vis = Tree(ast, {
-        label: d => d.ast_node_type,
-        title: d => { 
-          title_text = d
-          if (title_text.hasOwnProperty('children')) {
-            delete title_text['children']
-          }
-          return JSON.stringify(title_text); 
-        },
-        // nodeOnClick: d => {
-        nodeOnHover: d => {
-          console.log(d.data['lineno'], d.data['col_offset']);
-          if(d.data.hasOwnProperty('lineno') && d.data.hasOwnProperty('col_offset')) {
-            lineno = d.data['lineno']
-            col_offset = d.data['col_offset']
-            startIndex = codeWidget.doc.indexFromPos({ line: lineno - 1, ch: col_offset})
-            lineMarkText(startIndex, startIndex+1, "ast-line-highlight")
-          }
-        }
-      });
-      removeAllChildNodes(astWidget);
-      astWidget.append(ast_vis);
-    }
+    updateAst();
   } else {
     errorWidget.innerHTML = `Error on line ${errorLineNum}`;
     errorWidget.style.visibility = 'visible';
@@ -838,6 +818,29 @@ function reconstruct(df, fromScratch) {
   let end = eventNum <= dfall.length-n ? eventNum+n : dfall.length;
 
   spreadsheet.update(dfall.slice(start, end), eventNum-start);
+}
+
+function updateAst() {
+  if (asts != null) {
+    ast = asts[+slider.value];
+    if (ast != null) {
+      ast_vis = Tree(ast, {
+        label: d => d.name,
+        children: d => d.children,
+        nodeOnHover: d => {
+          console.log(d.data['lineno'], d.data['col_offset']);
+          if(d.data.hasOwnProperty('lineno') && d.data.hasOwnProperty('col_offset')) {
+            lineno = d.data['lineno']
+            col_offset = d.data['col_offset']
+            startIndex = codeWidget.doc.indexFromPos({ line: lineno - 1, ch: col_offset})
+            lineMarkText(startIndex, startIndex+1, "ast-line-highlight")
+          }
+        }
+      });
+      removeAllChildNodes(astWidget);
+      astWidget.append(ast_vis);
+    }
+  }
 }
 
 //-----------------------------------------------------------------------------

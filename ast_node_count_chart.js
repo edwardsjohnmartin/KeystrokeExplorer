@@ -109,7 +109,7 @@ class AstNodeCountChart {
   // }
 
     create(asts) {
-      asts.asts.forEach((ast,i) => {
+      asts.forEach((ast,i) => {
         if (ast) {
           this.astNodeCounts[i] = calcNumAstNodesHelper(ast);
         } else {
