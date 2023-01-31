@@ -10,15 +10,9 @@ function calcNumAstNodesHelper(astNode){
     return 0
   }
   sum = 1
-  // astNode['children'].forEach(child => {
-  // console.log('astNode', astNode);
-  let body = astNode['body'];
-  if (body !== undefined) {
-    // console.log('body', astNode['body']);
-    astNode['body'].forEach(child => {
-      sum += calcNumAstNodesHelper(child)
-    })
-  }
+  astNode.children.forEach(child => {
+    sum += calcNumAstNodesHelper(child)
+  });
   return sum
 }
 

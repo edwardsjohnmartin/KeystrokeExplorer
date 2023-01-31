@@ -18,9 +18,9 @@ function compile(prog) {
   Sk.configure({output:outf, read:builtinRead}); 
   (Sk.TurtleGraphics || (Sk.TurtleGraphics = {})).target = 'mycanvas';
   try {
-    var parse = Sk.parse(null, prog);
-    var ast = Sk.astFromParse(parse.cst, null, parse.flags);
-    console.log(ast);
+    // var parse = Sk.parse(null, prog);
+    // var ast = Sk.astFromParse(parse.cst, null, parse.flags);
+    // console.log(ast);
     
     Sk.compile(prog);
     return null;

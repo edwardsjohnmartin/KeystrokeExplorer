@@ -696,6 +696,7 @@ function lineMarkText(start, end, className) {
   lineLastMarkEnd = b;
   
   lineLastMark = codeWidget.markText(a, b, {className: className});
+  // console.log(lineLastMark);
 }
 
 // s is the current text
@@ -729,7 +730,7 @@ function replace(s, j, insertText, deleteText) {
 let curIndex = -1;
 let curReconstruction = '';
 function reconstruct(df, fromScratch) {
-  console.log('reconstructing');
+  // console.log('reconstructing');
   // table.innerHTML = '';
 
   // codeWidget.setValue('');
@@ -827,15 +828,18 @@ function updateAst() {
       ast_vis = Tree(ast, {
         label: d => d.name,
         children: d => d.children,
-        nodeOnHover: d => {
-          console.log(d.data['lineno'], d.data['col_offset']);
-          if(d.data.hasOwnProperty('lineno') && d.data.hasOwnProperty('col_offset')) {
-            lineno = d.data['lineno']
-            col_offset = d.data['col_offset']
-            startIndex = codeWidget.doc.indexFromPos({ line: lineno - 1, ch: col_offset})
-            lineMarkText(startIndex, startIndex+1, "ast-line-highlight")
+        nodeOnMouseOver: d => {
+          if(d.data.lineno !== undefined) {
+            lineno = d.data['lineno'];
+            col_offset = d.data['col_offset'];
+            startIndex = codeWidget.doc.indexFromPos({ line: lineno - 1, ch: col_offset});
+            lineMarkText(startIndex, startIndex+1, "ast-line-highlight");
+            console.log(d.data.src);
           }
-        }
+        },
+        nodeOnMouseOut: d => {
+          lineLastMark.clear();
+        },
       });
       removeAllChildNodes(astWidget);
       astWidget.append(ast_vis);
