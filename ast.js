@@ -63,10 +63,14 @@ function createCall(ast) {
   node.lineno = ast.lineno;
   node.col_offset = ast.col_offset;
 
+  let val = '';
+  if (ast.func.value !== undefined && ast.func.value != null && ast.func.value.id.v.length > 0) {
+    val = ast.func.value.id.v + '.';
+  }
   if (ast.func.id !== undefined) {
-    node.name = 'call ' + ast.func.id.v;
+    node.name = 'call ' + val + ast.func.id.v;
   } else {
-    node.name = 'call ' + ast.func.attr.v;
+    node.name = 'call ' + val + ast.func.attr.v;
   }
 
   // Arguments
@@ -236,6 +240,20 @@ function createReturn(ast) {
   return node;
 }
 
+function createElse(astArray) {
+  let node = new AstNode(astArray);
+
+  // node.lineno = ast.lineno;
+  // node.col_offset = ast.col_offset;
+
+  node.name = 'Else';
+  astArray.forEach((child) => {
+    node.children.push(createAstNode(child));
+  });
+
+  return node;
+}
+
 //------------------------------------------------------------
 // Main function
 //------------------------------------------------------------
@@ -280,6 +298,10 @@ function createAstNode(ast) {
       ast.body.forEach((child) => {
         node.children.push(createAstNode(child));
       });
+    }
+    // Conditional
+    if (ast.orelse !== undefined && ast.orelse.length > 0) {
+      node.children.push(createElse(ast.orelse));
     }
   }
   
