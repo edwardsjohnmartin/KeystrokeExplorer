@@ -35,6 +35,9 @@ class CodeStateTracker {
 }
 
 
+//------------------------------------------------------------
+// AstNode
+//------------------------------------------------------------
 class AstNode {
   constructor(src) {
     this.name = '';
@@ -44,6 +47,11 @@ class AstNode {
     this.src = src;
   }
 }
+
+//------------------------------------------------------------
+// Functions to recursively create our format of AST from
+// the Skulpt format.
+//------------------------------------------------------------
 
 function createBinOp(ast) {
   let node = new AstNode(ast);
@@ -308,6 +316,13 @@ function createAstNode(ast) {
   return node;
 }
 
+//------------------------------------------------------------
+// Region functions
+// These functions update the start and end values for each
+// node. These values indicate the character indices
+// corresponding to the node.
+//------------------------------------------------------------
+
 function getIndex(line, col, lineLengthCumSum) {
   return lineLengthCumSum[line] + col;
 }
@@ -353,6 +368,10 @@ function updateRegionsImpl(node, code, lines, lineLengthCumSum, endLine, endCol)
   }
 }
 
+//------------------------------------------------------------
+// createAsts
+// Create our custom AST format from the Skulpt format.
+//------------------------------------------------------------
 function createAsts(df) {
   asts = []
   codeStateTracker = new CodeStateTracker()
@@ -369,7 +388,7 @@ function createAsts(df) {
       updateRegions(asts[i], codeStateTracker.currentCodeState);
       if (i == 1327) {
         // This is useful to inspect what is in an AST
-        console.log('compare asts');
+        // console.log('compare asts');
         console.log(ast);
         console.log(asts[i]);
       }

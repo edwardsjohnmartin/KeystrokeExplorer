@@ -251,6 +251,11 @@ function test1() {
   console.log('hover');
 }
 
+function mouseOverCode(e) {
+  console.log(event);
+  console.log(codeWidget.coordsChar({left:e.x, top:e.y}));
+}
+
 //-----------------------------------------------------------------------------
 // onload
 //-----------------------------------------------------------------------------
@@ -273,9 +278,7 @@ function onload() {
     readOnly: true,
     styleSelectedText: true,
   });
-  // textarea.setSize(500, 300);
-  document.getElementsByClassName('CodeMirror')[0].onmouseenter=test1();
-  document.getElementsByClassName('CodeMirror')[0].onmouseexit=test1();
+  CodeMirror.on(codeWidget.getWrapperElement(), "mouseover", mouseOverCode);
   
   document.addEventListener("keydown", onKeyDown);
   document.addEventListener("keypress", onKeyPress);
@@ -464,7 +467,7 @@ function fileChanged() {
   reconstruct(df, true);
   loadingWidget.style.visibility = 'hidden';
 
-  console.log('creating asts');
+  // console.log('creating asts');
   asts = createAsts(df);
   updateAst();
 
