@@ -829,12 +829,27 @@ function updateAst() {
         label: d => d.name,
         children: d => d.children,
         nodeOnMouseOver: d => {
+          // console.log(d.data);
           if(d.data.lineno !== undefined) {
-            lineno = d.data['lineno'];
-            col_offset = d.data['col_offset'];
-            startIndex = codeWidget.doc.indexFromPos({ line: lineno - 1, ch: col_offset});
-            lineMarkText(startIndex, startIndex+1, "ast-line-highlight");
-            console.log(d.data.src);
+            // lineno = d.data['lineno'];
+            // col_offset = d.data['col_offset'];
+            // startIndex = codeWidget.doc.indexFromPos({ line: lineno - 1, ch: col_offset});
+            // lineMarkText(startIndex, startIndex+1, "ast-line-highlight");
+
+            let node = d.data;
+            // let startIndex = codeWidget.doc.indexFromPos({ line: node.startLine, ch: node.startCol});
+            // let endIndex = codeWidget.doc.indexFromPos({ line: node.endLine, ch: node.endCol});
+            let startIndex = node.start;
+            let endIndex = node.end;
+
+            let a = codeWidget.doc.posFromIndex(startIndex);
+            let b = codeWidget.doc.posFromIndex(endIndex);
+
+            // lineLastMarkStart = a;
+            // lineLastMarkEnd = b;
+
+            let className = 'ast-line-highlight';
+            lineLastMark = codeWidget.markText(a, b, {className: className});
           }
         },
         nodeOnMouseOut: d => {

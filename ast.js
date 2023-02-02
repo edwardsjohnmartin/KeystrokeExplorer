@@ -243,8 +243,8 @@ function createReturn(ast) {
 function createElse(astArray) {
   let node = new AstNode(astArray);
 
-  // node.lineno = ast.lineno;
-  // node.col_offset = ast.col_offset;
+  node.lineno = astArray[0].lineno;
+  node.col_offset = astArray[0].col_offset;
 
   node.name = 'Else';
   astArray.forEach((child) => {
@@ -308,6 +308,51 @@ function createAstNode(ast) {
   return node;
 }
 
+function getIndex(line, col, lineLengthCumSum) {
+  return lineLengthCumSum[line] + col;
+}
+
+function updateRegions(node, code) {
+  // Get the number of characters on each line
+  let lines = code.split('\n');
+  let lineLengths = new Array(lines.length);
+  lines.forEach((line,i) => {
+    // +1 to account for the newline character
+    lineLengths[i] = line.length + 1;
+  });
+  let lineLengthCumSum = lineLengths.map((sum => value => sum += value)(0));
+  lineLengthCumSum = [0].concat(lineLengthCumSum);
+  // if (debug) {
+  //   console.log('lineLengths', lineLengths);
+  //   console.log('cumsum', lineLengthCumSum);
+  // }
+
+  updateRegionsImpl(node, code, lines, lineLengthCumSum, lines.length-1, lineLengths[lines.length-1]);
+}
+
+function updateRegionsImpl(node, code, lines, lineLengthCumSum, endLine, endCol) {
+  node.startLine = node.lineno - 1;
+  node.startCol = node.col_offset;
+  node.endLine = endLine;
+  node.endCol = endCol;
+
+  // Get linear indices
+  node.start = getIndex(node.startLine, node.startCol, lineLengthCumSum);
+  node.end = getIndex(node.endLine, node.endCol, lineLengthCumSum);
+  // Ignore whitespace at end
+  let s = code.substring(node.start, node.end);
+  let trim = s.length - s.trimEnd().length;
+  node.end -= trim;
+
+  // Set start and end for each child
+  for (let i = node.children.length-1; i >= 0; --i) {
+    let cur = node.children[i];
+    updateRegionsImpl(cur, code, lines, lineLengthCumSum, endLine, endCol);
+    endLine = cur.startLine;
+    endCol = cur.startCol;
+  }
+}
+
 function createAsts(df) {
   asts = []
   codeStateTracker = new CodeStateTracker()
@@ -321,6 +366,7 @@ function createAsts(df) {
         debug = true;
       }
       asts[i] = createAstNode(ast);
+      updateRegions(asts[i], codeStateTracker.currentCodeState);
       if (i == 1327) {
         // This is useful to inspect what is in an AST
         console.log('compare asts');
