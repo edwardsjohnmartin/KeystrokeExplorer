@@ -252,8 +252,8 @@ function test1() {
 }
 
 function mouseOverCode(e) {
-  console.log(event);
-  console.log(codeWidget.coordsChar({left:e.x, top:e.y}));
+  // console.log(event);
+  // console.log(codeWidget.coordsChar({left:e.x, top:e.y}));
 }
 
 //-----------------------------------------------------------------------------
@@ -828,6 +828,7 @@ function updateAst() {
   if (asts != null) {
     ast = asts[+slider.value];
     if (ast != null) {
+      console.log('Ready to load ast vis with ast ', ast)
       ast_vis = Tree(ast, {
         label: d => d.name,
         children: d => d.children,
