@@ -337,10 +337,6 @@ function updateRegions(node, code) {
   });
   let lineLengthCumSum = lineLengths.map((sum => value => sum += value)(0));
   lineLengthCumSum = [0].concat(lineLengthCumSum);
-  // if (debug) {
-  //   console.log('lineLengths', lineLengths);
-  //   console.log('cumsum', lineLengthCumSum);
-  // }
 
   updateRegionsImpl(node, code, lines, lineLengthCumSum, lines.length-1, lineLengths[lines.length-1]);
 }

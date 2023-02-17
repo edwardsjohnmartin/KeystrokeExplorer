@@ -167,8 +167,6 @@ function incFile(inc) {
 // onKeyPress
 //-----------------------------------------------------------------------------
 function onKeyPress(event) {
-  // console.log(event.key);
-
   let inc = 'f';
   let dec = 'd';
   let inc10 = 'F';
@@ -238,8 +236,6 @@ function test() {
 // onKeyDown
 //-----------------------------------------------------------------------------
 function onKeyDown(event) {
-  // console.log(event.key);
-
   if (event.key == 'ArrowRight') {
     incFile(1);
   } else if (event.key == 'ArrowLeft') {
@@ -247,13 +243,49 @@ function onKeyDown(event) {
   }    
 }
 
-function test1() {
-  console.log('hover');
+
+function getAllChildrenContaining(line, col, astNode) {
+  let result = [];
+  if(
+    astNode.startCol !== null && !isNaN(astNode.startCol) &&
+    astNode.startLine !== null && !isNaN(astNode.startLine) &&
+    astNode.endCol !== null && !isNaN(astNode.endCol) &&
+    astNode.endLine !== null && !isNaN(astNode.endLine) 
+  ) {
+    const startIndex = codeWidget.doc.indexFromPos({ line: astNode.startLine, ch: astNode.startCol })
+    const endIndex = codeWidget.doc.indexFromPos({ line: astNode.endLine, ch: astNode.endCol })
+    const highlightIndex = codeWidget.doc.indexFromPos({ line, ch:col })
+    if(startIndex <= highlightIndex && highlightIndex <= endIndex) {
+        result.push(astNode);
+        astNode.children.forEach(child => {
+          result = result.concat(getAllChildrenContaining(line, col, child));
+        });
+    }
+  } else {
+      astNode.children.forEach(child => {
+        result = result.concat(getAllChildrenContaining(line, col, child));
+      });
+
+  }
+  return result;
 }
 
 function mouseOverCode(e) {
-  // console.log(event);
-  // console.log(codeWidget.coordsChar({left:e.x, top:e.y}));
+  let coordinates = codeWidget.coordsChar({left:e.x, top:e.y})
+  
+  let currentAst = asts[+slider.value]
+  // remove highlights from previous hovers
+  d3.selectAll('.highlighted-ast-node')
+    .classed('highlighted-ast-node', false)
+    .attr('r', 3)
+  // highlight nodes corresponding to the hovered code
+  let highlightThese = getAllChildrenContaining(coordinates.line, coordinates.ch, currentAst)
+  highlightThese.forEach(node => {
+    nodeId = getAstNodeId(node)
+    d3.select(`#${nodeId}`)
+      .classed('highlighted-ast-node', true)
+      .attr('r', 7)
+  });
 }
 
 //-----------------------------------------------------------------------------
@@ -323,9 +355,6 @@ function prepdfall() {
     i++;
   });
 }
-
-// function loadData() {
-// }
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -467,7 +496,6 @@ function fileChanged() {
   reconstruct(df, true);
   loadingWidget.style.visibility = 'hidden';
 
-  // console.log('creating asts');
   asts = createAsts(df);
   updateAst();
 
@@ -824,6 +852,10 @@ function reconstruct(df, fromScratch) {
   spreadsheet.update(dfall.slice(start, end), eventNum-start);
 }
 
+function getAstNodeId(astNode) {
+  return `line${astNode.lineno}-col${astNode.col_offset}`
+}
+
 function updateAst() {
   if (asts != null) {
     ast = asts[+slider.value];
@@ -849,6 +881,7 @@ function updateAst() {
         nodeOnMouseOut: d => {
           lineLastMark.clear();
         },
+        getDomId: d => getAstNodeId(d.data),
       });
       removeAllChildNodes(astWidget);
       astWidget.append(astVis);

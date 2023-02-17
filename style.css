@@ -294,3 +294,7 @@ td#tdtabs {
 #timelinesvg { height: 30px; }
 tr.selected { background-color:powderblue; }
 #compileError { background-color:red; }
+
+.highlighted-ast-node {
+    fill: purple
+}
