@@ -41,39 +41,6 @@ function calcNumAstNodes(code) {
     // }
 }
 
-/**
- * Helper class to keep track of the state of code over time
- */
-// class CodeStateTracker {
-//     constructor() {
-//         this.currentCodeState = ''
-//     }
-
-//     /**
-//      * Update the code by the change from one edit event 
-//      */
-//     updateCode(editEvent, i) {
-//         const codeAdded = editEvent['InsertText']
-//         const codeRemoved = editEvent['DeleteText']
-    
-//         if (codeAdded == '' && codeRemoved == '') {
-//             return
-//         }
-    
-//         if (editEvent['SourceLocation'] == '') {
-//             return
-//         }
-    
-//         const editPosition = parseFloat(editEvent['SourceLocation'])
-//         const plannedRemove = this.currentCodeState.slice(editPosition, editPosition + codeRemoved.length)
-//         if ( plannedRemove !== codeRemoved) {
-//             throw new Exception("Code removed doesn't match event")
-//         }
-//         const result = this.currentCodeState.slice(0, editPosition) + codeAdded + 
-//             this.currentCodeState.slice(editPosition + codeRemoved.length, this.currentCodeState.length)
-//         this.currentCodeState = result
-//     }
-// }
 
 /**
  * This class builds a chart of the number of nodes in the abstract syntax tree over a
@@ -82,25 +49,7 @@ function calcNumAstNodes(code) {
 class AstNodeCountChart {
   constructor() {
     this.astNodeCounts = [];
-    // this.codeStateTracker = new CodeStateTracker()
   }
-
-  //   /**
-  //    * Apply one additional event to the saved code state and calculate how many ast
-  //    * nodes there are after the event is applied
-  //    * 
-  //    * @param {object} row one event from the file
-  //    * @param {number} i the index of the row event
-  //    */
-  // newRow(row, i) {
-  //   this.codeStateTracker.updateCode(row, i)
-  //   // DEBUG
-  //   if (i % 100 == 0) {
-  //     this.astNodeCounts[i] = calcNumAstNodes(this.codeStateTracker.currentCodeState)
-  //   } else {
-  //     this.astNodeCounts[i] = 0;
-  //   }
-  // }
 
     create(asts) {
       asts.forEach((ast,i) => {
@@ -121,37 +70,6 @@ class AstNodeCountChart {
 
       displayAstNodeCountChart(formatted)
     }
-
-  /**
-     * Create a visualization of how many nodes are in the abstract syntax tree over time
-     * @param {Array of objects} df An array of all event objects for this file
-     */
-    // create(df, attemptsCounter = 0) {
-
-      // Removed until we can get the Skulpt AST working
-      
-        // // Since brython is required to build the AST, we have to wait for it to be loaded
-        // // before creating this visualization. There are probably better ways to do this.
-        // if(typeof brythonListener !== "function") {
-        //     console.log('Waiting for the brython listener to be defined')
-        //     window.setTimeout(() => this.create(df, attemptsCounter++), 100 * attemptsCounter);
-        // } else {
-        //   console.log('else');
-        //     df.forEach((row, i) => {
-        //         this.newRow(row, i)
-        //     });
-
-        //     const formatted = this.astNodeCounts.map((e, i) => {
-        //         return {
-        //             x: i,
-        //             y: e
-        //         }
-        //     })
-
-        //     displayAstNodeCountChart(formatted)
-        // }
-    // }
-
 }
 
 /**
