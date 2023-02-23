@@ -303,3 +303,7 @@ tr.selected { background-color:powderblue; }
     stroke: purple;
     stroke-width: 5;
 }
+
+.ast-code-block {
+    background-color: lightgray; 
+}

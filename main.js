@@ -282,8 +282,10 @@ function getEdgesBetween(nodes) {
   return edges;
 }
 
+let highlightedAstBlock = null
+
 function mouseOverCode(e) {
-  let coordinates = codeWidget.coordsChar({left:e.x, top:e.y})
+  let startCoordinates = codeWidget.coordsChar({left:e.x, top:e.y})
   
   let currentAst = asts[+slider.value]
   // remove highlights from previous hovers
@@ -294,7 +296,7 @@ function mouseOverCode(e) {
     .classed('highlighted-ast-edge', false)
 
   // highlight nodes corresponding to the hovered code
-  let highlightTheseNodes = getAllChildrenContaining(coordinates.line, coordinates.ch, currentAst);
+  let highlightTheseNodes = getAllChildrenContaining(startCoordinates.line, startCoordinates.ch, currentAst);
   let highlightTheseEdges = getEdgesBetween(highlightTheseNodes);
   highlightTheseNodes.forEach(node => {
     nodeId = getAstNodeId(node)
@@ -306,6 +308,26 @@ function mouseOverCode(e) {
     d3.select(`#${edge}`)
       .classed('highlighted-ast-edge', true)
   })
+
+  let maxNode = highlightTheseNodes[0]
+  let minNode = highlightTheseNodes[0]
+  highlightTheseNodes.forEach(node => {
+    let currentMax = codeWidget.doc.indexFromPos({ line: maxNode.startLine, ch: maxNode.col_offset})
+    let currentMin = codeWidget.doc.indexFromPos({ line: minNode.startLine, ch: minNode.col_offset})
+    let newPotential = codeWidget.doc.indexFromPos({ line: node.startLine, ch: node.col_offset})
+    if(newPotential > currentMax) {
+      maxNode = node
+    }
+    if(newPotential < currentMin) {
+      minNode = node
+    }
+  })
+  if(highlightedAstBlock) {
+    highlightedAstBlock.clear()
+  }
+  highlightedAstBlock = codeWidget.markText({ line: minNode.lineno, ch: minNode.col_offset }, 
+    { line: maxNode.lineno, ch: maxNode.col_offset}, {className: "ast-code-block"});
+
 }
 
 //-----------------------------------------------------------------------------
