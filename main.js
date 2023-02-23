@@ -270,6 +270,18 @@ function getAllChildrenContaining(line, col, astNode) {
   return result;
 }
 
+function getEdgesBetween(nodes) {
+  let edges = []
+  nodes.forEach(node => {
+    node.children.forEach(child => {
+      if(nodes.includes(child)) {
+        edges.push(getAstEdgeId(node, child))
+      }
+    })
+  });
+  return edges;
+}
+
 function mouseOverCode(e) {
   let coordinates = codeWidget.coordsChar({left:e.x, top:e.y})
   
@@ -278,14 +290,22 @@ function mouseOverCode(e) {
   d3.selectAll('.highlighted-ast-node')
     .classed('highlighted-ast-node', false)
     .attr('r', 3)
+  d3.selectAll('.highlighted-ast-edge')
+    .classed('highlighted-ast-edge', false)
+
   // highlight nodes corresponding to the hovered code
-  let highlightThese = getAllChildrenContaining(coordinates.line, coordinates.ch, currentAst)
-  highlightThese.forEach(node => {
+  let highlightTheseNodes = getAllChildrenContaining(coordinates.line, coordinates.ch, currentAst);
+  let highlightTheseEdges = getEdgesBetween(highlightTheseNodes);
+  highlightTheseNodes.forEach(node => {
     nodeId = getAstNodeId(node)
     d3.select(`#${nodeId}`)
       .classed('highlighted-ast-node', true)
       .attr('r', 7)
   });
+  highlightTheseEdges.forEach(edge => {
+    d3.select(`#${edge}`)
+      .classed('highlighted-ast-edge', true)
+  })
 }
 
 //-----------------------------------------------------------------------------
@@ -856,6 +876,10 @@ function getAstNodeId(astNode) {
   return `line${astNode.lineno}-col${astNode.col_offset}`
 }
 
+function getAstEdgeId(node1, node2) {
+  return `from-${getAstNodeId(node1)}-to-${getAstNodeId(node2)}`
+}
+
 function updateAst() {
   if (asts != null) {
     ast = asts[+slider.value];
@@ -881,7 +905,8 @@ function updateAst() {
         nodeOnMouseOut: d => {
           lineLastMark.clear();
         },
-        getDomId: d => getAstNodeId(d.data),
+        getNodeDomId: d => getAstNodeId(d.data),
+        getEdgeDomId: d => getAstEdgeId(d.source.data, d.target.data),
       });
       removeAllChildNodes(astWidget);
       astWidget.append(astVis);

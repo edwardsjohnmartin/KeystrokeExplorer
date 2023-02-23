@@ -298,3 +298,8 @@ tr.selected { background-color:powderblue; }
 .highlighted-ast-node {
     fill: purple
 }
+
+.highlighted-ast-edge {
+    stroke: purple;
+    stroke-width: 5;
+}
