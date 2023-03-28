@@ -1,11 +1,12 @@
 // set variables
-var xmax = 100;
+var depthdata;
+/*var xmax = 100;
 var ymax = 100;
 var allText;
 var astdata;
 var dataset;
-readTextFile('ast_metrics.csv');
-
+readTextFile('ast_metrics_with_heights.csv');*/
+/*
 function readTextFile(file) {
     var rawFile = new XMLHttpRequest();
     rawFile.open("GET", file, true);
@@ -42,21 +43,23 @@ function parseASTCSV(text){
         final_data[i] = d;
     }
     return final_data;
-}
+}*/
 
-function get_depth_data(){
+function get_depth_data(chartType){
     if (astdata == null){
-        astdata = parseASTCSV(allText);
+        astdata = parseACSV(allText);
     }
     // get dropdown menu values
-    var subjectsWidget = document.getElementById('depth student select');
-    var assignmentsWidget = document.getElementById('depth assign select');
+    var subjectsWidget = document.getElementById('subjects');
+    var assignmentsWidget = document.getElementById('assignments');
+    //console.log("sub: " + subjectsWidget.value)
+    //console.log("assign: " + assignmentsWidget.value)
     var cont = true;
     var counter = 0;
     var index;
     while (cont){
         var current = astdata[counter];
-        if (current[0] == subjectsWidget.value && current[1] == assignmentsWidget.value){
+        if (current["student"] == subjectsWidget.value && current["assign"] == assignmentsWidget.value){
             index = counter;
             //alert(current);
             cont = false;
@@ -70,19 +73,30 @@ function get_depth_data(){
             }
         }
     }
+    console.log("counter: " + counter);
     if (index == null){
         return [];
     }
     else {
         var student_assignment = astdata[index];
-        var depths = student_assignment[student_assignment.length - 1];
+        var values;
+        if (chartType == "Height"){
+            values = student_assignment["heights"];
+        }
+        else {
+            values = student_assignment["depths"];
+        }
         //alert(depths);
-        return depths;
+        return values;
     }
 }
 
+function onBarClick(){
+    // change playback slider location
+}
 
-function draw_depth() {
+
+function draw_depth(chartType) {
     //alert(dataset);
     //dataset = [5, 10, 15, 20];
     var svg = d3.select("#depthsvg");
@@ -102,7 +116,7 @@ function draw_depth() {
         domain[i] = i;
     }
     //alert(xmax);
-    ymax = 12;
+    ymax =10;
     var xScale = d3.scaleBand().range([0, width]),
         yScale = d3.scaleLinear().range([height, 0]);
     //var xScale = d3.scaleLinear().domain([0, xmax]).range([0, width]),
@@ -118,7 +132,7 @@ function draw_depth() {
         .attr('text-anchor', 'middle')
         .style('font-family', 'Helvetica')
         .style('font-size', 20)
-        .text('Depth Chart');
+        .text(chartType + ' Chart');
 
     // X label
     svg.append('text')
@@ -134,10 +148,10 @@ function draw_depth() {
     svg.append('text')
         .property('id', 'ytext')
         .attr('text-anchor', 'middle')
-        .attr('transform', 'translate(20,' + height + ')rotate(-90)')
+        .attr('transform', 'translate(15,' + (height-70) + ')rotate(-90)')
         .style('font-family', 'Helvetica')
         .style('font-size', 12)
-        .text("Depth Value");
+        .text(chartType + " Value");
 
     var x_Ax = g.append("g")
         .property('id', 'xscale')
@@ -171,12 +185,17 @@ function draw_depth() {
 
 function updateDepth(){
     //alert("update depths");
-    console.log("updating")
-    dataset = get_depth_data();
-    draw_depth();
-    if (dataset == null){
-        alert("Sorry, the data for this student assignment is unavailable.");
+    //console.log("updating")
+    var chartType = viztypeWidget.options[viztypeWidget.selectedIndex].value;
+    if (chartType == "Height" || chartType == "Depth"){
+        dataset = get_depth_data(chartType);
+        //console.log(dataset);
+        draw_depth(chartType);
+        if (dataset == []){
+            alert("Sorry, the data for this student assignment is unavailable.");
+        }
     }
+
 }
 
 function handleMouseOver(d, i) {

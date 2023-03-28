@@ -1,49 +1,37 @@
-// data
-// default
-var dataset = [[90, 20], [20, 100], [66, 44], [53, 80], [24, 182], [80, 72], [10, 76], [33, 150], [100, 15], [30, 12], [100, 76], [3, 10], [50, 1]];
-// data from ast_metrics
+// global variables
 var allText;
 var astdata;
+var dataset = [];
 var dataForAssign = [];
-// 0=6,1=7,2=8,3=9,4=11,5=12,6=13
-/*var skews = [[0.7755102040816326, 1.1658291457286432, 0, 0.9722222222222222, 1.0311526479750779, 0.9240506329113924, 0.9724770642201835, 0, 0.8850574712643678, 0.8625592417061612, 0, 0, 0, 0.90625, 0.7369791666666666, 0.8231046931407943, 1.2757475083056478, 0.8487394957983193, 0, 0.975, 1.143646408839779, 0, 0, 1.0101010101010102, 0.7386363636363636, 0.9890710382513661, 0.9641025641025641, 0.8947368421052632, 0, 1.1047619047619048, 0, 0, 0.8587570621468926, 0.9518072289156626, 0.8745098039215686, 0, 0, 1.1428571428571428, 1.1058201058201058, 0, 0.6666666666666666, 0, 1.1586538461538463, 0],
-    [0.7653061224489796, 0.7142857142857143, 0, 0.6609195402298851, 0, 0, 0, 0.8159203980099502, 0.8181818181818182, 1.1782178217821782, 0, 0.6894736842105263, 0.8093525179856115, 1.1371428571428572, 0.9523809523809523, 0.9333333333333333, 0, 0, 0, 0.9251700680272109, 0.5817307692307693, 0, 0.6806083650190115, 1.256544502617801, 0, 0.8673469387755102, 0.9722222222222222, 0.8205128205128205, 0, 0.738831615120275, 0.7233009708737864, 0.711764705882353, 0, 0, 0.8830409356725146, 0, 0.8913043478260869, 0, 0.7853403141361257, 0, 0, 0, 1.1910828025477707, 0.7870370370370371],
-    [1.1772575250836121, 1.1902912621359223, 0, 0, 0, 0, 0.9510603588907015, 0, 0.8654781199351702, 0, 0.8478915662650602, 0, 0.7949526813880127, 0.8066561014263075, 0.9777015437392796, 1.0414507772020725, 1.0983899821109124, 0, 0, 1.0480274442538593, 1.0448028673835126, 0.8736, 1.1031307550644567, 0.9904761904761905, 0, 1.1807692307692308, 0.851373182552504, 1.0016420361247949, 0, 1.0682196339434276, 1.022653721682848, 0.9312714776632303, 0.8623417721518988, 0, 0, 0, 1.303088803088803, 1.0104166666666667, 0.8467741935483871, 0, 0.8643790849673203, 0.9965034965034965, 1.07168458781362, 0.8845029239766082]];
-var grades = [[99.0, 95.0, 70.0, 79.0, 73.0, null, 93.0, 90.0, 89.0, 0.0, 95.0, 33.0, -50.0, 90.0, 93.0, 100.0, 0.0, 32.0, 78.0, 66.0, 73.0, 100.0, 48.0, 95.0, 45.0, 63.0, 88.0, 90.0, null, 89.0, 70.0, 85.0, 95.0, null, 100.0, 3.0, 84.0, 95.0, 95.0, 60.0, 25.0, 100.0, 93.0, 47.0],
-    [99.0, 100.0, 88.0, 87.5, 100.0, null, 86.0, 75.0, 96.0, 89.0, 100.0, 37.0, 58.5, 96.0, 100.0, 100.0, 100.0, 93.0, 89.0, 90.0, 88.0, 100.0, 99.0, 100.0, 35.0, 88.0, 100.0, 100.0, null, 100.0, 100.0, 81.0, 100.0, null, 100.0, 88.0, 8.0, 100.0, 75.0, 100.0, 0.0, 100.0, 0.0, 76.0],
-    [100.0, 100.0, 45.0, 96.0, 99.0, null, 100.0, 86.0, 100.0, 95.0, 92.0, 40.0, 93.0, 98.0, 99.0, 100.0, 99.0, 97.0, 98.0, 94.0, 100.0, 100.0, 100.0, 98.0, 100.0, 96.0, 100.0, 100.0, null, 99.0, 90.0, 90.0, 98.0, null, 100.0, 0.0, 92.0, 100.0, 87.0, 94.0, 84.0, 99.5, 100.0, 78.0],
-    [100.0, 85.0, 63.0, 95.0, 0.0, null, 92.0, 75.0, 94.0, 96.0, 0.0, 11.0, 96.0, 95.0, 98.0, 98.0, 87.0, 5.0, 100.0, 96.0, 86.0, 100.0, 95.0, 98.0, 0.0, 58.0, 100.0, 97.0, null, 81.5, 92.0, 98.0, 95.0, null, 100.0, 28.0, 89.0, 100.0, 91.0, 100.0, 71.0, 97.0, 100.0, 56.0],
-    [0.0, 94.0, 97.0, 86.0, 100.0, null, 93.0, 96.0, 100.0, 88.0, 79.0, 21.0, 74.0, 0.0, 68.0, 91.0, 92.0, 0.0, 88.0, 97.0, 86.0, 100.0, 88.0, 92.0, 0.0, 56.0, 100.0, 91.0, null, 64.0, 96.0, 94.0, 89.0, null, 100.0, 84.0, 100.0, 86.0, 97.0, 96.0, 100.0, 95.0, 100.0, 66.0],
-    [82.0, 100.0, 20.0, 99.0, 100.0, null, 76.0, 90.0, 89.0, 78.0, 86.0, 7.0, 66.0, 97.0, 21.0, 94.0, 96.0, 0.0, 93.0, 86.0, 89.0, 100.0, 74.0, 97.0, 0.0, 66.0, 100.0, 46.0, null, 21.0, 97.0, 0.0, 97.0, null, 100.0, 20.0, 100.0, 32.0, 15.0, 94.0, 26.0, 98.0, 81.0, 79.0],
-    [86.0, 0.0, 88.0, 77.0, 95.0, null, 66.0, 98.0, 0.0, 51.0, 45.0, 0.0, 63.0, 56.0, 0.0, 0.0, 78.0, 0.0, 97.0, 84.0, 56.0, 56.0, 38.0, 15.0, 0.0, 0.0, 0.0, 0.0, null, 10.0, 95.0, 44.0, 75.0, null, 0.0, 58.0, 94.0, 40.0, 0.0, 18.0, 9.0, 18.0, 0.0, 50.0]];
-*/
-readTextFile('ast_metrics.csv');
-var xmax = 100
-    ymax = 200;
+//readTextFile('ast_metrics_with_heights.csv');
+//readTextFile('TASTMetricsCalc2_3.csv')
+//readTextFile('TASTMetricsCalc2_10.csv')
+//readTextFile('astMetricsCalc3_17.csv');
+//readTextFile('astMetricsAssign10_2_27.csv')
+readTextFile('astMetricsKeystrokes3_17.csv');
+//readTextFile('ast_metrics_with_monotonicity2.csv');
+var xmax = 100;
+var ymax = 200;
+var xmin = 0;
+var ymin = 0;
+var colormin;
+var colormax;
+var colorindex;
 var xAxis = document.getElementById('x-axis').options[document.getElementById('x-axis').selectedIndex].value;
 var yAxis = document.getElementById('y-axis').options[document.getElementById('y-axis').selectedIndex].value;
+var xAxisText = document.getElementById('x-axis').options[document.getElementById('x-axis').selectedIndex].html;
+var yAxisText = document.getElementById('y-axis').options[document.getElementById('y-axis').selectedIndex].html;
+var colorScaleMetric = document.getElementById('color-scale').options[document.getElementById('color-scale').selectedIndex].value;
 var xtext;
 var ytext;
 var xIndex;
 var yIndex;
-var dots;
-//var data = parseASTCSV(allText);
-//alert(data);
-// var data = []
-// alert(data)
-//$.ajax({
-//    url: 'ast_metrics.csv',
-//    dataType: 'text',
-//}).done(parseCSV);
-/*
-d3.csv('ast_metrics.csv', function(data){
-    //astdata = data;
-    //console.log(astdata)
-    console.log(data);
-    //console.log(astdata.Assignment);
-    //updateScatter();
-    //console.log(astdata);
-});*/
+var prevColor;
+var m;
+var b;
+var tooltip = d3.select("#Scatters").append("div")
+                    .attr("class", "tooltip")
+                    .style("opacity", 0);
 
 function readTextFile(file) {
     var rawFile = new XMLHttpRequest();
@@ -60,58 +48,77 @@ function readTextFile(file) {
                         updateScatter();
                     }
                 });
-                //alert(allText);
+                // console.log(allText);
                 return allText;
             }
         }
     }
     rawFile.send(null);
 }
-/*
-function parseASTCSV(text){
-    //console.log(String(text));
-    var rows = text.split(/\r?\n/);
-    //console.log('split');
-    var data_rows = rows.slice(1);
-    var final_data = [];
-    for (let i = 0; i < data_rows.length; i++){
-        var r = data_rows[i];
-        var r_split = r.split("\"", 2);
-        var d = r_split[0].split(",");
-        if (data_rows[1] == null){
-            d.push([]);
-        }
-        else {
-            d.push(data_rows[1]);
-        }
-        final_data[i] = d
-    }
-    return final_data;
-}
-*/
 
 function parseACSV(text){
     //console.log(String(text));
     var rows = text.split(/\r?\n/);
     //console.log('split');
     var data_rows = rows.slice(1);
+    //console.log(data_rows)
     var final_data = [];
     for (let i = 0; i < data_rows.length; i++){
         var obj = {};
         var r = data_rows[i];
-        var r_split = r.split("\"", 2);
-        var d = r_split[0].split(",");
-        obj["student"] = d[0];
-        obj["assign"] = d[1];
-        obj["grade"] = parseFloat(d[2]);
-        obj["height"] = parseInt(d[3]);
-        obj["skew"] = parseFloat(d[4]);
+        //console.log(r);
+        //console.log(r);
+        var r_split = r.split("\"", 4);
+        //console.log(r_split.length)
+        //console.log(r_split[2]
+        if (r_split.length == 1){
+            var d = r_split[0].split(",")
+            obj["student"] = d[0];
+            obj["assign"] = d[1];
+            obj["filename"] = d[2];
+            obj["filegroup"] = d[3];
+            obj["grade"] = parseFloat(d[4]);
+            obj["keystrokes"] = parseInt(d[5]);
+            obj["comments"] = parseInt(d[6]);
+            obj["compilable_states"] = parseFloat(d[7]);
+            obj["mono_compilable_states"] = parseFloat(d[8])
+            obj["height"] =parseInt(d[9]);
+            obj["monotonicity"] = parseFloat(d[10]);
+            obj["depth_atm"] = parseFloat(d[11]);
+            obj["depth_skew"] = parseFloat(d[12]);
+            obj["height_atm"] = parseFloat(d[14]);
+            obj["height_skew"] = parseFloat(d[15]);
+        }
+        else{
+            var d = r_split[0].split(",");
+            var d_2 = r_split[2].split(",");
+            //console.log(d_2);
+            obj["student"] = d[0];
+            obj["assign"] = d[1];
+            obj["filename"] = d[2];
+            obj["filegroup"] = d[3];
+            obj["grade"] = parseFloat(d[4]);
+            obj["keystrokes"] = parseInt(d[5]);
+            obj["comments"] = parseInt(d[6]);
+            obj["compilable_states"] = parseFloat(d[7]);
+            obj["mono_compilable_states"] = parseFloat(d[8])
+            obj["height"] =parseInt(d[9]);
+            obj["monotonicity"] = parseFloat(d[10]);
+            obj["depth_atm"] = parseFloat(d[11]);
+            obj["depth_skew"] = parseFloat(d[12]);
+            obj["height_atm"] = parseFloat(d_2[1]);
+            obj["height_skew"] = parseFloat(d_2[2]);
+        }
+        //console.log(d)
+        //console.log(d[5])
         //console.log(obj);
         if (r_split[1] == null){
             obj["depths"] = [];
+            obj["heights"] = [];
         }
         else {
             obj["depths"] = r_split[1];
+            obj["heights"] = r_split[3];
         }
         //console.log(obj["depths"]);
         //console.log(obj["depths"].length);
@@ -121,64 +128,323 @@ function parseACSV(text){
     return final_data;
 }
 
+// help with linear regression line https://bl.ocks.org/HarryStevens/be559bed98d662f69e68fc8a7e0ad097
+function calcLinear(data, x, y, minX, maxX) {
+    /////////
+    //SLOPE//
+    /////////
 
-/*
-function linearRegression(y,x){
-        var lr = {};
-        var n = y.length;
-        var sum_x = 0;
-        var sum_y = 0;
-        var sum_xy = 0;
-        var sum_xx = 0;
-        var sum_yy = 0;
+    // Let n = the number of data points
+    var n = data.length;
 
-        for (var i = 0; i < y.length; i++) {
+    // Get just the points
+    var pts = [];
+    data.forEach(function (d, i) {
+        var obj = {};
+        obj.x = d[x];
+        obj.y = d[y];
+        obj.mult = obj.x * obj.y;
+        pts.push(obj);
+    });
+    // Let a equal n times the summation of all x-values multiplied by their corresponding y-values
+    // Let b equal the sum of all x-values times the sum of all y-values
+    // Let c equal n times the sum of all squared x-values
+    // Let d equal the squared sum of all x-values
+    var sum = 0;
+    var xSum = 0;
+    var ySum = 0;
+    var sumSq = 0;
+    pts.forEach(function (pt) {
+        sum = sum + pt.mult;
+        xSum = xSum + pt.x;
+        ySum = ySum + pt.y;
+        sumSq = sumSq + (pt.x * pt.x);
+        //sumSq = sumSq + (pt.x * pt.x);
+    });
+    var a = sum * n;
+    b = xSum * ySum;
+    var c = sumSq * n;
+    var d = xSum * xSum;
 
-            sum_x += x[i];
-            sum_y += y[i];
-            sum_xy += (x[i]*y[i]);
-            sum_xx += (x[i]*x[i]);
-            sum_yy += (y[i]*y[i]);
+    // Plug the values that you calculated for a, b, c, and d into the following equation to calculate the slope
+    // slope = m = (a - b) / (c - d)
+    m = (a - b) / (c - d);
+    /////////////
+    //INTERCEPT//
+    /////////////
+
+    // Let e equal the sum of all y-values
+    var e = ySum;
+
+    // Let f equal the slope times the sum of all x-values
+    var f = m * xSum;
+
+    // Plug the values you have calculated for e and f into the following equation for the y-intercept
+    // y-intercept = b = (e - f) / n
+    b = (e - f) / n;
+
+    // Print the equation below the chart
+    //document.getElementsByClassName("equation")[0].innerHTML = "y = " + m + "x + " + b;
+    //document.getElementsByClassName("equation")[1].innerHTML = "x = ( y - " + b + " ) / " + m;
+
+    // return an object of two points
+    // each point is an object with an x and y coordinate
+    return {
+        ptA: {
+            x: minX,
+            y: m * minX + b
+        },
+        ptB: {
+            y: m * maxX + b,
+            x: maxX
         }
-
-        lr['slope'] = (n * sum_xy - sum_x * sum_y) / (n*sum_xx - sum_x * sum_x);
-        lr['intercept'] = (sum_y - lr.slope * sum_x)/n;
-        lr['r2'] = Math.pow((n*sum_xy - sum_x*sum_y)/Math.sqrt((n*sum_xx-sum_x*sum_x)*(n*sum_yy-sum_y*sum_y)),2);
-
-        return lr;
+    }
 }
 
-// help with linear regression https://stackoverflow.com/questions/6195335/linear-regression-in-javascript
-function getRegressionPoints(data){
-    var X;
-    var Y;
-    for (let i = 0; i < data.length; i++){
-        X.push(parseFloat(data[i][0]));
-        Y.push(parseFloat(data[i][1]));
-    }
-    var lr = linearRegression(Y, X);
-    var regressionPoints = {
-        const firstX = data[0].x;
-        const lastX = data.slice(-1)[0].x;
-        const xCoordinates = [firstX, lastX];
 
-
-        return xCoordinates.map(d => ({
-            x: d,                         // We pick x and y arbitrarily, just make sure they match d3.line accessors
-            y: linearRegressionLine(d)
-        }));
-    }
-}*/
-
-function onMouseOver(){
-    //dots.attr("r", 3)
-    //    .style("fill", "pink");
-    console.log("woooooo");
+function onMouseEnter(d){
+    prevColor = d3.select(this).style("fill");
+    d3.select(this)
+        .transition()
+        .duration('100')
+        .attr("r", 5)
+        .style("fill", "pink");
+    tooltip.style("opacity", 1)
+      .html(d["student"] +
+          "<br/>" + d["assign"] +
+          "<br/> Grade: " + d["grade"] +
+          "<br/> Height: " + d["height"] +
+          "<br/> Depth ATM: " + d["depth_atm"] +
+          "<br/> Monotonicity: " + d["monotonicity"] +
+          "<br/> Height ATM: " + d["height_atm"] +
+          "<br/> Height Skew: " + d["height_skew"] +
+          "<br/> Number of Nodes: " + d["numOfNodes"])
+      .style("left", (d3.event.pageX + -220) + "px")
+      .style("top", (d3.event.pageY - 35) + "px");
 }
 
 function onMouseOut(){
-    dots.attr("r", 3)
-        .style("fill", "pink");
+    d3.select(this)
+        .transition()
+        .duration('200')
+        .attr("r", 3)
+        .style("fill", prevColor);
+    tooltip.transition()
+      .duration(200)
+      .style("opacity", 0);
+}
+
+function onClick(d){
+    // get student # and assign #
+    console.log("student clicked");
+    var newStudent = d["student"];
+    var currentAssign = assignmentsWidget.value
+    var currentAssignIndex = assignmentsWidget.selectedIndex
+    var currentFile = filesWidget.value
+    var currentFileIndex = filesWidget.value
+    // change dropdown to the new student and assign #s
+    for (var option of subjectsWidget.options) {
+        if (option.value == newStudent) {
+            option.selected = true;
+            // change the code displayed
+            //assignmentChanged();
+            //updateSubjectWidget();
+            subjectChanged();
+            //return;
+        }
+    }
+    for (var option of assignmentsWidget.options) {
+        if (option.value == currentAssign) {
+            option.selected = true;
+            // change the code displayed
+            assignmentChanged();
+        }
+    }
+    for (var option of filesWidget.options) {
+        if (option.value == currentFile) {
+            option.selected = true;
+            // change the code displayed
+            fileChanged();
+        }
+    }
+}
+
+function onRegLineHover(){
+    console.log("reg line hover")
+    d3.select(this)
+        .transition()
+        .duration('100')
+        .attr("stroke","orange");
+    tooltip.style("opacity", 1)
+      .html("y = " + m.toFixed(2) + "x + " + b.toFixed(2)+
+          "<br/>" + "x = ( y - " + b.toFixed(2) + " ) / " + m.toFixed(2))
+      .style("left", (d3.event.pageX + -130) + "px")
+      .style("top", (d3.event.pageY - 35) + "px");
+}
+
+function onRegLineLeave(){
+    d3.select(this)
+        .transition()
+        .duration('200')
+        .attr("stroke","steelblue");
+    tooltip.transition()
+      .duration(200)
+      .style("opacity", 0);
+}
+
+function get_color_scale(){
+    if (colorScaleMetric == "Height"){
+        colorindex = "height";
+        colormax = getMax(dataForAssign, colorindex) + 1;
+        colormin = 0;
+    }
+    else if (colorScaleMetric == "Monotonicity of Compilable States"){
+        colorindex = "mono_compilable_states";
+        colormax = getMax(dataForAssign, colorindex) + 0.025;
+        colormin = getMin(dataForAssign, colorindex) - 0.025;
+    }
+    else if (colorScaleMetric == "Percent of Compilable States"){
+        colorindex = "compilable_states";
+        colormax = 1;
+        colormin = 0;
+    }
+    else if (colorScaleMetric == "Number of Comments"){
+        colorindex = "comments";
+        colormax = getMax(dataForAssign, colorindex) + 2;
+        colormin = 0;
+    }
+    else if (colorScaleMetric == "Number of Keystrokes"){
+        colorindex = "keystrokes";
+        colormax = getMax(dataForAssign, colorindex) + 5;
+        colormin = 0;
+    }
+    else if (colorScaleMetric == "Attentiveness"){
+        colorindex = "monotonicity";
+        colormax = getMax(dataForAssign, colorindex) + 0.025;
+        colormin = getMin(dataForAssign, colorindex) - 0.025;
+    }
+    else if (colorScaleMetric == "Foresight"){
+        colorindex = "depth_atm";
+        colormax = getMax(dataForAssign, colorindex) + 0.025;
+        colormin = getMin(dataForAssign, colorindex) - 0.025;
+    }
+    else if (colorScaleMetric == "Depth Skew"){
+        colorindex = "depth_skew";
+        colormax = getMax(dataForAssign, colorindex) + 0.025;
+        colormin = getMin(dataForAssign, colorindex) - 0.025;
+    }
+    else if (colorScaleMetric == "Height ATM"){
+        colorindex = "height_atm";
+        colormax = getMax(dataForAssign, colorindex) + 0.025;
+        colormin = getMin(dataForAssign, colorindex) - 0.025;
+    }
+    else if (colorScaleMetric == "Height Skew"){
+        colorindex = "height_skew";
+        colormax = getMax(dataForAssign, colorindex) + 0.025;
+        colormin = getMin(dataForAssign, colorindex) - 0.025;
+    }
+    else if (colorScaleMetric == "Grades"){
+        colorindex = "grade";
+        colormax = 100;
+        colormin = 0;
+    }
+    else if (colorScaleMetric == "Number of Nodes"){
+        colorindex = "numOfNodes";
+        colormax = getMax(dataForAssign, colorindex) + 5;
+        colormin = 0;
+    }
+    return [colormin, colormax]
+}
+
+// https://www.visualcinnamon.com/2016/05/smooth-color-legend-d3-svg-gradient/
+function create_legend(){
+    colorScaleMetric = document.getElementById('color-scale').options[document.getElementById('color-scale').selectedIndex].value;
+    var svg = d3.select("#scattersvg")
+    //Append a defs (for definition) element to your SVG
+    var defs = svg.append("defs");
+    //Append a linearGradient element to the defs and give it a unique id
+    var linearGradient = defs.append("linearGradient")
+        .attr("id", "linear-gradient");
+    //Horizontal gradient
+    linearGradient
+        .attr("x1", "0%")
+        .attr("y1", "0%")
+        .attr("x2", "100%")
+        .attr("y2", "0%");
+    var colorScaleVals = get_color_scale();
+    var colorMin = colorScaleVals[0];
+    var colorMax = colorScaleVals[1];
+    //A color scale
+    var colorScale = d3.scaleSequential().domain([colorMin,colorMax]).interpolator(d3.interpolateRdYlGn);
+    var colorTotal = + Math.abs(colorMax) - Math.abs(colorMin);
+    var bucket = colorTotal/5;
+    var buckets = []
+    for (let i = 0; i < 6; i++){
+        buckets[i] = colorMin + (i*bucket);
+    }
+    console.log(buckets);
+    console.log(colorMin);
+    console.log(colorMax);
+    //A color scale
+    var color = d3.scaleLinear()
+        .range([colorScale(colorMin), colorScale(buckets[1]), colorScale(buckets[2]),
+            colorScale(buckets[3]), colorScale(buckets[4]), colorScale(colorMax)]);
+
+    //Append multiple color stops by using D3's data/enter step
+    linearGradient.selectAll("stop")
+        .data( color.range() )
+        .enter().append("stop")
+        .attr("offset", function(d,i) { return i/(color.range().length-1); })
+        .attr("stop-color", function(d) { return d; });
+    //Append multiple color stops by using D3's data/enter step
+    linearGradient.selectAll("stop")
+        .data( colorScale.domain() )
+        .enter().append("stop")
+        .attr("offset", 10)
+        .attr("stop-color",colorScale(colorMax));
+
+    var legendWidth = width * 0.6,
+	legendHeight = 10;
+
+    //Color Legend container
+    var legendsvg = svg.append("g")
+	    .attr("class", "legendWrapper")
+	    .attr("transform", "translate(" + (width/2 + 30) + "," + (height + 50) + ")");
+
+    //Draw the Rectangle
+    legendsvg.append("rect")
+	    .attr("class", "legendRect")
+	    .attr("x", -legendWidth/2)
+	    .attr("y", 10)
+	    //.attr("rx", legendHeight/2)
+	    .attr("width", legendWidth)
+	    .attr("height", legendHeight)
+        .style("fill", "url(#linear-gradient)");
+
+    //Append title
+    legendsvg.append("text")
+	    .attr("class", "legendTitle")
+	    .attr("x", -2)
+	    .attr("y", -2)
+	    .text(colorScaleMetric);
+
+    //Set scale for x-axis
+    var leg_xScale = d3.scaleLinear()
+	    .range([0, legendWidth])
+	    .domain([colorMin,colorMax]);
+	    //.domain([d3.min(pt.legendSOM.colorData)/100, d3.max(pt.legendSOM.colorData)/100]);
+
+    //Define x-axis
+    var leg_xAxis = d3.axisBottom(leg_xScale)
+	  .ticks(5)  //Set rough # of ticks
+	  //.tickFormat(formatPercent)
+
+    //Set up X axis
+    legendsvg.append("g")
+	    .attr("class", "axis")  //Assign "axis" class
+	    .attr("transform", "translate(" + (-legendWidth/2) + "," + (10 + legendHeight) + ")")
+	    .call(leg_xAxis);
+
 }
 
 function draw_scatter(student, assignment) {
@@ -193,13 +459,9 @@ function draw_scatter(student, assignment) {
         .attr("width", width +70)
 		.attr("height", height +90);
 
-    d3.select('#Charts').on("mouseover", function(event, d){
-        console.log('scatters');
-    });
-
     // set scales
-    var xScale = d3.scaleLinear().domain([0, xmax]).range([0, width]),
-        yScale = d3.scaleLinear().domain([0, ymax]).range([height, 0]);
+    var xScale = d3.scaleLinear().domain([xmin, xmax]).range([0, width]),
+        yScale = d3.scaleLinear().domain([ymin, ymax]).range([height-75, 0]);
 
     var g = svg.append("g")
         .attr("transform", "translate(" + 50 + "," + 50 + ")");
@@ -208,32 +470,34 @@ function draw_scatter(student, assignment) {
     var subjectsWidget = document.getElementById('subjects');
     var assignmentsWidget = document.getElementById('assignments');
 
+    var title = assignment + " " + xAxisText + " vs " + yAxisText;
+
     svg.append('text')
         .attr('x', width / 2 + 50)
         .attr('y', 40)
         .attr('text-anchor', 'middle')
         .style('font-family', 'Helvetica')
         .style('font-size', 20)
-        .text('Scatter Plot');
+        .text(title);
 
     // X label
     svg.append('text')
         .property('id', 'xtext')
         .attr('x', width / 2 + 50)
-        .attr('y', height - 15 + 100)
+        .attr('y', height + 15)
         .attr('text-anchor', 'middle')
         .style('font-family', 'Helvetica')
-        .style('font-size', 12)
-        .text(xAxis);
+        .style('font-size', 16)
+        .text(xAxisText);
 
     // Y label
     svg.append('text')
         .property('id', 'ytext')
         .attr('text-anchor', 'middle')
-        .attr('transform', 'translate(20,' + height + ')rotate(-90)')
+        .attr('transform', 'translate(13,' + (height-137) + ')rotate(-90)')
         .style('font-family', 'Helvetica')
-        .style('font-size', 12)
-        .text(yAxis);
+        .style('font-size', 16)
+        .text(yAxisText);
 
     xtext = d3.select("#xtext");
     ytext = d3.select("#ytext");
@@ -241,100 +505,50 @@ function draw_scatter(student, assignment) {
     // add axis
     var x_Ax = g.append("g")
         .property('id', 'xscale')
-        .attr("transform", "translate(0," + height + ")")
+        .style('font-size', 12)
+        .attr("transform", "translate(0," + (height - 75) + ")")
         .call(d3.axisBottom(xScale));
 
     var y_Ax = g.append("g")
         .property('id', 'yscale')
+        .style('font-size', 12)
         .call(d3.axisLeft(yScale));
 
-    //draw_dots(svg);
-    /*
-    var div = d3.select("body").append("div")
-     .attr("class", "tooltip")
-     .style("opacity", 0);*/
-
+    // scale for color
+    // create_legend();
+    // var myColor = d3.scaleSequential().domain([colormin,colormax]).interpolator(d3.interpolateRdYlGn);
     svg.selectAll(".dot")
         .data(dataset)
         .enter().append("circle")
         .attr("cx", function (d) {
-            return xScale(d[0]);
+            return xScale(d[xIndex]);
         })
         .attr("cy", function (d) {
-            return yScale(d[1]);
+            return yScale(d[yIndex]);
         })
         .attr("r", 3)
         .attr("class", "dot")
         .attr("transform", "translate(" + 50 + "," + 50 + ")")
-        .style("fill", "#CC0000")
-        .on('mouseover', function (d, i) {
-            d3.select(this).transition()
-                .duration('100')
-                .attr("r", 7);
-        })
-        .on('mouseout', function (d, i) {
-            d3.select(this).transition()
-                .duration('200')
-                .attr("r", 5);
-        });
+        //.style("fill", function(d){return myColor(d[colorindex]) })
+        .style("fill", "black")
+        .on('mouseover', onMouseEnter)
+        .on('mouseout', onMouseOut)
+        .on('click', onClick);
 
+    // recolor selected student assignment
+    // var chosenPoint = getPoint(svg, student, assignment, xScale, yScale);
+    // chosenPoint.attr("r", 4).style("fill", "yellow");
+    // add regression line
+    var lg = calcLinear(dataset, xIndex, yIndex, xmin, xmax);
+    var lineGenerator = d3.line();
+    var points = [[xScale(lg.ptA.x), yScale(lg.ptA.y)], [xScale(lg.ptB.x), yScale(lg.ptB.y)]]
+    var pathData = lineGenerator(points);
+    g.append('path')
+        .attr("class", "regression")
+        .attr('d', pathData)
+        .on('mouseover', onRegLineHover)
+        .on('mouseout', onRegLineLeave);
 
-
-    /*d3.selectAll(".dot").on("mouseover", (event, d) => {
-        console.log("circle");
-        d3.select(this)
-            .attr("r","5")
-            .style("fill", "pink");
-    });
-
-    /*d3.selectAll(".dot")
-        .on('mouseover', onMouseOver);*/
-
-    //console.log("dots");
-    //d3.selectAll(".dot")
-     // .on("click", onMouseOver);
-    /*var dotElements= document.getElementsByClassName('dot')
-    console.log(dotElements);
-    for (i = 0; i < dotElements.length; i++) {
-        dotElements[i].addEventListener('mouseover', onMouseOver);
-        dotElements[i].addEventListener('mouseout', onMouseOut);
-    }*/
-
-/*
-    dots.on('mouseover', function (d,i) {
-            alert("hi");
-            console.log(d);
-            d3.select(this).transition()
-                .duration('100')
-                .attr("r", 5);
-            console.log(d3.event);
-        })
-        .on('mouseout', function (d,i) {
-            console.log("out");
-            d3.select(this).transition()
-                .duration('200')
-                .attr("r", 3);
-            console.log(d3.event);
-            /*div.transition()
-                .duration('200')
-                .style("opacity", 0);
-        });*/
-
-    //console.log("events");
-
-    //colorChosenAssignment(svg, student, assignment, xScale, yScale);
-
-
-    // draw line of best fit (regression line)
-    /*
-    regressionPoints = getRegressionPoints();
-    line = d3.line()
-         .x(d => xScale(d.x))
-         .y(d => yScale(d.y))
-    svg.append('path')
-        .classed('regressionLine', true)
-        .datum(regressionPoints)
-        .attr('d', line);*/
 
 }
 
@@ -354,72 +568,182 @@ function getMax(dataForAssign, index){
     return max;
 }
 
-function getScatterData(x, y, student, assign){
+function getMin(dataForAssign, index){
+    var numbers = [];
+    for (let k = 0; k < dataForAssign.length; k++){
+        if (dataForAssign[k][index] != 0){
+            numbers.push(dataForAssign[k][index]);
+        }
+    }
+    var min = 1000000;
+    for (let i = 0; i < numbers.length; i++){
+        if (numbers[i] < min){
+            min = numbers[i];
+        }
+    }
+    return min;
+}
+
+
+function getScatterData(x, y, student, assign, file){
     //var cont = true;
     //var counter = 0;
-    // student, assignment, grade, height, skew, depths
+    // student, assignment, grade, height, monotonicity, skew, depths
     var newdata = [];
     // get all arrays for the given assignment
     dataForAssign = [];
     for (let i = 0; i < astdata.length; i++){
         if (astdata[i]["assign"] == assign){
-            dataForAssign.push(astdata[i]);
+            if (astdata[i]["filegroup"] == file){
+                dataForAssign.push(astdata[i]);
+            }
         }
     }
     // get x and y index values
-    if (x == "height"){
+    if (x == "Height"){
         xIndex = "height";
-        xmax = getMax(dataForAssign, xIndex);
+        xmax = getMax(dataForAssign, xIndex) + 1;
+        xmin = 0;
     }
-    else if (x == "tree depth skew"){
-        xIndex = "skew";
-        xmax = 1.5;
+    else if (x == "Monotonicity of Compilable States"){
+        xIndex = "mono_compilable_states";
+        xmax = getMax(dataForAssign, xIndex) + 0.025;
+        xmin = getMin(dataForAssign, xIndex) - 0.025;
     }
-    else if (x == "grades"){
+    else if (x == "Percent of Compilable States"){
+        xIndex = "compilable_states";
+        xmax = 1;
+        xmin = 0;
+    }
+    else if (x == "Number of Comments"){
+        xIndex = "comments";
+        xmax = getMax(dataForAssign, xIndex) + 2;
+        xmin = 0;
+    }
+    else if (x == "Number of Keystrokes"){
+        xIndex = "keystrokes";
+        xmax = getMax(dataForAssign, xIndex) + 5;
+        xmin = 0;
+    }
+    else if (x == "Attentiveness"){
+        xIndex = "monotonicity";
+        xmax = getMax(dataForAssign, xIndex) + 0.025;
+        xmin = getMin(dataForAssign, xIndex) - 0.025;
+    }
+    else if (x == "Foresight"){
+        xIndex = "depth_atm";
+        xmax = getMax(dataForAssign, xIndex) + 0.025;
+        xmin = getMin(dataForAssign, xIndex) - 0.025;
+    }
+    else if (x == "Depth Skew"){
+        xIndex = "depth_skew";
+        xmax = getMax(dataForAssign, xIndex) + 0.025;
+        xmin = getMin(dataForAssign, xIndex) - 0.025;
+    }
+    else if (x == "Height ATM"){
+        xIndex = "height_atm";
+        xmax = getMax(dataForAssign, xIndex) + 0.025;
+        xmin = getMin(dataForAssign, xIndex) - 0.025;
+    }
+    else if (x == "Height Skew"){
+        xIndex = "height_skew";
+        xmax = getMax(dataForAssign, xIndex) + 0.025;
+        xmin = getMin(dataForAssign, xIndex) - 0.025;
+    }
+    else if (x == "Grades"){
         xIndex = "grade";
         xmax = 100;
+        xmin = 0;
     }
-    else if (x == "number of nodes"){
+    else if (x == "Number of Nodes"){
         xIndex = "numOfNodes";
-        xmax = getMax(dataForAssign, xIndex);
+        xmax = getMax(dataForAssign, xIndex) + 5;
+        xmin = 0;
     }
-    if (y == "height"){
+    if (y == "Height"){
         yIndex = "height";
+        ymax = getMax(dataForAssign, yIndex) + 1;
+        ymin = 0;
+    }
+    else if (y == "Monotonicity of Compilable States"){
+        yIndex = "mono_compilable_states";
+        ymax = getMax(dataForAssign, yIndex) + 0.025;
+        ymin = getMin(dataForAssign, yIndex) - 0.025;
+    }
+    else if (y == "Percent of Compilable States"){
+        yIndex = "compilable_states";
+        ymax = 1;
+        ymin = 0;
+    }
+    else if (y == "Number of Comments"){
+        yIndex = "comments";
+        ymax = getMax(dataForAssign, yIndex) + 2;
+        ymin = 0;
+    }
+    else if (y == "Number of Keystrokes"){
+        yIndex = "keystrokes";
+        ymax = getMax(dataForAssign, yIndex) + 5;
+        ymin = 0;
+    }
+    else if (y == "Attentiveness"){
+        yIndex = "monotonicity";
+        ymax = getMax(dataForAssign, yIndex) + 0.025;
+        ymin = getMin(dataForAssign, yIndex) - 0.025;
+    }
+    else if (y == "Foresight"){
+        yIndex = "depth_atm";
+        ymax = getMax(dataForAssign, yIndex) + 0.025;
+        ymin = getMin(dataForAssign, yIndex) - 0.025;
+    }
+    else if (y == "Depth Skew"){
+        yIndex = "depth_skew";
+        ymax = getMax(dataForAssign, yIndex) + 0.025;
+        ymin = getMin(dataForAssign, yIndex) - 0.025;
+    }
+    else if (y == "Height ATM"){
+        yIndex = "height_atm";
+        ymax = getMax(dataForAssign, yIndex) + 0.025;
+        ymin = getMin(dataForAssign, yIndex) - 0.025;
+    }
+    else if (y == "Height Skew"){
+        yIndex = "height_skew";
         ymax = getMax(dataForAssign, yIndex);
+        ymin = getMin(dataForAssign, yIndex);
     }
-    else if (y == "tree depth skew"){
-        yIndex = "skew";
-        ymax = 1.5;
-    }
-    else if (y == "grades"){
+    else if (y == "Grades"){
         yIndex = "grade";
         ymax = 100;
+        ymin = 0;
     }
-    else if (y == "number of nodes"){
+    else if (y == "Number of Nodes"){
         yIndex = "numOfNodes";
-        ymax = getMax(dataForAssign, yIndex);
+        ymax = getMax(dataForAssign, yIndex) + 5;
+        ymin = 0;
     }
     //console.log(xIndex)
     // get x y array for graphing
     // check for 0 skew values and omit
-    if (xIndex == "height" | xIndex == "skew"){
+    if (xIndex == "height" | xIndex == "depth_skew" | xIndex == "depth_atm" | xIndex == "height_skew" | xIndex == "height_atm"){
         for (let j = 0; j < dataForAssign.length; j++) {
             if (dataForAssign[j][xIndex] != 0 && isNaN(dataForAssign[j][yIndex]) == false && isNaN(dataForAssign[j][xIndex]) == false) {
-                newdata.push([dataForAssign[j][xIndex], dataForAssign[j][yIndex]]);
+                //newdata.push([dataForAssign[j][xIndex], dataForAssign[j][yIndex]]);
+                newdata.push(dataForAssign[j]);
             }
         }
     }
-    else if (yIndex == "height" | yIndex == "skew"){
+    else if (yIndex == "height" | yIndex == "depth_skew" | yIndex == "depth_atm" | yIndex == "height_skew" | yIndex == "height_atm"){
         for (let j = 0; j < dataForAssign.length; j++) {
             if (dataForAssign[j][yIndex] != 0 && isNaN(dataForAssign[j][yIndex]) == false && isNaN(dataForAssign[j][xIndex]) == false) {
-                newdata.push([dataForAssign[j][xIndex], dataForAssign[j][yIndex]]);
+                //newdata.push([dataForAssign[j][xIndex], dataForAssign[j][yIndex]]);
+                newdata.push(dataForAssign[j]);
             }
         }
     }
     else {
         for (let j = 0; j < dataForAssign.length; j++) {
             if (isNaN(dataForAssign[j][yIndex]) == false && isNaN(dataForAssign[j][xIndex]) == false){
-                newdata.push([dataForAssign[j][xIndex], dataForAssign[j][yIndex]]);
+                //newdata.push([dataForAssign[j][xIndex], dataForAssign[j][yIndex]]);
+                newdata.push(dataForAssign[j]);
             }
         }
     }
@@ -428,7 +752,7 @@ function getScatterData(x, y, student, assign){
 
 }
 
-function colorChosenAssignment(svg, student, assignment, xScale, yScale){
+function getPoint(svg, student, assignment, xScale, yScale){
     // get location
     var point;
     var cont = true;
@@ -451,32 +775,23 @@ function colorChosenAssignment(svg, student, assignment, xScale, yScale){
         }
     }
     // draw dot
-    svg.append("g").selectAll(".dot")
-        .data([point])
-        .enter().append("circle")
-        .attr("cx", function (d) {
-            return xScale(d[0]);
-        })
-        .attr("cy", function (d) {
-            return yScale(d[1]);
-        })
-        .attr("r", 4)
-        .attr("transform", "translate(" + 50 + "," + 50 + ")")
-        .style("fill", "yellow");
+    var comparison = "circle[cx='" + xScale(point[0]) + "'][cy='" + yScale(point[1]) + "']";
+    var dot = svg.select(comparison)
 
-    //console.log(point);
+    return dot;
 }
 
+
+// regression line stuff
+// https://bl.ocks.org/nanu146/de5bd30782dfe18fa5efa0d8d299abce
 function getCorrelationCoefficient(data){
     var ccParagraph = document.getElementById('correlation coefficient');
     var X = [];
     var Y = [];
     for (let i = 0; i < data.length; i++){
-        X.push(parseFloat(data[i][0]));
-        Y.push(parseFloat(data[i][1]));
+        X.push(parseFloat(data[i][xIndex]));
+        Y.push(parseFloat(data[i][yIndex]));
     }
-    //console.log(X);
-    //console.log(Y);
     let sum_X = 0, sum_Y = 0, sum_XY = 0;
     let squareSum_X = 0, squareSum_Y = 0;
     let n = data.length;
@@ -504,12 +819,20 @@ function getCorrelationCoefficient(data){
                        sum_X * sum_X) *
                           (n * squareSum_Y -
                        sum_Y * sum_Y)));
-    ccParagraph.innerText = String(corr);
+    ccParagraph.innerText = String(corr.toFixed(2));
+}
+
+function getFileGroup(assign, student, file){
+    for (let i = 0; i < astdata.length; i++) {
+        if (astdata[i]["assign"] == assign & astdata[i]["student"] == student & astdata[i]["filename"] == file) {
+            return astdata[i]["filegroup"]
+        }
+    }
+    return "unknown"
 }
 
 function updateScatter(){
     // check to see if csv has been parsed
-    //alert("update scatter");
     if (astdata == null){
         //console.log("data null");
         astdata = parseACSV(allText);
@@ -517,12 +840,18 @@ function updateScatter(){
     // update axis names
     xAxis =document.getElementById('x-axis').options[document.getElementById('x-axis').selectedIndex].value
     yAxis =document.getElementById('y-axis').options[document.getElementById('y-axis').selectedIndex].value
+    // update file group
+    var group = getFileGroup(assignment, subject, file);
+    fileGroupDisplay.innerHTML = group;
     // get student and assignment values
     var studentnum =subjectsWidget.value;
     var assignnum =assignmentsWidget.value;
+    var filename = filesWidget.value;
+    // get file group
+    var filegroup = getFileGroup(assignnum, studentnum, filename);
     // get new data
     dataset.length = 0;
-    dataset = getScatterData(xAxis, yAxis, studentnum, assignnum);
+    dataset = getScatterData(xAxis, yAxis, studentnum, assignnum, filegroup);
     //console.log(dataset);
     getCorrelationCoefficient(dataset);
 

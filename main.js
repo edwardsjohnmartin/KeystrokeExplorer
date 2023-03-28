@@ -34,6 +34,10 @@ depths.style.display = 'none';
 depthWidgets.style.display = 'none';
 tast.style.display = 'none';
 tastWidgets.style.display = 'none';
+var currentStudent = subjectsWidget.value
+var currentAssign = assignmentsWidget.value
+var currentFile = filesWidget.value
+var fileGroupDisplay = document.getElementById('fileGroup')
 
 var findStringWidget = document.getElementById('findString');
 
@@ -341,6 +345,7 @@ function updateSubjectWidget() {
   // console.log(subjects);
 
   // console.log('updateSubjectWidget');
+  // currentStudent = subjectsWidget.value
   removeAllChildNodes(subjectsWidget);
   // subjects = Array.from(subjects).sort()
   // subjects.forEach(file => {
@@ -360,6 +365,7 @@ function updateSubjectWidget() {
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 function subjectChanged() {
+  console.log("subject changed");
   subject = subjectsWidget.value;
   // dfSubject = dfall.filter(row => row.EventType == 'File.Edit' && row['SubjectID'] == subject);
   updateAssignmentWidget();
@@ -373,7 +379,7 @@ function updateAssignmentWidget() {
   // dfSubject.forEach(row => {
   //   assignments.add(row['AssignmentID']);
   // });
-
+  // currentAssign = assignmentsWidget.value
   removeAllChildNodes(assignmentsWidget);
   // assignments = Array.from(assignments).sort()
   // assignments.forEach(assignment => {
@@ -385,11 +391,13 @@ function updateAssignmentWidget() {
   }//);
 
   assignmentChanged();
+
 }
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 function assignmentChanged() {
+  console.log("assignment changed");
   assignment = assignmentsWidget.value;
   // dfAssign = dfSubject.filter(row => row['AssignmentID'] == assignment);
   updateFileWidget();
@@ -404,41 +412,60 @@ function visualizationChanged() {
   if (vizType == 'Scatter') {
       // cpc is visible. hide it
       cpc.style.display = 'none';
+      cpc.style.zIndex = null;
       // scatter is hidden. show it
       scatter.style.display = 'block';
+      scatter.style.zIndex = '9999';
       scatterWidgets.style.display = 'block';
       depths.style.display = 'none';
+      depths.style.zIndex = null;
       depthWidgets.style.display = 'none';
       tast.style.display = 'none';
+      tast.style.zIndex = null;
       tastWidgets.style.display = 'none';
+
   }
   else if (vizType == 'CPC'){
       // cpc is hidden. show it
       cpc.style.display = 'block';
+      scatter.style.zIndex = '9999';
       // cpc is visible. hide it
       scatter.style.display = 'none';
+      scatter.style.zIndex = null;
       scatterWidgets.style.display = 'none';
       depths.style.display = 'none';
+      depths.style.zIndex = null;
       depthWidgets.style.display = 'none';
       tast.style.display = 'none';
+      tast.style.zIndex = null;
       tastWidgets.style.display = 'none';
   }
-  else if (vizType == 'Depth'){
+  else if (vizType == 'Depth' || vizType == 'Height'){
+      // Slider values need to be updated
+      // Slider location needs to be standarized when visualization changes
       cpc.style.display = 'none';
+      cpc.style.zIndex = null;
       scatter.style.display = 'none';
+      scatter.style.zIndex = null;
       scatterWidgets.style.display = 'none';
       depths.style.display = 'block';
+      depths.style.zIndex = '9999';
       depthWidgets.style.display = 'block';
       tast.style.display = 'none';
+      tast.style.zIndex = null;
       tastWidgets.style.display = 'none';
   }
   else if (vizType == 'TAST'){
       cpc.style.display = 'none';
+      cpc.style.zIndex = null;
       scatter.style.display = 'none';
+      scatter.style.zIndex = null;
       scatterWidgets.style.display = 'none';
       depths.style.display = 'none';
+      depths.style.zIndex = null;
       depthWidgets.style.display = 'none';
       tast.style.display = 'block';
+      tast.style.zIndex = '9999';
       tastWidgets.style.display = 'block';
   }
   updateGraphs();
@@ -446,11 +473,21 @@ function visualizationChanged() {
   // updateFileWidget();
 }
 
+function showTAST() {
+
+            /* Access image by id and change
+            the display property to block*/
+            document.getElementById('image')
+                    .style.display = "block";
+
+            document.getElementById('btnID')
+                    .style.display = "none";
+}
+
 function updateGraphs(){
   updateScatter();
-  //updateDepth();
-  //updateTAST();
-  console.log("update");
+  updateDepth();
+  // updateTAST();
 }
 
 //-----------------------------------------------------------------------------
@@ -461,7 +498,7 @@ function updateFileWidget() {
   // dfAssign.forEach(row => {
   //   files.add(row['CodeStateSection']);
   // });
-
+  // currentFile = filesWidget.value
   removeAllChildNodes(filesWidget);
   // files = Array.from(files).sort()
   // files.forEach(file => {
@@ -510,7 +547,7 @@ function updateFileWidget() {
 function fileChanged() {
   // let t = [];
   // t.push(performance.now()); //****************
-
+  console.log("file changed");
   file = filesWidget.value;
   if (!updatedfall()) return;
   loadingWidget.style.visibility = 'visible';
@@ -538,6 +575,7 @@ function fileChanged() {
   timeline.create(df);
   timeline.updatePlaybar(slider.value);
 
+  updateGraphs();
   // t.push(performance.now()); //****************
   // console.log('timings');
   // for (let i = 1; i < t.length; ++i) {

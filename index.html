@@ -54,6 +54,9 @@
           <label for="files">File:</label>
           <select name="files" id="files" onchange="fileChanged()"></select>
 
+          <label for="fileGroup">File Group: </label>
+          <text name="fileGroup" id="fileGroup">N/A</text>
+
           <label for="findString">Search string (use arrows):</label>
           <input name="findString" id="findString" type="text"></input>
 
@@ -78,21 +81,29 @@
       <!-------------- Scatter Dropdown Menu -------------->
       <headerright>
         <label for="viztype">Visualization:</label>
-          <select name="viztype" id="viztype">
+          <select name="viztype" id="viztype" onchange="updateGraphs()">
             <option value="CPC">CPC</option>
             <option value="Scatter">Scatter</option>
             <option value="Depth">Depth</option>
-            <option value="TAST">TAST</option>
+            <option value="Height">Height</option>
           </select>
         <button name="visual" id="visual" onclick="visualizationChanged()">Switch Visualization</button>
         <div id="scatterWidgets">
           <label for="x-axis">X Axis</label>
           <select name="x axis" id="x-axis" onchange="updateGraphs()">
             <!-- <option value="deleted nodes">deleted nodes</option> -->
-            <option value="height">height</option>
-            <option value="grades">grades</option>
-            <option value="tree depth skew">tree depth skew</option>
-            <option value="number of nodes">number of nodes</option>
+            <option value="Attentiveness">Attentiveness</option>
+            <option value="Depth Skew">Depth Skew</option>
+            <option value="Foresight">Foresight</option>
+            <option value="Grades">Grades</option>
+            <option value="Height">Height</option>
+            <option value="Height ATM">Height ATM</option>
+            <option value="Height Skew">Height Skew</option>
+            <option value="Monotonicity of Compilable States">Monotonicity of Compilable States</option>
+            <option value="Number of Comments">Number of Comments</option>
+            <option value="Number of Keystrokes">Number of Keystrokes</option>
+            <option value="Number of Nodes">Number of Nodes</option>
+            <option value="Percent of Compilable States">Percent of Compilable States</option>
             <!--<option value="tree width">tree width</option> -->
             <!-- <option value="tree height">tree height</option> -->
           </select>
@@ -100,10 +111,37 @@
           <label for="y-axis">Y Axis</label>
           <select name="y axis" id="y-axis" onchange="updateGraphs()">
             <!-- <option value="deleted nodes">deleted nodes</option> -->
-            <option value="height">height</option>
-            <option value="grades">grades</option>
-            <option value="tree depth skew">tree depth skew</option>
-            <option value="number of nodes">number of nodes</option>
+            <option value="Attentiveness">Attentiveness</option>
+            <option value="Depth Skew">Depth Skew</option>
+            <option value="Foresight">Foresight</option>
+            <option value="Grades">Grades</option>
+            <option value="Height">Height</option>
+            <option value="Height ATM">Height ATM</option>
+            <option value="Height Skew">Height Skew</option>
+            <option value="Monotonicity of Compilable States">Monotonicity of Compilable States</option>
+            <option value="Number of Comments">Number of Comments</option>
+            <option value="Number of Keystrokes">Number of Keystrokes</option>
+            <option value="Number of Nodes">Number of Nodes</option>
+            <option value="Percent of Compilable States">Percent of Compilable States</option>
+            <!--<option value="tree width">tree width</option> -->
+            <!-- <option value="tree height">tree height</option> -->
+          </select>
+
+          <label for="color-scale">Color Scale</label>
+          <select name="color-scale" id="color-scale" onchange="updateGraphs()">
+            <!-- <option value="deleted nodes">deleted nodes</option> -->
+            <option value="Attentiveness">Attentiveness</option>
+            <option value="Depth Skew">Depth Skew</option>
+            <option value="Foresight">Foresight</option>
+            <option value="Grades">Grades</option>
+            <option value="Height">Height</option>
+            <option value="Height ATM">Height ATM</option>
+            <option value="Height Skew">Height Skew</option>
+            <option value="Monotonicity of Compilable States">Monotonicity of Compilable States</option>
+            <option value="Number of Comments">Number of Comments</option>
+            <option value="Number of Keystrokes">Number of Keystrokes</option>
+            <option value="Number of Nodes">Number of Nodes</option>
+            <option value="Percent of Compilable States">Percent of Compilable States</option>
             <!--<option value="tree width">tree width</option> -->
             <!-- <option value="tree height">tree height</option> -->
           </select>
@@ -114,7 +152,7 @@
           <p id="correlation coefficient">n/a</p>
         </div>
         <div id="depthWidgets">
-          <button name="updatedepth" id="updatedepth" onclick="updateDepth()">Update Depth</button>
+          <!--<button name="updatedepth" id="updatedepth" onclick="updateDepth()">Update Depth</button>
           <select name="student select" id="depth student select" onchange="updateDepth()">
             <option value="Student1">Student1</option>
             <option value="Student2">Student2</option>
@@ -145,7 +183,7 @@
             <option value="Assign11">Assign11</option>
             <option value="Assign12">Assign12</option>
             <option value="Assign13">Assign13</option>
-          </select>
+          </select>-->
         </div>
         <div id="tastWidgets">
           <button name="updatetast" id="updatetast" onclick="updateTAST()">Update TAST</button>
@@ -154,7 +192,7 @@
 
 
       <!-------------- Chart -------------->
-      <cpchart>
+      <cpchart style="z-index: 9999">
         <div id="Charts" class="tabcontent_">
           <svg class="chart" id="chart">
             <g id="cpchartgroup">
@@ -168,7 +206,7 @@
           </svg>
         </div>
         <div id="Scatters">
-          <svg id="scattersvg" width="700" height="350"></svg>
+          <svg id="scattersvg" width="700" height="425"></svg>
         </div>
       </cpchart>
       <depths>
@@ -282,6 +320,9 @@
     <script src="timeline.js?2"></script>
     <script src="spreadsheet.js?3"></script>
     <script src="compile.js?3"></script>
+
+    <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+
 
 </body>
 </html>
