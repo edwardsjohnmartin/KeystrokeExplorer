@@ -1,0 +1,70 @@
+<div class="flex flex-row">
+    <div class="ml-2 left justify-top space-y-2">
+        <div class="w-96 mb-4">
+            <label class="inline-block mb-2 text-md font-medium text-gray-900" for="file-selector">
+                Keystroke Upload:
+            </label>
+            <input files.bind="fileUpload" id="file-selector" type="file" accept=".csv, .ps2, .log"
+                class="block text-sm text-gray-400 rounded-lg cursor-pointer bg-gray-50 focus:outline-none file:mr-2 file:py-2 file:px-2 file:border-0 file:text-sm file:font-semibold">
+        </div>
+
+        <div class="w-64">
+            <label for="slider"> Playback: (${sliderValue} / ${data.codeStates.length - 1}) </label>
+            <input value.bind="sliderValue & throttle:100" type="range" id="slider" name="slider" min="0"
+                max="${data.codeStates.length - 1}">
+        </div>
+
+        <div class="relative z-0 w-64">
+            <input value.bind="searchString & debounce:850" type="text" id="findString"
+                class="block py-2.5 px-0 w-full text-sm ${stringNotFoundClass} text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                placeholder="" />
+            <label for="findString"
+                class="absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
+                <p if.bind="stringNotFound"> String Not Found </p>
+                <p else> Search String </p>
+            </label>
+        </div>
+    </div>
+
+    <div class="relative m-4 right justify-top space-y-4 w-full">
+
+        <div class="w-64 grid grid-cols-2">
+            <label for="subjects" class="inline-block mb-2 text-md font-medium text-gray-900"> Subject: </label>
+            <select value.bind="data.subjectId"
+                class="inline-block bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 w-40 p-1"
+                id="subjects">
+                <option repeat.for="studentId of students">
+                    ${studentId}
+                </option>
+            </select>
+        </div>
+
+        <div class="w-64 grid grid-cols-2">
+            <label for="assignments" class="inline-block mb-2 text-md font-medium text-gray-900"> Assignment: </label>
+            <select value.bind="data.assignmentId"
+                class="inline-block bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 w-40 p-1"
+                id="assignments">
+                <option repeat.for="assignmentId of assignments">
+                    ${assignmentId}
+                </option>
+            </select>
+        </div>
+
+        <div class="w-64 grid grid-cols-2">
+            <label for="files" class="inline-block mb-2 text-md font-medium text-gray-900"> Task: </label>
+            <select value.bind="data.taskId"
+                class="inline-block bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 w-40 p-1"
+                id="files">
+                <option repeat.for="taskId of tasks">
+                    ${taskId}
+                </option>
+            </select>
+        </div>
+
+        <!-- TODO: Anchor to code-text instead of bottom-right. Breaks when minimized -->
+        <div class="absolute bottom-0 right-0 h-16 w-32 pt-12 text-md text-red-800 rounded-lg">
+            ${parseError}
+        </div>
+    </div>
+
+</div>
