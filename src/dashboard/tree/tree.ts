@@ -24,7 +24,9 @@ export class Tree {
     @watch("data.playback")
     buildTree() {
         const ast = this.data.precompiledAsts[this.data.playback];
-        if (ast === null) return;
+        if (ast === null || ast === undefined) return;
+
+        // console.log(ast);
 
         // clear old html out
         d3.select("g#tree").selectAll("*").remove();

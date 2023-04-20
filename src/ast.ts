@@ -1,3 +1,4 @@
+import { AnyARecord } from "dns";
 import * as Sk from "skulpt";
 
 
@@ -11,8 +12,8 @@ export class AstNode {
     public type: string;
     public name: string;
     public children: Array<AstNode>;
-    public lineno: number;
-    public col_offset: number;
+    // public lineno: number;
+    // public col_offset: number;
     public src;
 
     // text-position attributes -- compute later
@@ -23,17 +24,82 @@ export class AstNode {
     public start: number;
     public end: number;
 
+    // correspondence attributes -- compute later
+    public cid: number|undefined = undefined;
+    public tparent: number|undefined = undefined;
+    public starti: number|undefined = undefined;
+    public endi: number|undefined = undefined;
+    // public end_lineno: number|undefined = undefined;
+    // public end_col_offset: number|undefined = undefined;
+    public num_edits: number = -1;
+    public num_new_chars: number = -1;
+
     constructor(src) {
         this.descendants = 0;
         this.type = "ERROR PARSING";
         this.name = undefined;
         this.children = []
-        this.lineno = -1;
-        this.col_offset = -1;
+        // this.lineno = -1;
+        // this.col_offset = -1;
         this.src = src;
     }
 }
 
+//-------------------------------------------------
+// AstGenerator
+//-------------------------------------------------
+
+export type AstGeneratorValue = {
+    node: AstNode;
+    level: number;
+}
+
+export function* AstGenerator(node:AstNode, level:number=0): Generator<AstGeneratorValue, null, any> {
+    if (node) {
+        yield {node:node, level:level};
+        for (let i:number = 0; i < node.children?.length; ++i) {
+            let n:AstNode = node.children[i];
+            yield* AstGenerator(n, level+1);
+        }
+    }
+    return null;
+}
+
+//-------------------------------------------------
+// printAst
+//-------------------------------------------------
+export function printAst2(ast:AstNode) {
+    const gen = AstGenerator(ast);
+    let cur = gen.next();
+    while (!cur.done) {
+        const node:AstNode = cur.value.node;
+        const prefix:string = ''.padStart(cur.value.level*2, ' ');
+        console.log(prefix, node);
+        cur = gen.next();
+    }
+}
+
+export function printAst(ast:AstNode) {
+    const gen = AstGenerator(ast);
+    let cur = gen.next();
+    while (!cur.done) {
+        const node:AstNode = cur.value.node;
+        const prefix:string = ''.padStart(cur.value.level*2, ' ');
+
+        const cid:string = (node.cid !== undefined) ? `cid=${node.cid}` : '';
+        const tparent:string = (node.tparent !== undefined) ? `tparent=${node.tparent}` : '';
+        const location:string = (node.starti !== undefined) ? `loc=${node.starti}-${node.endi}` : '';
+        const new_chars:string = (node.num_new_chars !== undefined) ? `new_chars=${node.num_new_chars}` : '';
+
+        console.log(`${prefix}${node.name} ${cid} ${tparent} ${location} ${new_chars}`);
+
+        cur = gen.next();
+    }
+}
+
+//-------------------------------------------------
+// AstBuilder
+//-------------------------------------------------
 export abstract class AstBuilder {
     static createAst(codeState: string) {
         let parse = null;
@@ -121,8 +187,10 @@ export abstract class AstBuilder {
             }
         }
 
-        node.lineno = ast.lineno;
-        node.col_offset = ast.col_offset;
+        // node.lineno = ast.lineno;
+        // node.col_offset = ast.col_offset;
+        node.startLine = ast.lineno;
+        node.startCol = ast.col_offset;
         node.type = ast._astname;
 
         // default name is the type
@@ -277,12 +345,19 @@ export abstract class AstBuilder {
         let lineLengthCumSum = lineLengths.map((sum => value => sum += value)(0));
         lineLengthCumSum = [0].concat(lineLengthCumSum);
 
+        // node.lineno = 1;
+        // node.col_offset = 0;
+        node.startLine = 1;
+        node.startCol = 0;
         this.updateRegionsImpl(node, code, lines, lineLengthCumSum, lines.length - 1, lineLengths[lines.length - 1]);
     }
 
     static updateRegionsImpl(node: AstNode, code: string, lines: Array<string>, lineLengthCumSum: Array<any>, endLine: number, endCol: number) {
-        node.startLine = node.lineno - 1;
-        node.startCol = node.col_offset;
+        // AstBuilder.setNodeRegions(node, node.lineno - 1, node.col_offset, endLine, endCol, lineLengthCumSum, code);
+        // node.startLine = startLine;//node.lineno - 1;
+        // node.startCol = startCol;//node.col_offset;
+        // node.startLine = node.lineno - 1;
+        // node.startCol = node.col_offset;
         node.endLine = endLine;
         node.endCol = endCol;
 
@@ -290,11 +365,11 @@ export abstract class AstBuilder {
         node.start = this.getIndex(node.startLine, node.startCol, lineLengthCumSum);
         node.end = this.getIndex(node.endLine, node.endCol, lineLengthCumSum);
 
+        console.log('test***', node.name, node);
         // Ignore whitespace at end
         let s = code.substring(node.start, node.end);
         let trim = s.length - s.trimEnd().length;
         node.end -= trim;
-
         // Set start and end for each child
         node.children.forEach(child => {
             this.updateRegionsImpl(child, code, lines, lineLengthCumSum, endLine, endCol);
@@ -308,4 +383,8 @@ export abstract class AstBuilder {
             node.children = undefined;
         }
     }
+
+    // private static setNodeRegions(node: AstNode, startLine: number, startCol: number, endLine: number, endCol: number, lineLengthCumSum: any[], code: string) {
+
+    // }
 }

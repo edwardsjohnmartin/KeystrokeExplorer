@@ -72,7 +72,8 @@ export class Header {
 
         this.searchString = "";
         this.sliderValue = 0;
-        this.data.extractStudentData();
+        //this.data.extractStudentData();
+        this.data.studentFileLoaded();
     }
 
     // Sometimes our playback changes without the use of the slider
