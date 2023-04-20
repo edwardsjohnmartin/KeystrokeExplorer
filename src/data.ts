@@ -2,7 +2,6 @@ import { AstBuilder, AstNode, AstGenerator, printAst } from './ast';
 import { DataFrame, IDataFrame, ISeries } from 'data-forge';
 
 import { watch } from '@aurelia/runtime-html';
-import { AstCorrespondence } from './ast-correspondence';
 import internal from 'stream';
 import { ConsoleSink } from 'aurelia';
 
@@ -136,8 +135,8 @@ export class Data {
         this.extractStudentData();
         // this.compileAsts();
         // Call correspondence function
-        console.log('calling correspondence');
-        AstCorrespondence.correspondence(this.precompiledAsts);
+        // console.log('calling correspondence');
+        // AstCorrespondence.correspondence(this.precompiledAsts);
         // this.precompiledAsts.forEach((head:AstNode) => {
         //   console.log(head)
         // });
