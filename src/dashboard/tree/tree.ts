@@ -72,8 +72,21 @@ export class Tree {
             .append("g")
             .attr("transform", d => `translate(${d.y}, ${d.x})`)
             .append("circle")
-            .attr("r", 3)
+            .attr("r", 5)
             .attr("fill", "#364e74")
+            .on('mouseover', (_, datum) => {
+                const node = datum.data;
+                console.log('hovering over', node)
+                this.data.codeHighlights = [{
+                    startLineNumber: node.startLine,
+                    startColumn: node.startCol,
+                    endLineNumber: node.endLine,
+                    endColumn: node.endCol
+                }]
+            })
+            .on("mouseout", () => {
+                this.data.codeHighlights = []
+            })
             ;
     }
 }
