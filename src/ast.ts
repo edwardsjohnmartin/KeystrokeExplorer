@@ -38,6 +38,9 @@ export class AstNode {
     // public col_offset: number;
     public src;
 
+    // The event number
+    public eventNum: number;
+
     // text-position attributes -- compute later
     public startLine: number;
     public startCol: number;
@@ -58,7 +61,7 @@ export class AstNode {
     public num_edits: number = -1;
     public num_new_chars: number = -1;
 
-    constructor(src) {
+    constructor(src, eventNum: number) {
         this.descendants = 0;
         this.type = "ERROR PARSING";
         this.name = undefined;
@@ -66,6 +69,7 @@ export class AstNode {
         // this.lineno = -1;
         // this.col_offset = -1;
         this.src = src;
+        this.eventNum = eventNum;
 
         // node.lineno = ast.lineno;
         // node.col_offset = ast.col_offset;
@@ -133,7 +137,7 @@ export function printAst(ast:AstNode) {
 // AstBuilder
 //-------------------------------------------------
 export abstract class AstBuilder {
-    static createAst(codeState: string) {
+    static createAst(codeState: string, eventNum: number) {
         let parse = null;
         try {
             // first argument is file-name (pointless)
@@ -143,7 +147,7 @@ export abstract class AstBuilder {
         }
 
         const ast = Sk.astFromParse(parse.cst, "", parse.flags);
-        const root = this.createAstNode(ast);
+        const root = this.createAstNode(ast, eventNum);
         this.updateRegions(root, codeState);
 
         return root;
@@ -152,67 +156,67 @@ export abstract class AstBuilder {
     //------------------------------------------------------------
     // Main function
     //------------------------------------------------------------
-    static createAstNode(ast: any) {
+    static createAstNode(ast: any, eventNum: number) {
         let node:AstNode;
         // console.log(ast);
 
         switch (ast._astname) {
             case "Call":
-                node = this.createCall(ast);
+                node = this.createCall(ast, eventNum);
                 break;
             case "BinOp":
-                node = this.createBinOp(ast);
+                node = this.createBinOp(ast, eventNum);
                 break;
             case "Expr":
-                node = this.createAstNode(ast.value);
+                node = this.createAstNode(ast.value, eventNum);
                 break;
             case "FunctionDef":
-                node = this.createFunctionDef(ast);
+                node = this.createFunctionDef(ast, eventNum);
                 break;
             case "Name":
-                node = new AstNode(ast);
+                node = new AstNode(ast, eventNum);
                 node.name = ast.id.v;
                 node.endLine = node.startLine;
                 node.endCol = node.startCol + node.name.length;
                 break;
             case "Num":
-                node = new AstNode(ast);
+                node = new AstNode(ast, eventNum);
                 node.endLine = node.startLine;
                 node.endCol = node.startCol + ast.n.v.toString().length;
                 break;
             case "Compare":
-                node = this.createCompare(ast);
+                node = this.createCompare(ast, eventNum);
                 break;
             case "Assign":
-                node = this.createAssign(ast);
+                node = this.createAssign(ast, eventNum);
                 break;
             case "AugAssign":
-                node = this.createAugDecAssign(ast, true);
+                node = this.createAugDecAssign(ast, true, eventNum);
                 break;
             case "DecAssign":
-                node = this.createAugDecAssign(ast, false);
+                node = this.createAugDecAssign(ast, false, eventNum);
                 break;
             case "For":
-                node = this.createFor(ast);
+                node = this.createFor(ast, eventNum);
                 break;
             case "Return":
-                node = this.createReturn(ast);
+                node = this.createReturn(ast, eventNum);
                 break;
             case "arguments":
                 ast._astname = "Arguments"
-                node = this.createArguments(ast);
+                node = this.createArguments(ast, eventNum);
                 break;
             default: {
-                node = new AstNode(ast);
+                node = new AstNode(ast, eventNum);
                 // Loop, conditional, etc
                 if (ast.test !== undefined) {
-                    node.children.push(this.createAstNode(ast.test));
+                    node.children.push(this.createAstNode(ast.test, eventNum));
                 }
 
                 // Body of a function, loop, conditional, etc
                 if (ast.body !== undefined) {
                     ast.body.forEach((child: any) => {
-                        node.children.push(this.createAstNode(child));
+                        node.children.push(this.createAstNode(child, eventNum));
                     });
                 }
 
@@ -224,7 +228,7 @@ export abstract class AstBuilder {
                         "body": [ast.orelse[0]],
                         "_astname": "Else",
                     }
-                    node.children.push(this.createAstNode(orelse));
+                    node.children.push(this.createAstNode(orelse, eventNum));
                 }
             }
         }
@@ -249,17 +253,17 @@ export abstract class AstBuilder {
     // Functions to recursively create our format of AST from
     // the Skulpt format.
     //------------------------------------------------------------
-    static createBinOp(ast: any) {
-        let node = new AstNode(ast);
+    static createBinOp(ast: any, eventNum: number) {
+        let node = new AstNode(ast, eventNum);
 
-        node.children.push(this.createAstNode(ast.left));
-        node.children.push(this.createAstNode(ast.right));
+        node.children.push(this.createAstNode(ast.left, eventNum));
+        node.children.push(this.createAstNode(ast.right, eventNum));
 
         return node;
     }
 
-    static createCall(ast: any) {
-        let node = new AstNode(ast);
+    static createCall(ast: any, eventNum: number) {
+        let node = new AstNode(ast, eventNum);
 
         let val = "";
         if (ast.func.value !== undefined && ast.func.value != null && ast.func.value.id.v.length > 0) {
@@ -274,98 +278,98 @@ export abstract class AstBuilder {
         // Arguments
         if (ast.args != null) {
             ast.args.forEach((child: any) => {
-                node.children.push(this.createAstNode(child));
+                node.children.push(this.createAstNode(child, eventNum));
             });
         }
 
         return node;
     }
 
-    static createArguments(ast: any) {
+    static createArguments(ast: any, eventNum: number) {
         // Sk.astnodes.arguments_ node
-        let node = new AstNode(ast);
+        let node = new AstNode(ast, eventNum);
 
         ast.args.forEach((child: any) => {
             child._astname = "Name";
             child.id = child.arg;
-            node.children.push(this.createAstNode(child));
+            node.children.push(this.createAstNode(child, eventNum));
         });
 
         return node;
     }
 
-    static createFunctionDef(ast: any) {
-        let node = new AstNode(ast);
+    static createFunctionDef(ast: any, eventNum: number) {
+        let node = new AstNode(ast, eventNum);
         node.name = "def " + ast.name.v;
 
         // Arguments
         if (ast.args.args.length > 0) {
-            node.children.push(this.createAstNode(ast.args));
+            node.children.push(this.createAstNode(ast.args, eventNum));
         }
 
         // Body of a function, loop, conditional, etc
         if (ast.body !== undefined) {
             ast.body.forEach((child: any) => {
-                node.children.push(this.createAstNode(child));
+                node.children.push(this.createAstNode(child, eventNum));
             });
         }
 
         return node;
     }
 
-    static createCompare(ast: any) {
-        let node = new AstNode(ast);
+    static createCompare(ast: any, eventNum: number) {
+        let node = new AstNode(ast, eventNum);
 
         const lhs = ast.left;
         const rhs = ast.comparators[0];
         const op = ast.ops[0].prototype;
 
-        node.children.push(this.createAstNode(lhs));
-        node.children.push(this.createAstNode(op));
-        node.children.push(this.createAstNode(rhs));
+        node.children.push(this.createAstNode(lhs, eventNum));
+        node.children.push(this.createAstNode(op, eventNum));
+        node.children.push(this.createAstNode(rhs, eventNum));
 
         return node;
     }
 
-    static createAssign(ast: any) {
-        let node = new AstNode(ast);
+    static createAssign(ast: any, eventNum: number) {
+        let node = new AstNode(ast, eventNum);
         node.name = "=";
 
         ast.targets.forEach((target: any) => {
-            node.children.push(this.createAstNode(target));
+            node.children.push(this.createAstNode(target, eventNum));
         });
-        node.children.push(this.createAstNode(ast.value));
+        node.children.push(this.createAstNode(ast.value, eventNum));
 
         return node;
     }
 
-    static createAugDecAssign(ast: any, aug: boolean) {
-        let node = new AstNode(ast);
+    static createAugDecAssign(ast: any, aug: boolean, eventNum: number) {
+        let node = new AstNode(ast, eventNum);
         node.name = aug ? "+=" : "-=";
 
-        node.children.push(this.createAstNode(ast.target));
-        node.children.push(this.createAstNode(ast.value));
+        node.children.push(this.createAstNode(ast.target, eventNum));
+        node.children.push(this.createAstNode(ast.value, eventNum));
 
         return node;
     }
 
-    static createFor(ast: any) {
-        let node = new AstNode(ast);
+    static createFor(ast: any, eventNum: number) {
+        let node = new AstNode(ast, eventNum);
 
-        node.children.push(this.createAstNode(ast.target));
-        node.children.push(this.createAstNode(ast.iter));
+        node.children.push(this.createAstNode(ast.target, eventNum));
+        node.children.push(this.createAstNode(ast.iter, eventNum));
         ast.body.forEach((child: any) => {
-            node.children.push(this.createAstNode(child));
+            node.children.push(this.createAstNode(child, eventNum));
         });
 
         return node;
     }
 
-    static createReturn(ast: any) {
-        let node = new AstNode(ast);
+    static createReturn(ast: any, eventNum: number) {
+        let node = new AstNode(ast, eventNum);
 
         if (ast.value != null) {
-            node.children.push(this.createAstNode(ast.value));
+            node.children.push(this.createAstNode(ast.value, eventNum));
         }
 
         return node;

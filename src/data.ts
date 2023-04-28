@@ -106,6 +106,9 @@ export class Data {
     public precompiledAsts: Array<AstNode> = [];
     public astParseErrors: Array<string> = [];
 
+    // Maps a correspondence ID to the AST node
+    public cid2node: Array<AstNode> = [];
+
     constructor() {
         // this.file = require("sample.csv");
         this.file = require("correspondence.csv");
@@ -306,14 +309,16 @@ export class Data {
         this.next_cid = 0
     
         let cid2node_inc:number = 64;
-        let cid2node:Array<AstNode> = new Array(cid2node_inc);
+        // let cid2node:Array<AstNode> = new Array(cid2node_inc);
+        this.cid2node = new Array(cid2node_inc);
         // cid2node = [None] * cid2node_inc
 
         let char_list = Array<CharNode>();
         this.precompiledAsts = [];
         let asts:Array<AstNode> = [];
         this.astParseErrors = [];
-        selection.forEach((row: any) => {
+        selection.forEach((row: any, eventNum: number) => {
+            // console.log('eventNum', eventNum);
             let i = row.SourceLocation;
 
             let insertText = row.InsertText != null ? String(row.InsertText) : "";
@@ -379,7 +384,7 @@ export class Data {
             let cur_ast:AstNode = null;
             try {
                 let codeState = state;
-                const ast = AstBuilder.createAst(codeState);
+                const ast = AstBuilder.createAst(codeState, eventNum);
                 cur_ast = ast;
                 updateLoc(codeState, ast);
                 this.precompiledAsts.push(ast);
@@ -427,7 +432,7 @@ export class Data {
                 asts.push(cur_ast);
                     
                 // Set number of edits since last compilable state for each ast node
-                this.set_num_edits(cur_ast, char_list, curloc2charlistnode, cid2node, curloc2prevloc)
+                this.set_num_edits(cur_ast, char_list, curloc2charlistnode, this.cid2node, curloc2prevloc)
                     
                 // Gather nodes by cid and type
                 // gather_by_type(cur_ast, type2nodes)
@@ -440,13 +445,13 @@ export class Data {
                 while (!cur.done) {
                     // if (+node['cid'] >= cid2node.length) {
                     let node:AstNode = cur.value.node;
-                    if (node.cid >= cid2node.length) {
+                    if (node.cid >= this.cid2node.length) {
                         // Dynamically increase size of cid2node if necessary
-                        cid2node = cid2node.concat(new Array(cid2node_inc));
+                        this.cid2node = this.cid2node.concat(new Array(cid2node_inc));
                         cid2node_inc *= 2
                     }
                     // cid2node[+node['cid']] = node
-                    cid2node[node.cid] = node
+                    this.cid2node[node.cid] = node
                     cur = gen.next();
                 }
                 // for node in ast.walk(cur_ast):
@@ -478,11 +483,11 @@ export class Data {
         // print number of total edits -- this is done for each node by walking up through
         // tparents and adding the number of their edits.
         console.log('** parents and edits **')
-        for (let i:number=0; i < cid2node.length; ++i) {
-            let node:AstNode = cid2node[i];
+        for (let i:number=0; i < this.cid2node.length; ++i) {
+            let node:AstNode = this.cid2node[i];
             if (node && node.num_edits !== undefined) {
                 let tparent:number = node.tparent;//(node.tparent !== undefined) ? node.tparent : -1;
-                console.log(i, cid2node[i].name, 'tparent='+tparent, 'edits='+node.num_edits);
+                console.log(i, this.cid2node[i].name, 'eventNum='+node.eventNum, 'tparent='+tparent, 'edits='+node.num_edits);
             }
         }
 
