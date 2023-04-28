@@ -12,6 +12,10 @@ export type CharNode = {
     prev_index: number;
 }
 
+function CharNode2string(c:CharNode) {
+    return c.prev_index + '_' + c.char + '_' + c.index;
+}
+
 function updateLoc(code:string, ast:AstNode) {
     let lines:Array<string> = code.split('\n');
     // +1 to account for the newline character
@@ -25,14 +29,14 @@ function updateLoc(code:string, ast:AstNode) {
         let node:AstNode = cur.value.node;
 
         // console.log(node);
-        console.log('abcde');
-        // if (node.startLine !== undefined && node.endLine !== undefined) {
-        //     // node.starti = line_length_cum_sum[node.lineno-1] + node.col_offset;
-        //     // node.endi = line_length_cum_sum[node.endLine-1] + node.endCol;
-        //     node.starti = line_length_cum_sum[node.startLine] + node.startCol;
-        //     node.endi = line_length_cum_sum[node.endLine] + node.endCol;
-        //     console.log(node.name, node.startLine, node.startCol, node.endLine, node.endCol);//node.endLine, line_length_cum_sum[node.endLine], node.endCol, node.starti, node.endi);
-        // }
+        // console.log('abcde');
+        if (node.startLine !== undefined && node.endLine !== undefined) {
+            // node.starti = line_length_cum_sum[node.lineno-1] + node.col_offset;
+            // node.endi = line_length_cum_sum[node.endLine-1] + node.endCol;
+            node.starti = line_length_cum_sum[node.startLine] + node.startCol;
+            node.endi = line_length_cum_sum[node.endLine] + node.endCol;
+            // console.log(node.name, node.startLine, node.startCol, node.endLine, node.endCol);//node.endLine, line_length_cum_sum[node.endLine], node.endCol, node.starti, node.endi);
+        }
 
         // This code is backup
         // if (node.lineno !== undefined && node.endLine !== undefined) {
@@ -46,8 +50,8 @@ function updateLoc(code:string, ast:AstNode) {
         cur = gen.next();
     }
 
-    console.log('UpdateLocVisitor');
-    printAst(ast);
+    // console.log('UpdateLocVisitor');
+    // printAst(ast);
 
     // if hasattr(node, 'lineno') and hasattr(node, 'end_lineno'):
 //             node.starti = self.line_length_cum_sum[node.lineno-1] + node.col_offset
@@ -169,8 +173,8 @@ export class Data {
         if (prev.starti !== undefined) {
         // if ('starti' in prev) {
             // console.log('******** starti');
-            const pstarti:number = +prev.starti;
-            const pendi:number = +prev.endi;
+            const pstarti:number = prev.starti;
+            const pendi:number = prev.endi;
             if (pstarti <= cstarti && pendi >= cendi) {
                 cur.tparent = prev.cid;
             }
@@ -194,7 +198,7 @@ export class Data {
         if (node.starti !== undefined) {
         // if ('starti' in node) {
             let i:number = node.starti;//['starti'];
-            let j:number = node.endi;//['endi']-1;
+            let j:number = node.endi-1;//['endi']-1;
             while (curloc2prevloc[i] == -1 && i < j) {
                 i += 1;
             }
@@ -211,7 +215,8 @@ export class Data {
         
     // Uses index correspondences to set tparents
     private set_all_tparents(prev:AstNode, cur:AstNode, curloc2prevloc:Array<number>) {
-        // console.log('******** xyz');
+        // console.log('** set_all_parents **');
+        // console.log(prev.name, cur.name);
 
         if (cur.starti !== undefined) {
             // console.log('******** abc');
@@ -220,6 +225,8 @@ export class Data {
             // as it was when the prev ast was created. cstarti stands
             // for "cur start index in the coordinates of prev"
             const [cstarti, cendi] = this.prev_start_end(cur, curloc2prevloc);
+
+            // console.log(cur.starti, cstarti, cendi);
 
             // traverses through prev looking for a tparent for cur
             this.set_cur_tparent(prev, cur, cstarti, cendi);
@@ -294,7 +301,7 @@ export class Data {
         let state = "";
         this.codeStates = [];
 
-        console.log('visiting each row');
+        // console.log('visiting each row');
 
         this.next_cid = 0
     
@@ -304,6 +311,7 @@ export class Data {
 
         let char_list = Array<CharNode>();
         this.precompiledAsts = [];
+        let asts:Array<AstNode> = [];
         this.astParseErrors = [];
         selection.forEach((row: any) => {
             let i = row.SourceLocation;
@@ -374,8 +382,8 @@ export class Data {
                 const ast = AstBuilder.createAst(codeState);
                 cur_ast = ast;
                 updateLoc(codeState, ast);
-                // this.precompiledAsts.push(ast);
-                // this.astParseErrors.push("");
+                this.precompiledAsts.push(ast);
+                this.astParseErrors.push("");
             } catch (error) {
                 this.precompiledAsts.push(null);
                 this.astParseErrors.push(error.message);
@@ -395,23 +403,28 @@ export class Data {
                 let curloc2charlistnode: Array<number> = new Array(s.length);
                 curloc2charlistnode.fill(null);
                 // curloc2charlistnode = [None for _ in range(len(s))]
+                // console.log('** updating curloc2prevloc **');
                 char_list.forEach((char:CharNode, i:number) => {
                     //     for i,char in enumerate(char_list):
                     // if index is -1 then the node is deleted
+                    // console.log(CharNode2string(char), i);
                     if (char.index > -1) {
                         curloc2prevloc[char.index] = char.prev_index
                         curloc2charlistnode[char.index] = i
                     }
+                    // console.log('**', char.index, curloc2prevloc[char.index]);
                 });
                 // Update cid values. asts is the list of all asts to
                 // this point.
                 this.set_cids(cur_ast);
-                if (this.precompiledAsts.length > 0) {
-                    this.set_all_tparents(this.precompiledAsts[this.precompiledAsts.length-1], cur_ast, curloc2prevloc);
+                if (asts.length > 0) {
+                    // console.log('** curloc2prevloc **');
+                    // for (let k:number=0; k<curloc2prevloc.length; ++k) {
+                    //     console.log(k, curloc2prevloc[k]);
+                    // }
+                    this.set_all_tparents(asts[asts.length-1], cur_ast, curloc2prevloc);
                 }
-                // asts.append(cur_ast)
-                this.precompiledAsts.push(cur_ast);
-                this.astParseErrors.push("");
+                asts.push(cur_ast);
                     
                 // Set number of edits since last compilable state for each ast node
                 this.set_num_edits(cur_ast, char_list, curloc2charlistnode, cid2node, curloc2prevloc)
@@ -459,11 +472,12 @@ export class Data {
             }
         });
 
-        console.log('char_list2:');
-        console.log(char_list);
+        // console.log('** char_list **:');
+        // console.log(char_list);
 
         // print number of total edits -- this is done for each node by walking up through
         // tparents and adding the number of their edits.
+        console.log('** parents and edits **')
         for (let i:number=0; i < cid2node.length; ++i) {
             let node:AstNode = cid2node[i];
             if (node && node.num_edits !== undefined) {

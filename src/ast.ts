@@ -47,12 +47,14 @@ export class AstNode {
     public end: number;
 
     // correspondence attributes -- compute later
+
+    // cid - a unique "correspondence ID"
     public cid: number|undefined = undefined;
+    // tparent - temporal parent - the node from which this node
+    // was created
     public tparent: number|undefined = undefined;
     public starti: number|undefined = undefined;
     public endi: number|undefined = undefined;
-    // public end_lineno: number|undefined = undefined;
-    // public end_col_offset: number|undefined = undefined;
     public num_edits: number = -1;
     public num_new_chars: number = -1;
 
@@ -70,6 +72,8 @@ export class AstNode {
         this.startLine = src.lineno-1;
         this.startCol = src.col_offset;
         this.type = src._astname;
+
+        // console.log('** constructor:', this.starti);
     }
 }
 
@@ -173,7 +177,6 @@ export abstract class AstBuilder {
                 break;
             case "Num":
                 node = new AstNode(ast);
-                // node.name = ast.id.v;
                 node.endLine = node.startLine;
                 node.endCol = node.startCol + ast.n.v.toString().length;
                 break;
@@ -401,7 +404,7 @@ export abstract class AstBuilder {
         node.start = this.getIndex(node.startLine, node.startCol, lineLengthCumSum);
         node.end = this.getIndex(node.endLine, node.endCol, lineLengthCumSum);
 
-        console.log('test***', node.name, node);
+        // console.log('test***', node.name, node);
         // Ignore whitespace at end
         let s = code.substring(node.start, node.end);
         let trim = s.length - s.trimEnd().length;
