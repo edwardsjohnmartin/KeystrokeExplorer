@@ -4,19 +4,19 @@ import * as d3 from "d3";
 import { inject } from 'aurelia';
 import { watch } from '@aurelia/runtime-html';
 import { isFunction } from 'util';
-import { AstNode } from '../../ast';
+import { AstNode, AstTemporalGenerator } from '../../ast';
 
 
 @inject(Data)
 export class Tree {
     data: Data;
-    selectedParent: number;
-    parents: Set<number>;
+    tancestry: Set<number>;
+    tposterity: Set<number>;
 
     constructor(data: Data) {
         this.data = data;
-        this.selectedParent = -1;
-        this.parents = new Set<number>();
+        this.tancestry = new Set<number>();
+        this.tposterity = new Set<number>();
     }
 
     attached() {
@@ -64,19 +64,27 @@ export class Tree {
             .attr("dx", d => d.children === undefined ? 10 : -10)
             .attr("dy", d => d.children === undefined ? 5 : -10)
             .on("mouseover", (event: MouseEvent, d) => {
-                let node: AstNode = d.data;
-                console.log(node.name, 'cid='+node.cid, 'eventNum='+node.eventNum, 'tparent='+node.tparent, 'edits='+node.num_edits);
-                this.selectedParent = node.tparent;
+                const node: AstNode = d.data;
+                console.log(node.name, 'tid='+node.tid, 'eventNum='+node.eventNum, 'tparent='+node.tparent, 'edits='+node.num_edits);
                 // Find the root parent
                 let n: AstNode = node;
-                this.parents.clear();
-                this.parents.add(n.cid);
+                this.tancestry.clear();
+                this.tposterity.clear();
+                this.tancestry.add(n.tid);
                 while (n.tparent !== undefined) {
-                    n = this.data.cid2node[n.tparent];
-                    this.parents.add(n.cid);
+                    n = this.data.tid2node[n.tparent];
+                    this.tancestry.add(n.tid);
                 }
                 console.log('Origin node:', n);
-            })
+
+                const gen = AstTemporalGenerator(node, this.data.tid2node);
+                let cur = gen.next();
+                while (!cur.done) {
+                    let n:AstNode = cur.value.node;
+                    this.tposterity.add(n.tid);
+                    cur = gen.next();
+                }
+            });
             // .on("mouseout", function() {
             //     // // Remove the info text on mouse out.
             //     // d3.select(this).select('text.info').remove()
@@ -98,10 +106,12 @@ export class Tree {
             .append("g")
             .attr("transform", d => `translate(${d.y}, ${d.x})`)
             .append("circle")
-            .attr("r", d => this.parents.has(d.data.cid) ? 6 : 3)
+            .attr("r", d => {
+                return this.tancestry.has(d.data.tid) || this.tposterity.has(d.data.tid) ? 6 : 3;
+            })
             .attr("fill", d => {
-                
-                return this.parents.has(d.data.cid) ? "#ff0000" : "#364e74";
+                return this.tancestry.has(d.data.tid) ? "#ff0000" : 
+                    this.tposterity.has(d.data.tid) ? "#00ff00" : "#364e74";
             })
             ;
     }

@@ -6,36 +6,12 @@ Sk.configure({
     __future__: Sk.python3
 });
 
-//--------------------------------------------------------------
-// Testing
-//--------------------------------------------------------------
-
-// import {Python3Parser, Python3Listener} from'dt-python-parser';
-
-// const parser = new Python3Parser();
-// const python ='import sys\nfor i in sys.argv:\n print(i)';
-// // parseTree
-// const tree = parser.parse(python);
-// class MyListener extends Python3Listener {
-//     enterImport_name(ctx): void {
-//         let importName = ctx
-//             .getText()
-//             .toLowerCase()
-//             .match(/(?<=import).+/)?.[0];
-//         console.log('ImportName', importName);
-//     }
-// }
-// const listenTableName = new MyListener();
-// parser.listen(listenTableName, tree);
-
 export class AstNode {
     // base attributes
     public descendants: number;
     public type: string;
     public name: string;
     public children: Array<AstNode>;
-    // public lineno: number;
-    // public col_offset: number;
     public src;
 
     // The event number
@@ -49,13 +25,22 @@ export class AstNode {
     public start: number;
     public end: number;
 
-    // correspondence attributes -- compute later
+    // Temporal relationships. These attributes describe a node's
+    // ancestry and posterity in time. Using them we can answer questions
+    // such as "when was this node created?" and "how many keystrokes
+    // were spent on this node?"
 
-    // cid - a unique "correspondence ID"
-    public cid: number|undefined = undefined;
+    // tid - a unique "temporal ID"
+    public tid: number|undefined = undefined;
     // tparent - temporal parent - the node from which this node
     // was created
     public tparent: number|undefined = undefined;
+    // tchildren - temporal children - nodes created out of this
+    // node. The reason this is an array of ids and not nodes themselves
+    // (as is the children attribute) is because having references to
+    // the nodes themselves would require all ASTs for a program to be
+    // in memory.
+    public tchildren: Array<number> = [];
     public starti: number|undefined = undefined;
     public endi: number|undefined = undefined;
     public num_edits: number = -1;
@@ -66,13 +51,9 @@ export class AstNode {
         this.type = "ERROR PARSING";
         this.name = undefined;
         this.children = []
-        // this.lineno = -1;
-        // this.col_offset = -1;
         this.src = src;
         this.eventNum = eventNum;
 
-        // node.lineno = ast.lineno;
-        // node.col_offset = ast.col_offset;
         this.startLine = src.lineno-1;
         this.startCol = src.col_offset;
         this.type = src._astname;
@@ -101,6 +82,17 @@ export function* AstGenerator(node:AstNode, level:number=0): Generator<AstGenera
     return null;
 }
 
+export function* AstTemporalGenerator(node: AstNode, tid2node: Array<AstNode>, level: number=0): Generator<AstGeneratorValue, null, any> {
+    if (node) {
+        yield {node:node, level:level};
+        for (let i:number = 0; i < node.tchildren.length; ++i) {
+            let n:AstNode = tid2node[node.tchildren[i]];
+            yield* AstTemporalGenerator(n, tid2node, level+1);
+        }
+    }
+    return null;
+}
+
 //-------------------------------------------------
 // printAst
 //-------------------------------------------------
@@ -122,12 +114,12 @@ export function printAst(ast:AstNode) {
         const node:AstNode = cur.value.node;
         const prefix:string = ''.padStart(cur.value.level*2, ' ');
 
-        const cid:string = (node.cid !== undefined) ? `cid=${node.cid}` : '';
+        const tid:string = (node.tid !== undefined) ? `tid=${node.tid}` : '';
         const tparent:string = (node.tparent !== undefined) ? `tparent=${node.tparent}` : '';
         const location:string = (node.starti !== undefined) ? `loc=${node.starti}-${node.endi}` : '';
         const new_chars:string = (node.num_new_chars !== undefined) ? `new_chars=${node.num_new_chars}` : '';
 
-        console.log(`${prefix}${node.name} ${cid} ${tparent} ${location} ${new_chars}`);
+        console.log(`${prefix}${node.name} ${tid} ${tparent} ${location} ${new_chars}`);
 
         cur = gen.next();
     }
