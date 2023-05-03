@@ -1,5 +1,7 @@
 <import from="./header/header"></import>
 <import from="./code/code"></import>
+<!--import from="./ast-correspondence"></import-->
+<import from="./dashboard/tree/tree"></import>
 
 <!-- File-Loading Spinner -->
 <div if.bind="data.fileLoading" role="status" class="absolute -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2">
@@ -27,6 +29,11 @@
         <code class="block min-w-full h-3/4 p-8 pt-0 overflow-none"> </code>
     </div>
 
+    <tree class="h-screen">
+      <!--a load="tree" class="inline-block p-4 text-blue-600 border-b-2 border-blue-600 rounded-t-lg active"
+         aria-current="page"> Tree </a-->
+    </tree>
+
     <!-- Right Half -->
     <div class="hidden items-start p-8 h-screen 3xl:flex 3xl:w-[55vw] 3xl:flex-wrap">
 
@@ -37,10 +44,10 @@
                         class="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300">
                         Other </a>
                 </li>
-                <li class="mr-2">
+                <!--li class="mr-2">
                     <a load="tree" class="inline-block p-4 text-blue-600 border-b-2 border-blue-600 rounded-t-lg active"
                         aria-current="page"> Tree </a>
-                </li>
+                </li-->
                 <!-- <li class="mr-2">
                     <a href="#"
                         class="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300">Settings</a>

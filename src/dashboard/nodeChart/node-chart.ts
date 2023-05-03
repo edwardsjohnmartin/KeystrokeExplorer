@@ -49,7 +49,7 @@ export class NodeChart {
             .append("line")
             .attr("transform", `translate(${margin.left}, ${margin.bottom})`)
             .attr("y1", (node: AstNode, _: number) => node ? yScale(node.descendants) : 0)
-            .attr("y2", (node: AstNode, _: number) => node ? yScale(node.descendants + 1) : 0)
+            .attr("y2", (node: AstNode, _: number) => node ? yScale(node.descendants) : 0)
             .attr("x1", (_: AstNode, index: number) => xScale(index))
             .attr("x2", (_: AstNode, index: number) => xScale(index + 1))
             .attr("visibility", (node: AstNode) => node ? "visibile" : "hidden")
