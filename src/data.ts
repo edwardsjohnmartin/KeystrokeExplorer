@@ -4,13 +4,7 @@ import { DataFrame, IDataFrame, ISeries } from 'data-forge';
 import { watch } from '@aurelia/runtime-html';
 import internal from 'stream';
 import { ConsoleSink } from 'aurelia';
-
-// export type CharNode = {
-//     char: string;
-//     action: string;
-//     index: number;
-//     prev_index: number;
-// }
+import { assert } from 'console';
 
 class CharNode {
     char: string;
@@ -28,27 +22,6 @@ class CharNode {
 
 function CharNode2string(c:CharNode) {
     return c.prev_index + '_' + c.char + '_' + c.index;
-}
-
-function updateLoc(code:string, ast:AstNode) {
-    let lines:Array<string> = code.split('\n');
-    // +1 to account for the newline character
-    const line_lengths:Array<number> = lines.map(line => line.length+1);
-    const cumulativeSum = (sum => value => sum += value)(0);
-    const line_length_cum_sum:Array<number> = [0].concat(line_lengths.map(cumulativeSum));
-
-    const gen = AstGenerator(ast);
-    let cur = gen.next();
-    while (!cur.done) {
-        let node:AstNode = cur.value.node;
-
-        if (node.startLine !== undefined && node.endLine !== undefined) {
-            node.starti = line_length_cum_sum[node.startLine] + node.startCol;
-            node.endi = line_length_cum_sum[node.endLine] + node.endCol;
-        }
-
-        cur = gen.next();
-    }
 }
 
 export class Edit {
@@ -142,20 +115,22 @@ export class Data {
     }
 
     // traverse through prev looking for a tparent for cur
-    private set_cur_tparent(prev:AstNode, cur:AstNode, cstarti:number, cendi:number) {
-        let deeper:boolean = true;
-        if (prev.starti !== undefined) {
-            const pstarti:number = prev.starti;
-            const pendi:number = prev.endi;
-            if (pstarti <= cstarti && pendi >= cendi) {
-                cur.tparent = prev.tid;
-            }
-            // Go deeper if the current node is smaller then the prev node
-            deeper = (cstarti >= pstarti && cendi <= pendi);
+    private set_cur_tparent(prev:AstNode, cur:AstNode, curStartInPrevCoords:number, curEndInPrevCoords:number) {
+        if (prev.start === undefined) {
+            throw new Error('prev.start undefined');
         }
+
+        let deeper:boolean = true;
+        const pstarti:number = prev.start;
+        const pendi:number = prev.end;
+        if (pstarti <= curStartInPrevCoords && pendi >= curEndInPrevCoords) {
+            cur.tparent = prev.tid;
+        }
+        // Go deeper if the current node is smaller then the prev node
+        deeper = (curStartInPrevCoords >= pstarti && curEndInPrevCoords <= pendi);
         if (deeper) {
             prev.children?.forEach((n:AstNode) => {
-                this.set_cur_tparent(n, cur, cstarti, cendi);
+                this.set_cur_tparent(n, cur, curStartInPrevCoords, curEndInPrevCoords);
             });
         }
     }
@@ -164,40 +139,50 @@ export class Data {
     // and finds the corresponding start and end indices in
     // the last compilable code.
     private prev_start_end(node:AstNode, curloc2prevloc:Array<number>):Array<number> {
-        const n:number = curloc2prevloc.length;
-        if (node.starti !== undefined) {
-            let i:number = node.starti;
-            let j:number = node.endi-1;
-            while (curloc2prevloc[i] == -1 && i < j) {
-                i += 1;
-            }
-            if (i == j) {
-                return [curloc2prevloc[i], curloc2prevloc[j]+1];
-            }
-            while (curloc2prevloc[j] == -1) {
-                j -= 1;
-            }
-            return [curloc2prevloc[i], curloc2prevloc[j]+1];
+        if (node.start === undefined) {
+            throw new Error('node.start undefined in prev_start_end');
         }
-        return [-1, -1];
+
+        const n: number = curloc2prevloc.length;
+        let i: number = node.start;
+        let j:  number = node.end-1; // node.end is one past the last character, so get the last character
+        // Iterate past newly-added characters to the beginning then the end of the node
+        while (curloc2prevloc[i] == -1 && i < j) {
+            i += 1;
+        }
+        while (curloc2prevloc[j] == -1 && i < j) {
+            j -= 1;
+        }
+
+        let prev_start: number = curloc2prevloc[i];
+        let prev_end_minus_one: number = curloc2prevloc[j];
+
+        if (prev_start == prev_end_minus_one) {
+            if (prev_start == -1) {
+                return [-1, -1];
+            }
+            return [prev_start, prev_end_minus_one+1];
+        } else {
+            if (prev_start == -1 || prev_end_minus_one == -1) {
+                // Either both indices must be -1 (a new node) or they must both point to valid character
+                throw new Error('Illegal previous indices');
+            }
+            return [prev_start, prev_end_minus_one+1];
+        }
     }
         
     // Uses index correspondences to set tparents
     private set_all_tparents(prev:AstNode, cur:AstNode, curloc2prevloc:Array<number>) {
-        // console.log('** set_all_parents **');
-        // console.log(prev.name, cur.name);
-
-        if (cur.starti !== undefined) {
-            // cstarti and cendi are the start and end indices in the code
-            // as it was when the prev ast was created. cstarti stands
-            // for "cur start index in the coordinates of prev"
-            const [cstarti, cendi] = this.prev_start_end(cur, curloc2prevloc);
-
-            // console.log(cur.starti, cstarti, cendi);
-
-            // traverses through prev looking for a tparent for cur
-            this.set_cur_tparent(prev, cur, cstarti, cendi);
+        if (cur.start === undefined) {
+            throw new Error('cur.start undefined in set_all_parents');
         }
+        // curStartInPrevCoords and curEndInPrevCoords are the start and end indices in the code
+        // as it was when the prev ast was created.
+        const [curStartInPrevCoords, curEndInPrevCoords] = this.prev_start_end(cur, curloc2prevloc);
+
+        // traverses through prev looking for a tparent for cur
+        this.set_cur_tparent(prev, cur, curStartInPrevCoords, curEndInPrevCoords);
+
         // Make recursive call for all of cur's children
         cur.children?.forEach((n:AstNode) => {
             this.set_all_tparents(prev, n, curloc2prevloc);
@@ -209,11 +194,13 @@ export class Data {
     // Set the number of edits since the last successful compile
     private set_num_edits(node:AstNode, char_list:Array<CharNode>, curloc2charlistnode:Array<number>,
         tid2node:Array<AstNode>, curloc2prevloc:Array<number>) {
-        if (node.starti !== undefined) {
-        // if ('starti' in node) {
+        // if (node.starti !== undefined) {
+        if (node.start !== undefined) {
             // Set immediate edits
-            const startnodei:number = curloc2charlistnode[node.starti];//['starti']];
-            const endnodei:number = curloc2charlistnode[node.endi];//['endi']-1];
+            // const startnodei:number = curloc2charlistnode[node.starti];
+            // const endnodei:number = curloc2charlistnode[node.endi];
+            const startnodei:number = curloc2charlistnode[node.start];
+            const endnodei:number = curloc2charlistnode[node.end];
             let num_new_chars:number = 0;
             let i:number = startnodei;
             while (i <= endnodei) {
@@ -255,8 +242,6 @@ export class Data {
         this.codeStates = [];
         this.edits = [];
 
-        // console.log('visiting each row');
-
         this.next_tid = 0
     
         let tid2node_inc:number = 64;
@@ -267,7 +252,6 @@ export class Data {
         let asts:Array<AstNode> = [];
         this.astParseErrors = [];
         selection.forEach((row: any, eventNum: number) => {
-            // console.log('eventNum', eventNum);
             let i = row.SourceLocation;
 
             let insertText = row.InsertText != null ? String(row.InsertText) : "";
@@ -281,21 +265,16 @@ export class Data {
             //------------------------------------------------------------
             let insertions: Array<CharNode> = [];
             for (let i: number = 0; i < insertText.length; i++) {
-                // let c: CharNode = {char: insertText[i], action:'insert', index:-1, prev_index:-1};
                 let c: CharNode = new CharNode(insertText[i], 'insert');
-                // console.log(c);
                 insertions.push(c);
-                // console.log(insertions);
             }
-
-            // console.log('insertions', insertions);
 
             // Find the insertion node index j
             let icorr:number = +row.SourceLocation;
             let j:number = 0
             if (char_list.length > 0) {
                 while (j < char_list.length && char_list[j].index < icorr) {
-                    j += 1
+                    j += 1;
                 }
             }
             // Update the char list
@@ -321,11 +300,8 @@ export class Data {
                 }
             });
 
-            // console.log('******');
-            // console.log('insert', insertText);
-            // console.log('delete', deleteText);
-            // console.log('char_list');
-            // console.log(char_list);
+            console.log('char_list');
+            console.log(JSON.stringify(char_list));
             
             //------------------------------------------------------------
             // Update the code reconstruction
@@ -337,22 +313,20 @@ export class Data {
 
 
             //------------------------------------------------------------
-            // AST and temporal hierarchy code
+            // AST
             //------------------------------------------------------------
-            // this.codeStates.forEach((codeState: string) => {
             let cur_ast:AstNode = null;
             try {
                 let codeState = state;
                 const ast = AstBuilder.createAst(codeState, eventNum);
                 cur_ast = ast;
-                updateLoc(codeState, ast);
+                // updateLoc(codeState, ast);
                 this.precompiledAsts.push(ast);
                 this.astParseErrors.push("");
             } catch (error) {
                 this.precompiledAsts.push(null);
                 this.astParseErrors.push(error.message);
             }
-            // });
 
             //------------------------------------------------------------
             // Temporal hierarchy code
@@ -363,26 +337,20 @@ export class Data {
                 let s: string = state;
                 let curloc2prevloc: Array<number> = new Array(s.length);
                 curloc2prevloc.fill(-1);
-                // curloc2prevloc = [-1 for _ in range(len(s))]
                 let curloc2charlistnode: Array<number> = new Array(s.length);
                 curloc2charlistnode.fill(null);
-                // curloc2charlistnode = [None for _ in range(len(s))]
-                // console.log('** updating curloc2prevloc **');
                 char_list.forEach((char:CharNode, i:number) => {
-                    //     for i,char in enumerate(char_list):
                     // if index is -1 then the node is deleted
-                    // console.log(CharNode2string(char), i);
                     if (char.index > -1) {
                         curloc2prevloc[char.index] = char.prev_index
                         curloc2charlistnode[char.index] = i
                     }
-                    // console.log('**', char.index, curloc2prevloc[char.index]);
                 });
                 // Update tid values. asts is the list of all asts to
                 // this point.
                 this.set_tids(cur_ast);
                 if (asts.length > 0) {
-                    this.set_all_tparents(asts[asts.length-1], cur_ast, curloc2prevloc);
+                    this.set_all_tparents(asts.at(-1), cur_ast, curloc2prevloc);
                 }
                 asts.push(cur_ast);
                     
@@ -393,8 +361,6 @@ export class Data {
                 // gather_by_type(cur_ast, type2nodes)
                     
                 // Update tid2node
-                // const it = makeIterator(cur_ast);
-                // const it = new AstIterator(cur_ast);
                 const gen = AstGenerator(cur_ast);
                 let cur = gen.next();
                 while (!cur.done) {
@@ -402,18 +368,18 @@ export class Data {
                     if (node.tid >= this.tid2node.length) {
                         // Dynamically increase size of tid2node if necessary
                         this.tid2node = this.tid2node.concat(new Array(tid2node_inc));
-                        tid2node_inc *= 2
+                        tid2node_inc *= 2;
                     }
-                    this.tid2node[node.tid] = node
+                    this.tid2node[node.tid] = node;
                     cur = gen.next();
                 }
-                // Update char_list
-                char_list = char_list.filter(c => c.action !== 'delete');
-                char_list.forEach((c) => {
-                    c.prev_index = c.index;
-                    c.action = 'inherit';
-                });
             }
+            // Update char_list
+            char_list = char_list.filter(c => c.action !== 'delete');
+            char_list.forEach((c) => {
+                c.prev_index = c.index;
+                c.action = 'inherit';
+            });
         });
 
         // Set tchildren for each node

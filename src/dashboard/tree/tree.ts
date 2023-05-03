@@ -66,6 +66,7 @@ export class Tree {
             .on("mouseover", (event: MouseEvent, d) => {
                 const node: AstNode = d.data;
                 console.log(node.name, 'tid='+node.tid, 'eventNum='+node.eventNum, 'tparent='+node.tparent, 'edits='+node.num_edits);
+                console.log(node);
                 // Find the root parent
                 let n: AstNode = node;
                 this.tancestry.clear();

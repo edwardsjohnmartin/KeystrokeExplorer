@@ -1,3 +1,4 @@
+import { assert } from "console";
 import { AnyARecord } from "dns";
 import * as Sk from "skulpt";
 
@@ -17,13 +18,13 @@ export class AstNode {
     // The event number
     public eventNum: number;
 
-    // text-position attributes -- compute later
+    // text-position attributes -- compute later.
     public startLine: number;
     public startCol: number;
     public endLine: number;
     public endCol: number;
     public start: number;
-    public end: number;
+    public end: number; // one past the last character of the node
 
     // Temporal relationships. These attributes describe a node's
     // ancestry and posterity in time. Using them we can answer questions
@@ -41,8 +42,6 @@ export class AstNode {
     // the nodes themselves would require all ASTs for a program to be
     // in memory.
     public tchildren: Array<number> = [];
-    public starti: number|undefined = undefined;
-    public endi: number|undefined = undefined;
     public num_edits: number = -1;
     public num_new_chars: number = -1;
 
@@ -116,7 +115,7 @@ export function printAst(ast:AstNode) {
 
         const tid:string = (node.tid !== undefined) ? `tid=${node.tid}` : '';
         const tparent:string = (node.tparent !== undefined) ? `tparent=${node.tparent}` : '';
-        const location:string = (node.starti !== undefined) ? `loc=${node.starti}-${node.endi}` : '';
+        const location:string = (node.start !== undefined) ? `loc=${node.start}-${node.end}` : '';
         const new_chars:string = (node.num_new_chars !== undefined) ? `new_chars=${node.num_new_chars}` : '';
 
         console.log(`${prefix}${node.name} ${tid} ${tparent} ${location} ${new_chars}`);
@@ -374,17 +373,15 @@ export abstract class AstBuilder {
     static updateRegions(node: AstNode, code: string) {
         // Get the number of characters on each line
         const lines = code.split("\n");
-        const lineLengths = new Array(lines.length);
-        lines.forEach((line, i) => {
-            // +1 to account for the newline character
-            lineLengths[i] = line.length;
-        });
+        // +1 to account for the newline character
+        const lineLengths: Array<number> = lines.map(line => line.length+1);
+        // Account for the fact that the last string doesn't have a newline character
+        // at the end
+        lineLengths[lineLengths.length-1] -= 1;
 
         let lineLengthCumSum = lineLengths.map((sum => value => sum += value)(0));
         lineLengthCumSum = [0].concat(lineLengthCumSum);
 
-        // node.lineno = 1;
-        // node.col_offset = 0;
         node.startLine = 0;
         node.startCol = 0;
         this.updateRegionsImpl(node, code, lines, lineLengthCumSum, lines.length - 1, lineLengths[lines.length - 1]);
