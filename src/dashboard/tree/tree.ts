@@ -65,7 +65,8 @@ export class Tree {
             .attr("dy", d => d.children === undefined ? 5 : -10)
             .on("mouseover", (event: MouseEvent, d) => {
                 const node: AstNode = d.data;
-                console.log(node.name, 'tid='+node.tid, 'eventNum='+node.eventNum, 'tparent='+node.tparent, 'edits='+node.num_edits);
+                console.log(node.name, 'tid='+node.tid, 'eventNum='+node.eventNum,
+                    'tparent='+node.tparent, 'edits='+node.totalEdits(this.data.tid2node));
                 console.log(node);
                 // Find the root parent
                 let n: AstNode = node;

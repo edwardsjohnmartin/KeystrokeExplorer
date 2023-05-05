@@ -42,8 +42,10 @@ export class AstNode {
     // the nodes themselves would require all ASTs for a program to be
     // in memory.
     public tchildren: Array<number> = [];
-    public num_edits: number = -1;
-    public num_new_chars: number = -1;
+
+    // The number of new characters since the last compilable state
+    public numNewChars: number = -1;
+    // public num_edits: number = -1;
 
     constructor(src, eventNum: number) {
         this.descendants = 0;
@@ -58,6 +60,14 @@ export class AstNode {
         this.type = src._astname;
 
         // console.log('** constructor:', this.starti);
+    }
+
+    // Not really. Actually the number of new characters since its inception
+    public totalEdits(tid2node: Array<AstNode>): number {
+        if (this.tparent > 0) {
+            return this.numNewChars + tid2node[this.tparent].totalEdits(tid2node);
+        }
+        return this.numNewChars;
     }
 }
 
@@ -116,7 +126,7 @@ export function printAst(ast:AstNode) {
         const tid:string = (node.tid !== undefined) ? `tid=${node.tid}` : '';
         const tparent:string = (node.tparent !== undefined) ? `tparent=${node.tparent}` : '';
         const location:string = (node.start !== undefined) ? `loc=${node.start}-${node.end}` : '';
-        const new_chars:string = (node.num_new_chars !== undefined) ? `new_chars=${node.num_new_chars}` : '';
+        const new_chars:string = (node.numNewChars !== undefined) ? `new_chars=${node.numNewChars}` : '';
 
         console.log(`${prefix}${node.name} ${tid} ${tparent} ${location} ${new_chars}`);
 
