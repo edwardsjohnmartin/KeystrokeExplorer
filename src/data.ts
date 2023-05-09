@@ -1,29 +1,9 @@
-import { AstBuilder, AstNode, AstGenerator, printAst } from './ast';
-import { DataFrame, IDataFrame, ISeries } from 'data-forge';
+import { AstBuilder, AstNode, AstGenerator, printAst } from "./ast";
+import { DataFrame, IDataFrame, ISeries } from "data-forge";
 
-import { watch } from '@aurelia/runtime-html';
-import internal from 'stream';
-import { ConsoleSink } from 'aurelia';
-import { assert } from 'console';
-import { InstructionParameters } from '@aurelia/router';
+import { watch } from "@aurelia/runtime-html";
+import { TemporalHierarchy } from "./temporalHierarchy";
 
-class CharNode {
-    char: string;
-    action: string;
-    index: number;
-    prev_index: number;
-
-    constructor(char: string, action: string) {
-        this.char = char;
-        this.action = action;
-        this.index = -1;
-        this.prev_index = -1;
-    }
-}
-
-function CharNode2string(c:CharNode) {
-    return c.prev_index + '_' + c.char + '_' + c.index;
-}
 
 export class Edit {
     public location: number = 0;
@@ -34,167 +14,6 @@ export class Edit {
         this.location = location;
         this.insertText = insertText;
         this.deleteText = deleteText;
-    }
-}
-
-// In this editDistance function, only insertions and deletions are considered.
-// Substitutions are considered a deletion and then insertion.
-function editDistance(idxInLastSnapshot: Array<number>) {
-    // Suppose the change looks like this:
-    //    for
-    //    fler
-    // So the 'o' was deleted and 'le' was inserted, for a distance of three.
-    // The idxInLastSnapshot looks like this:
-    //    0 -1 -1 2
-    // The edit distance between indices [0, 4) is three: the two -1s are insertions
-    // and (4-0)-(2-0)-1=1 indicates there was a deletion.
-    // The edit distance between indices [0, 3) is undefined.
-    // Note: I am abandoning this approach for now because of the problem of undefined
-    // distances.
-}
-
-// Suppose the change looks like this:
-//    for
-//    fler
-// So the 'o' was deleted and 'le' was inserted.
-// The idxInLastSnapshot looks like this:
-//    0 -1 -1 2
-// The number of insertions between indices [0, 4) is two, one for each -1.
-// The number of insertions between indices [1, 3) is two.
-// The number of insertions between indices [0, 3) is one.
-// The number of insertions between indices [0, 1) is zero.
-function numInsertions(idxInLastSnapshot: Array<number>, start: number, end: number) {
-    return idxInLastSnapshot.slice(start, end).filter(x=>x==-1).length;
-}
-
-function setNumEdits(node:AstNode, allIdxInLastSnapshot:Array<Array<number>>, allCompilable:Array<boolean>) {
-    if (node.start === undefined) {
-        throw new Error('node.start unexpectedly undefined');
-    }
-    let i:number = 0;
-    let n = 0;
-    let start = node.start;
-    let end = node.end;
-    node.numNewChars = 0;
-    let stop = false;
-    // Iterate through previous snapshots until we hit a compilable snapshot. Add up
-    // the number of edits for each.
-    do {
-        i--;
-        const idxInLastSnapshot = allIdxInLastSnapshot.at(i);
-        node.numNewChars += numInsertions(idxInLastSnapshot, start, end);
-        // Update start and end. If either one is -1 then find a subset. Example:
-        //    for
-        //    fler
-        // The idxInLastSnapshot looks like this:
-        //    0 -1 -1 2
-        // If (start,end) are (0, 2) then the new start and end as we back up to
-        // a previous snapshot would be (0,-1). Since -1 isn't a valid index
-        while (idxInLastSnapshot.at(start) == -1 && start < end) {
-            start++;
-        }
-        while (idxInLastSnapshot.at(end-1) == -1 && start < end) {
-            end--;
-        }
-        if (start == end) {
-            stop = true;
-        } else {
-            start = idxInLastSnapshot.at(start);
-            end = idxInLastSnapshot.at(end-1)+1;
-        }
-    } while (!stop && !allCompilable.at(i-1));
-    // node.num_edits = node.num_new_chars;
-    node.children?.forEach((n:AstNode) => {
-        setNumEdits(n, allIdxInLastSnapshot, allCompilable);
-    });
-}
-
-// This function takes an ast node, its start and end indices,
-// and finds the corresponding start and end indices in
-// the last compilable code.
-function prev_start_end(node:AstNode, idxInLastSnapshot:Array<number>):Array<number> {
-    if (node.start === undefined) {
-        throw new Error('node.start undefined in prev_start_end');
-    }
-
-    const n: number = idxInLastSnapshot.length;
-    let i: number = node.start;
-    let j:  number = node.end-1; // node.end is one past the last character, so get the last character
-    // Iterate past newly-added characters to the beginning then the end of the node
-    while (idxInLastSnapshot[i] == -1 && i < j) {
-        i += 1;
-    }
-    while (idxInLastSnapshot[j] == -1 && i < j) {
-        j -= 1;
-    }
-
-    let prev_start: number = idxInLastSnapshot[i];
-    let prev_end_minus_one: number = idxInLastSnapshot[j];
-
-    if (prev_start == prev_end_minus_one) {
-        if (prev_start == -1) {
-            return [-1, -1];
-        }
-        return [prev_start, prev_end_minus_one+1];
-    } else {
-        if (prev_start == -1 || prev_end_minus_one == -1) {
-            // Either both indices must be -1 (a new node) or they must both point to valid character
-            throw new Error('Illegal previous indices');
-        }
-        return [prev_start, prev_end_minus_one+1];
-    }
-}
-    
-// Uses index correspondences to set tparents
-function set_all_tparents(prev:AstNode, cur:AstNode, idxInLastSnapshot:Array<number>) {
-    if (cur.start === undefined) {
-        throw new Error('cur.start undefined in set_all_parents');
-    }
-    // curStartInPrevCoords and curEndInPrevCoords are the start and end indices in the code
-    // as it was when the prev ast was created.
-    const [curStartInPrevCoords, curEndInPrevCoords] = prev_start_end(cur, idxInLastSnapshot);
-
-    // traverses through prev looking for a tparent for cur
-    set_cur_tparent(prev, cur, curStartInPrevCoords, curEndInPrevCoords);
-
-    // Make recursive call for all of cur's children
-    cur.children?.forEach((n:AstNode) => {
-        set_all_tparents(prev, n, idxInLastSnapshot);
-    });
-}
-
-// private gather_by_type(node:AstNode, type2nodes) {
-//     name = node.__class__.__name__
-//     if not name in type2nodes:
-//         type2nodes[name] = []
-//     type2nodes[name].append(node)
-//     for n in ast.iter_child_nodes(node):
-//         gather_by_type(n, type2nodes)
-// }
-
-
-
-// traverse through prev looking for a tparent for cur
-function set_cur_tparent(prev:AstNode, cur:AstNode, curStartInPrevCoords:number, curEndInPrevCoords:number) {
-    if (prev.start === undefined) {
-        throw new Error('prev.start undefined');
-    }
-    if (cur.name == 'Module') {
-        return;
-    }
-
-    let deeper:boolean = true;
-    const pstarti:number = prev.start;
-    const pendi:number = prev.end;
-    if (pstarti <= curStartInPrevCoords && pendi >= curEndInPrevCoords) {
-        cur.tparent = prev.tid;
-    }
-    // Go deeper if the current node is smaller then the prev node
-    deeper = (curStartInPrevCoords >= pstarti && curEndInPrevCoords <= pendi);
-    if (deeper) {
-        prev.children?.forEach((n:AstNode) => {
-            set_cur_tparent(n, cur, curStartInPrevCoords, curEndInPrevCoords);
-        });
     }
 }
 
@@ -220,12 +39,12 @@ export class Data {
     public precompiledAsts: Array<AstNode> = [];
     public astParseErrors: Array<string> = [];
 
-    // Maps a temporal ID to the AST node
-    public tid2node: Array<AstNode> = [];
+    public temporalHierarchy: TemporalHierarchy = new TemporalHierarchy();
 
     constructor() {
-        // this.file = require("sample.csv");
-        this.file = require("correspondence.csv");
+        // this.file = require("/static/sample.csv");
+        // this.file = require("/static/correspondence.csv");
+        this.file = require("/static/no-subject-assignment.csv");
         this.fileLoaded();
 
         setInterval(async () => {
@@ -238,117 +57,43 @@ export class Data {
 
     fileLoaded() {
         this.filteredFile = new DataFrame(this.file).where(row => row.EventType == "File.Edit");
+
+        // TODO: add columns for student and assignment ID if they are missing
+        console.log(this.filteredFile);
+
         this.cacheStudentAssignments();
 
-        // cannot compile Asts because we don't know which student/assignment/file is loaded
-        //  perform this in the 'extractStudentData' function
-        // this.compileAsts();
-
-        // TODO:
-        // Garbage collect doesn't work??
-        //   I believe that the GC doesn't sweep these values out
-        //   because the Aurelia component is still attached
         this.file = null;
         this.filteredFile = null;
     }
 
+    // this will be called by the dashboard when the webpage loads
+    // and we know what student to show
     public studentFileLoaded() {
-        this.extractStudentData();
-        // this.compileAsts();
-        // Call correspondence function
-        // console.log('calling correspondence');
-        // AstCorrespondence.correspondence(this.precompiledAsts);
-        // this.precompiledAsts.forEach((head:AstNode) => {
-        //   console.log(head)
-        // });
-    }
-
-    private next_tid:number = 0;
-
-    private set_tids(node:AstNode) {
-        if (node == null) return;
-
-        if (node.tid === undefined) {
-            node.tid = this.next_tid;
-            this.next_tid += 1;
-        }
-        node.children?.forEach((child:AstNode) => {
-            this.set_tids(child);
-        });
-    }    
-
-    public extractStudentData() {
         if (this.subjectId == null) return;
         if (this.assignmentId == null) return;
         if (this.taskId == null) return;
 
+        this.extractStudentData();
+    }
+
+    private extractStudentData() {
         const selection = this.cachedSubjects[this.subjectId][this.assignmentId][this.taskId];
 
         let state = "";
         this.codeStates = [];
         this.edits = [];
 
-        this.next_tid = 0
-    
-        let tid2node_inc:number = 64;
-        this.tid2node = new Array(tid2node_inc);
-
-        // let char_list = Array<CharNode>();
-
-        // idxInLastSnapshot[i] contains the index in the last snapshot (last edit)
-        // for the character currently at index i. -1 if the character was just
-        // inserted.
-        let idxInLastSnapshot = Array<number>();
-        let allIdxInLastSnapshot = Array<Array<number>>();
-        // idxInLastCompilable[i] contains the index in the last compilable snapshot
-        // for the character currently at index i. -1 if the character was inserted
-        // since the last compilable event.
-        let idxInLastCompilable = Array<number>();
-        let allIdxInLastCompilable = Array<Array<number>>();
-        // Whether the last code snapshot was compilable
-        // (the AST in the last iteration existed).
-        let allCompilable = Array<boolean>();
-        // let lastWasCompilable = false;
-
         this.precompiledAsts = [];
-        let asts:Array<AstNode> = [];
         this.astParseErrors = [];
-        selection.forEach((row: any, eventNum: number) => {
+
+        this.temporalHierarchy.reset();
+
+        selection.forEach((row: any, eventNumber: number) => {
             let i = row.SourceLocation;
 
             let insertText = row.InsertText != null ? String(row.InsertText) : "";
             let deleteText = row.DeleteText != null ? String(row.DeleteText) : "";
-            
-            //------------------------------------------------------------
-            // Temporal correspondence
-            //------------------------------------------------------------
-            // Setup
-            const n = insertText.length;
-            const m = deleteText.length;
-            const idxOffset = n-m;
-            const inserted = Array<number>(n);
-            inserted.fill(-1);
-            // Update idxInLastSnapshot for this iteration.
-            idxInLastSnapshot = idxInLastSnapshot.map((x,i)=>i);
-            // beforeInsert/afterInsert are the mappings of all characters preceding/following the insertion and deletion.
-            const beforeInsert = idxInLastSnapshot.slice(0, i);
-            const afterInsert = idxInLastSnapshot.slice(i + m);
-            // Create the new array.
-            idxInLastSnapshot = beforeInsert.concat(inserted).concat(afterInsert);
-            allIdxInLastSnapshot.push(idxInLastSnapshot);
-
-            idxInLastCompilable = idxInLastSnapshot.slice();
-            allIdxInLastCompilable.push(idxInLastCompilable);
-            if (eventNum > 0 && !allCompilable.at(-1)) {
-                for (let k = 0; k < idxInLastCompilable.length; ++k) {
-                    // If the character was not inserted, get the index from the
-                    // idxInLastCompilable from the last snapshot.
-                    const pk = idxInLastSnapshot[k];
-                    if (pk != -1) {
-                        idxInLastCompilable[k] = allIdxInLastCompilable.at(-2)[pk];
-                    }
-                }
-            }
 
             //------------------------------------------------------------
             // Update the code reconstruction
@@ -358,109 +103,52 @@ export class Data {
             this.codeStates.push(state);
             this.edits.push(new Edit(i, insertText, deleteText));
 
-
             //------------------------------------------------------------
-            // AST
+            // AST Parsing
             //------------------------------------------------------------
-            let cur_ast:AstNode = null;
+            let ast: AstNode = null;
             try {
                 let codeState = state;
-                const ast = AstBuilder.createAst(codeState, eventNum);
-                cur_ast = ast;
-                // updateLoc(codeState, ast);
+                ast = AstBuilder.createAst(codeState, eventNumber);
+
                 this.precompiledAsts.push(ast);
                 this.astParseErrors.push("");
             } catch (error) {
                 this.precompiledAsts.push(null);
                 this.astParseErrors.push(error.message);
             }
-            allCompilable.push(cur_ast != null);
 
-            //------------------------------------------------------------
-            // Temporal hierarchy code
-            //------------------------------------------------------------
-            // If we successfully built an AST
-            if (cur_ast != null) {
-                // Update tid values. asts is the list of all asts to
-                // this point.
-                this.set_tids(cur_ast);
-                if (asts.length > 0) {
-                    // this.set_all_tparents(asts.at(-1), cur_ast, idxInLastSnapshot);
-                    set_all_tparents(asts.at(-1), cur_ast, idxInLastCompilable);
-                }
-                asts.push(cur_ast);
-                    
-                // Set number of edits since last compilable state for each ast node
-                // Note: this currently gets the number of edits since the last snapshot only.
-                setNumEdits(cur_ast, allIdxInLastSnapshot, allCompilable);
-                    
-                // Gather nodes by tid and type
-                // gather_by_type(cur_ast, type2nodes)
-                    
-                // Update tid2node
-                const gen = AstGenerator(cur_ast);
-                let cur = gen.next();
-                while (!cur.done) {
-                    let node:AstNode = cur.value.node;
-                    if (node.tid >= this.tid2node.length) {
-                        // Dynamically increase size of tid2node if necessary
-                        this.tid2node = this.tid2node.concat(new Array(tid2node_inc));
-                        tid2node_inc *= 2;
-                    }
-                    this.tid2node[node.tid] = node;
-                    cur = gen.next();
-                }
-            }
+            this.temporalHierarchy.pushCompilableTree(ast !== null);
+            this.temporalHierarchy.temporalCorrespondence(i, eventNumber, insertText, deleteText);
+            if (ast !== null) this.temporalHierarchy.temporalHierarchy(ast);
         });
 
-        // Set tchildren for each node
-        this.precompiledAsts.forEach((ast: AstNode) => {
-            const gen = AstGenerator(ast);
-            let cur = gen.next();
-            while (!cur.done) {
-                const node: AstNode = cur.value.node;
-                if (node.tparent !== undefined) {
-                    this.tid2node[node.tparent].tchildren.push(node.tid);
-                }
-                cur = gen.next();
-            }
-        });
-
-        // print number of total edits -- this is done for each node by walking up through
-        // tparents and adding the number of their edits.
-        // console.log('** parents and edits **')
-        // for (let i:number=0; i < this.tid2node.length; ++i) {
-        //     let node:AstNode = this.tid2node[i];
-        //     if (node && node.num_edits !== undefined) {
-        //         let tparent:number = node.tparent;//(node.tparent !== undefined) ? node.tparent : -1;
-        //         console.log(i, this.tid2node[i].name, 'eventNum='+node.eventNum, 'tparent='+tparent, 'edits='+node.num_edits);
-        //     }
-        // }
+        this.setTchildren();
 
         // initial file load, show first state
         this.playback = 0;
         this.playbackChanged();
     }
 
-    // private compileAsts() {
-    //     this.precompiledAsts = [];
-    //     this.astParseErrors = [];
+    private setTchildren() {
+        const tid2node = this.temporalHierarchy.getTid();
 
-    //     this.codeStates.forEach((codeState: string) => {
-    //         try {
-    //             const ast = AstBuilder.createAst(codeState);
-    //             this.precompiledAsts.push(ast);
-    //             this.astParseErrors.push("");
-    //         } catch (error) {
-    //             this.precompiledAsts.push(null);
-    //             this.astParseErrors.push(error.message);
-    //         }
-    //     });
-    // }
+        this.precompiledAsts.forEach((ast: AstNode) => {
+            const gen = AstGenerator(ast);
+            let cur = gen.next();
+            while (!cur.done) {
+                const node: AstNode = cur.value.node;
+                if (node.tparent !== undefined) {
+                    tid2node[node.tparent].tchildren.push(node.tid);
+                }
+                cur = gen.next();
+            }
+        });
+    }
 
     private cacheStudentAssignments() {
 
-        // cache every student ID, but don't fill anything in
+        // cache every student ID, but don"t fill anything in
         const students = this.filteredFile.groupBy(row => row.SubjectID);
         this.cachesubjectIds(students);
 
@@ -483,6 +171,7 @@ export class Data {
             .select(group => group.first().SubjectID)
             .inflate()
             .toArray();
+
         subjectIds.forEach(subjectId => this.cachedSubjects[subjectId] = {});
     }
 
@@ -494,6 +183,7 @@ export class Data {
             }))
             .inflate()
             .toArray();
+
         assignmentIds.forEach(assignment => {
             this.cachedSubjects[assignment.subjectId][assignment.assignmentId] = {}
         });

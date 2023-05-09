@@ -3,7 +3,6 @@ import { Data } from '../../data';
 import * as d3 from "d3";
 import { inject } from 'aurelia';
 import { watch } from '@aurelia/runtime-html';
-import { isFunction } from 'util';
 import { AstNode, AstTemporalGenerator } from '../../ast';
 
 
@@ -22,9 +21,7 @@ export class Tree {
     attached() {
         this.buildTree();
 
-        // somehow we lose "this" context inside the event listenter
-        //   would be nice for resizing, but not important for now
-        // window.addEventListener("resize", this.buildTree);
+        window.addEventListener("resize", () => this.buildTree());
     }
 
     @watch("data.playback")
@@ -65,32 +62,35 @@ export class Tree {
             .attr("dy", d => d.children === undefined ? 5 : -10)
             .on("mouseover", (event: MouseEvent, d) => {
                 const node: AstNode = d.data;
-                console.log(node.name, 'tid='+node.tid, 'eventNum='+node.eventNum,
-                    'tparent='+node.tparent, 'edits='+node.totalEdits(this.data.tid2node));
+                const tid2node = this.data.temporalHierarchy.getTid();
+
+                console.log(node.name, 'tid=' + node.tid, 'eventNum=' + node.eventNum,
+                    'tparent=' + node.tparent, 'edits=' + node.totalEdits(tid2node));
                 console.log(node);
+
                 // Find the root parent
                 let n: AstNode = node;
                 this.tancestry.clear();
                 this.tposterity.clear();
                 this.tancestry.add(n.tid);
                 while (n.tparent !== undefined) {
-                    n = this.data.tid2node[n.tparent];
+                    n = tid2node[n.tparent];
                     this.tancestry.add(n.tid);
                 }
                 console.log('Origin node:', n);
 
-                const gen = AstTemporalGenerator(node, this.data.tid2node);
+                const gen = AstTemporalGenerator(node, tid2node);
                 let cur = gen.next();
                 while (!cur.done) {
-                    let n:AstNode = cur.value.node;
+                    let n: AstNode = cur.value.node;
                     this.tposterity.add(n.tid);
                     cur = gen.next();
                 }
             });
-            // .on("mouseout", function() {
-            //     // // Remove the info text on mouse out.
-            //     // d3.select(this).select('text.info').remove()
-            //   });            
+        // .on("mouseout", function() {
+        //     // // Remove the info text on mouse out.
+        //     // d3.select(this).select('text.info').remove()
+        //   });            
         ;
 
         d3.select("g#tree")
@@ -112,7 +112,7 @@ export class Tree {
                 return this.tancestry.has(d.data.tid) || this.tposterity.has(d.data.tid) ? 6 : 3;
             })
             .attr("fill", d => {
-                return this.tancestry.has(d.data.tid) ? "#ff0000" : 
+                return this.tancestry.has(d.data.tid) ? "#ff0000" :
                     this.tposterity.has(d.data.tid) ? "#00ff00" : "#364e74";
             })
             ;

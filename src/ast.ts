@@ -32,10 +32,10 @@ export class AstNode {
     // were spent on this node?"
 
     // tid - a unique "temporal ID"
-    public tid: number|undefined = undefined;
+    public tid: number | undefined = undefined;
     // tparent - temporal parent - the node from which this node
     // was created
-    public tparent: number|undefined = undefined;
+    public tparent: number | undefined = undefined;
     // tchildren - temporal children - nodes created out of this
     // node. The reason this is an array of ids and not nodes themselves
     // (as is the children attribute) is because having references to
@@ -55,7 +55,7 @@ export class AstNode {
         this.src = src;
         this.eventNum = eventNum;
 
-        this.startLine = src.lineno-1;
+        this.startLine = src.lineno - 1;
         this.startCol = src.col_offset;
         this.type = src._astname;
 
@@ -80,23 +80,23 @@ export type AstGeneratorValue = {
     level: number;
 }
 
-export function* AstGenerator(node:AstNode, level:number=0): Generator<AstGeneratorValue, null, any> {
+export function* AstGenerator(node: AstNode, level: number = 0): Generator<AstGeneratorValue, null, any> {
     if (node) {
-        yield {node:node, level:level};
-        for (let i:number = 0; i < node.children?.length; ++i) {
-            let n:AstNode = node.children[i];
-            yield* AstGenerator(n, level+1);
+        yield { node: node, level: level };
+        for (let i: number = 0; i < node.children?.length; ++i) {
+            let n: AstNode = node.children[i];
+            yield* AstGenerator(n, level + 1);
         }
     }
     return null;
 }
 
-export function* AstTemporalGenerator(node: AstNode, tid2node: Array<AstNode>, level: number=0): Generator<AstGeneratorValue, null, any> {
+export function* AstTemporalGenerator(node: AstNode, tid2node: Array<AstNode>, level: number = 0): Generator<AstGeneratorValue, null, any> {
     if (node) {
-        yield {node:node, level:level};
-        for (let i:number = 0; i < node.tchildren.length; ++i) {
-            let n:AstNode = tid2node[node.tchildren[i]];
-            yield* AstTemporalGenerator(n, tid2node, level+1);
+        yield { node: node, level: level };
+        for (let i: number = 0; i < node.tchildren.length; ++i) {
+            let n: AstNode = tid2node[node.tchildren[i]];
+            yield* AstTemporalGenerator(n, tid2node, level + 1);
         }
     }
     return null;
@@ -105,28 +105,28 @@ export function* AstTemporalGenerator(node: AstNode, tid2node: Array<AstNode>, l
 //-------------------------------------------------
 // printAst
 //-------------------------------------------------
-export function printAst2(ast:AstNode) {
+export function printAst2(ast: AstNode) {
     const gen = AstGenerator(ast);
     let cur = gen.next();
     while (!cur.done) {
-        const node:AstNode = cur.value.node;
-        const prefix:string = ''.padStart(cur.value.level*2, ' ');
+        const node: AstNode = cur.value.node;
+        const prefix: string = ''.padStart(cur.value.level * 2, ' ');
         console.log(prefix, node);
         cur = gen.next();
     }
 }
 
-export function printAst(ast:AstNode) {
+export function printAst(ast: AstNode) {
     const gen = AstGenerator(ast);
     let cur = gen.next();
     while (!cur.done) {
-        const node:AstNode = cur.value.node;
-        const prefix:string = ''.padStart(cur.value.level*2, ' ');
+        const node: AstNode = cur.value.node;
+        const prefix: string = ''.padStart(cur.value.level * 2, ' ');
 
-        const tid:string = (node.tid !== undefined) ? `tid=${node.tid}` : '';
-        const tparent:string = (node.tparent !== undefined) ? `tparent=${node.tparent}` : '';
-        const location:string = (node.start !== undefined) ? `loc=${node.start}-${node.end}` : '';
-        const new_chars:string = (node.numNewChars !== undefined) ? `new_chars=${node.numNewChars}` : '';
+        const tid: string = (node.tid !== undefined) ? `tid=${node.tid}` : '';
+        const tparent: string = (node.tparent !== undefined) ? `tparent=${node.tparent}` : '';
+        const location: string = (node.start !== undefined) ? `loc=${node.start}-${node.end}` : '';
+        const new_chars: string = (node.numNewChars !== undefined) ? `new_chars=${node.numNewChars}` : '';
 
         console.log(`${prefix}${node.name} ${tid} ${tparent} ${location} ${new_chars}`);
 
@@ -158,7 +158,7 @@ export abstract class AstBuilder {
     // Main function
     //------------------------------------------------------------
     static createAstNode(ast: any, eventNum: number) {
-        let node:AstNode;
+        let node: AstNode;
         // console.log(ast);
 
         switch (ast._astname) {
@@ -384,10 +384,10 @@ export abstract class AstBuilder {
         // Get the number of characters on each line
         const lines = code.split("\n");
         // +1 to account for the newline character
-        const lineLengths: Array<number> = lines.map(line => line.length+1);
+        const lineLengths: Array<number> = lines.map(line => line.length + 1);
         // Account for the fact that the last string doesn't have a newline character
         // at the end
-        lineLengths[lineLengths.length-1] -= 1;
+        lineLengths[lineLengths.length - 1] -= 1;
 
         let lineLengthCumSum = lineLengths.map((sum => value => sum += value)(0));
         lineLengthCumSum = [0].concat(lineLengthCumSum);
@@ -413,7 +413,7 @@ export abstract class AstBuilder {
         let trim = s.length - s.trimEnd().length;
         node.end -= trim;
         // Set start and end for each child. We have to iterate backwards.
-        let children:Array<AstNode> = [...node.children];
+        let children: Array<AstNode> = [...node.children];
         children.reverse();
         children.forEach(child => {
             this.updateRegionsImpl(child, code, lines, lineLengthCumSum, endLine, endCol);

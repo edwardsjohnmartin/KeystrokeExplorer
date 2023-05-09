@@ -1,0 +1,430 @@
+,EventType,InsertText,DeleteText,SourceLocation,ClientTimestamp,CodeStateSection,ToolInstances,EditType,X-Metadata,CodeStateID,X-Compilable,EventID,SubjectID,AssignmentID
+0,X-Action,ShowYourWork Init,,,1676048936240,,1.1.5 for 2021-2022 @t1,,Init,,,,Student1,
+1,File.Edit,a,,0.0,1676048938960,test1.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test1.py
+2,X-Keystroke,a,,1.0,1676048938963,test1.py,1.1.5 for 2021-2022 @t1,,a,,,,Student1,test1.py
+3,File.Edit,=,,1.0,1676048939078,test1.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test1.py
+4,X-Keystroke,=,,2.0,1676048939079,test1.py,1.1.5 for 2021-2022 @t1,,=,,,,Student1,test1.py
+5,File.Edit,3,,2.0,1676048939208,test1.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test1.py
+6,X-Keystroke,3,,3.0,1676048939209,test1.py,1.1.5 for 2021-2022 @t1,,3,,,,Student1,test1.py
+7,X-Keystroke,a,,1.0,1676048938963,test1.py,1.1.5 for 2021-2022 @t1,,a,,,,Student1,test1.py
+8,X-Keystroke,=,,2.0,1676048939079,test1.py,1.1.5 for 2021-2022 @t1,,=,,,,Student1,test1.py
+9,X-Keystroke,3,,3.0,1676048939209,test1.py,1.1.5 for 2021-2022 @t1,,3,,,,Student1,test1.py
+10,File.Edit,a,,0.0,1676048949849,test2.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test2.py
+11,X-Keystroke,a,,1.0,1676048949850,test2.py,1.1.5 for 2021-2022 @t1,,a,,,,Student1,test2.py
+12,File.Edit,=,,1.0,1676048950217,test2.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test2.py
+13,X-Keystroke,=,,2.0,1676048950218,test2.py,1.1.5 for 2021-2022 @t1,,=,,,,Student1,test2.py
+14,X-Action,Backspace,,,1676048951596,test2.py,1.1.5 for 2021-2022 @t1,,Backspace,,,,Student1,test2.py
+15,File.Edit,,=,1.0,1676048951605,test2.py,1.1.5 for 2021-2022 @t1,Delete,,,,,Student1,test2.py
+16,File.Edit,=,,1.0,1676048952325,test2.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test2.py
+17,X-Keystroke,=,,2.0,1676048952326,test2.py,1.1.5 for 2021-2022 @t1,,=,,,,Student1,test2.py
+18,File.Edit,3,,2.0,1676048952670,test2.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test2.py
+19,X-Keystroke,3,,3.0,1676048952671,test2.py,1.1.5 for 2021-2022 @t1,,3,,,,Student1,test2.py
+20,X-Keystroke,a,,1.0,1676048949850,test2.py,1.1.5 for 2021-2022 @t1,,a,,,,Student1,test2.py
+21,X-Keystroke,=,,2.0,1676048950218,test2.py,1.1.5 for 2021-2022 @t1,,=,,,,Student1,test2.py
+22,X-Keystroke,=,,2.0,1676048952326,test2.py,1.1.5 for 2021-2022 @t1,,=,,,,Student1,test2.py
+23,X-Keystroke,3,,3.0,1676048952671,test2.py,1.1.5 for 2021-2022 @t1,,3,,,,Student1,test2.py
+24,X-Action,Left,,,1676048953644,test2.py,1.1.5 for 2021-2022 @t1,,Left,,,,Student1,test2.py
+25,X-Action,Left,,,1676048953756,test2.py,1.1.5 for 2021-2022 @t1,,Left,,,,Student1,test2.py
+26,File.Edit,b,,1.0,1676048953876,test2.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test2.py
+27,X-Keystroke,b,,2.0,1676048953878,test2.py,1.1.5 for 2021-2022 @t1,,b,,,,Student1,test2.py
+28,X-Keystroke,b,,2.0,1676048953877,test2.py,1.1.5 for 2021-2022 @t1,,b,,,,Student1,test2.py
+29,X-Action,Creating file /Users/edwards/PycharmProjects/correspondence/test3.py,,,1676048963847,test2.py,1.1.5 for 2021-2022 @t1,,Creating file /Users/edwards/PycharmProjects/correspondence/test3.py,,,,Student1,test2.py
+30,X-Keystroke,a,,1.0,1676049007620,test3.py,1.1.5 for 2021-2022 @t1,,a,,,,Student1,test3.py
+31,X-Keystroke,=,,2.0,1676049008752,test3.py,1.1.5 for 2021-2022 @t1,,=,,,,Student1,test3.py
+32,X-Keystroke,3,,3.0,1676049009959,test3.py,1.1.5 for 2021-2022 @t1,,3,,,,Student1,test3.py
+33,File.Edit,a,,0.0,1676049007619,test3.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test3.py
+34,X-Keystroke,a,,1.0,1676049007620,test3.py,1.1.5 for 2021-2022 @t1,,a,,,,Student1,test3.py
+35,File.Edit,=,,1.0,1676049008750,test3.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test3.py
+36,X-Keystroke,=,,2.0,1676049008752,test3.py,1.1.5 for 2021-2022 @t1,,=,,,,Student1,test3.py
+37,File.Edit,3,,2.0,1676049009958,test3.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test3.py
+38,X-Keystroke,3,,3.0,1676049009959,test3.py,1.1.5 for 2021-2022 @t1,,3,,,,Student1,test3.py
+39,X-Action,Left,,,1676049010939,test3.py,1.1.5 for 2021-2022 @t1,,Left,,,,Student1,test3.py
+40,X-Action,Left,,,1676049011086,test3.py,1.1.5 for 2021-2022 @t1,,Left,,,,Student1,test3.py
+41,X-Action,Paste,,,1676049011973,test3.py,1.1.5 for 2021-2022 @t1,,Paste,,,,Student1,test3.py
+42,p,bcd,,1.0,1676049012008,test3.py,1.1.5 for 2021-2022 @t1,,bcd,,,,Student1,test3.py
+43,File.Edit,bcd,,1.0,1676049012014,test3.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test3.py
+44,X-Action,Right,,,1676049014099,test3.py,1.1.5 for 2021-2022 @t1,,Right,,,,Student1,test3.py
+45,X-Action,Backspace,,,1676049015727,test3.py,1.1.5 for 2021-2022 @t1,,Backspace,,,,Student1,test3.py
+46,File.Edit,,=,4.0,1676049015735,test3.py,1.1.5 for 2021-2022 @t1,Delete,,,,,Student1,test3.py
+47,X-Keystroke,=,,5.0,1676049017305,test3.py,1.1.5 for 2021-2022 @t1,,=,,,,Student1,test3.py
+48,File.Edit,=,,4.0,1676049017304,test3.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test3.py
+49,X-Keystroke,=,,5.0,1676049017305,test3.py,1.1.5 for 2021-2022 @t1,,=,,,,Student1,test3.py
+50,X-Action,Creating file /Users/edwards/PycharmProjects/correspondence/test4.py,,,1676049024753,test3.py,1.1.5 for 2021-2022 @t1,,Creating file /Users/edwards/PycharmProjects/correspondence/test4.py,,,,Student1,test3.py
+51,File.Edit,f,,0.0,1676049025684,test4.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test4.py
+52,X-Keystroke,f,,1.0,1676049025685,test4.py,1.1.5 for 2021-2022 @t1,,f,,,,Student1,test4.py
+53,File.Edit,o,,1.0,1676049025785,test4.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test4.py
+54,X-Keystroke,o,,2.0,1676049025786,test4.py,1.1.5 for 2021-2022 @t1,,o,,,,Student1,test4.py
+55,File.Edit,r,,2.0,1676049025864,test4.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test4.py
+56,X-Keystroke,r,,3.0,1676049025865,test4.py,1.1.5 for 2021-2022 @t1,,r,,,,Student1,test4.py
+57,File.Edit, ,,3.0,1676049027004,test4.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test4.py
+58,X-Keystroke, ,,4.0,1676049027005,test4.py,1.1.5 for 2021-2022 @t1,, ,,,,Student1,test4.py
+59,File.Edit,i,,4.0,1676049027213,test4.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test4.py
+60,X-Keystroke,i,,5.0,1676049027214,test4.py,1.1.5 for 2021-2022 @t1,,i,,,,Student1,test4.py
+61,File.Edit, ,,5.0,1676049027293,test4.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test4.py
+62,X-Keystroke, ,,6.0,1676049027294,test4.py,1.1.5 for 2021-2022 @t1,, ,,,,Student1,test4.py
+63,File.Edit,i,,6.0,1676049027445,test4.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test4.py
+64,X-Keystroke,i,,7.0,1676049027445,test4.py,1.1.5 for 2021-2022 @t1,,i,,,,Student1,test4.py
+65,File.Edit,n,,7.0,1676049027522,test4.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test4.py
+66,X-Keystroke,n,,8.0,1676049027522,test4.py,1.1.5 for 2021-2022 @t1,,n,,,,Student1,test4.py
+67,File.Edit, ,,8.0,1676049027593,test4.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test4.py
+68,X-Keystroke, ,,9.0,1676049027594,test4.py,1.1.5 for 2021-2022 @t1,, ,,,,Student1,test4.py
+69,X-Keystroke,f,,1.0,1676049025685,test4.py,1.1.5 for 2021-2022 @t1,,f,,,,Student1,test4.py
+70,X-Keystroke,o,,2.0,1676049025786,test4.py,1.1.5 for 2021-2022 @t1,,o,,,,Student1,test4.py
+71,X-Keystroke,r,,3.0,1676049025865,test4.py,1.1.5 for 2021-2022 @t1,,r,,,,Student1,test4.py
+72,X-Keystroke, ,,4.0,1676049027005,test4.py,1.1.5 for 2021-2022 @t1,, ,,,,Student1,test4.py
+73,X-Keystroke,i,,5.0,1676049027214,test4.py,1.1.5 for 2021-2022 @t1,,i,,,,Student1,test4.py
+74,X-Keystroke, ,,6.0,1676049027294,test4.py,1.1.5 for 2021-2022 @t1,, ,,,,Student1,test4.py
+75,X-Keystroke,i,,7.0,1676049027445,test4.py,1.1.5 for 2021-2022 @t1,,i,,,,Student1,test4.py
+76,X-Keystroke,n,,8.0,1676049027522,test4.py,1.1.5 for 2021-2022 @t1,,n,,,,Student1,test4.py
+77,X-Keystroke, ,,9.0,1676049027593,test4.py,1.1.5 for 2021-2022 @t1,, ,,,,Student1,test4.py
+78,X-Keystroke,j,,10.0,1676049027856,test4.py,1.1.5 for 2021-2022 @t1,,j,,,,Student1,test4.py
+79,X-Keystroke,:,,11.0,1676049028235,test4.py,1.1.5 for 2021-2022 @t1,,:,,,,Student1,test4.py
+80,File.Edit,j,,9.0,1676049027855,test4.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test4.py
+81,X-Keystroke,j,,10.0,1676049027856,test4.py,1.1.5 for 2021-2022 @t1,,j,,,,Student1,test4.py
+82,File.Edit,:,,10.0,1676049028234,test4.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test4.py
+83,X-Keystroke,:,,11.0,1676049028235,test4.py,1.1.5 for 2021-2022 @t1,,:,,,,Student1,test4.py
+84,X-Action,Enter,,,1676049028535,test4.py,1.1.5 for 2021-2022 @t1,,Enter,,,,Student1,test4.py
+85,File.Edit,"
+",,11.0,1676049028543,test4.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test4.py
+86,File.Edit,    ,,12.0,1676049028552,test4.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test4.py
+87,File.Edit,;,,16.0,1676049028824,test4.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test4.py
+88,X-Keystroke,;,,17.0,1676049028825,test4.py,1.1.5 for 2021-2022 @t1,,;,,,,Student1,test4.py
+89,X-Keystroke,;,,17.0,1676049028825,test4.py,1.1.5 for 2021-2022 @t1,,;,,,,Student1,test4.py
+90,X-Action,Backspace,,,1676434574791,test4.py,1.1.5 for 2021-2022 @t1,,Backspace,,,,Student1,test4.py
+91,File.Edit,,;,16.0,1676434574886,test4.py,1.1.5 for 2021-2022 @t1,Delete,,,,,Student1,test4.py
+92,File.Edit,p,,16.0,1676434575621,test4.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test4.py
+93,X-Keystroke,p,,17.0,1676434575626,test4.py,1.1.5 for 2021-2022 @t1,,p,,,,Student1,test4.py
+94,X-Keystroke,p,,17.0,1676434575626,test4.py,1.1.5 for 2021-2022 @t1,,p,,,,Student1,test4.py
+95,File.Edit,r,,17.0,1676434578898,test4.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test4.py
+96,X-Keystroke,r,,18.0,1676434578916,test4.py,1.1.5 for 2021-2022 @t1,,r,,,,Student1,test4.py
+97,File.Edit,i,,18.0,1676434578999,test4.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test4.py
+98,X-Keystroke,i,,19.0,1676434579010,test4.py,1.1.5 for 2021-2022 @t1,,i,,,,Student1,test4.py
+99,File.Edit,n,,19.0,1676434579042,test4.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test4.py
+100,X-Keystroke,n,,20.0,1676434579053,test4.py,1.1.5 for 2021-2022 @t1,,n,,,,Student1,test4.py
+101,File.Edit,t,,20.0,1676434579103,test4.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test4.py
+102,X-Keystroke,t,,21.0,1676434579109,test4.py,1.1.5 for 2021-2022 @t1,,t,,,,Student1,test4.py
+103,File.Edit,(,,21.0,1676434580923,test4.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test4.py
+104,File.Edit,),,22.0,1676434580932,test4.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test4.py
+105,X-Keystroke,(,,22.0,1676434580936,test4.py,1.1.5 for 2021-2022 @t1,,(,,,,Student1,test4.py
+106,X-Keystroke,r,,18.0,1676434578916,test4.py,1.1.5 for 2021-2022 @t1,,r,,,,Student1,test4.py
+107,X-Keystroke,i,,19.0,1676434579010,test4.py,1.1.5 for 2021-2022 @t1,,i,,,,Student1,test4.py
+108,X-Keystroke,n,,20.0,1676434579053,test4.py,1.1.5 for 2021-2022 @t1,,n,,,,Student1,test4.py
+109,X-Keystroke,t,,21.0,1676434579109,test4.py,1.1.5 for 2021-2022 @t1,,t,,,,Student1,test4.py
+110,X-Keystroke,(,,22.0,1676434580936,test4.py,1.1.5 for 2021-2022 @t1,,(,,,,Student1,test4.py
+111,File.Edit,',,22.0,1676434582728,test4.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test4.py
+112,File.Edit,',,23.0,1676434582737,test4.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test4.py
+113,X-Keystroke,',,23.0,1676434582738,test4.py,1.1.5 for 2021-2022 @t1,,',,,,Student1,test4.py
+114,File.Edit,h,,23.0,1676434583643,test4.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test4.py
+115,X-Keystroke,h,,24.0,1676434583644,test4.py,1.1.5 for 2021-2022 @t1,,h,,,,Student1,test4.py
+116,File.Edit,e,,24.0,1676434583736,test4.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test4.py
+117,X-Keystroke,e,,25.0,1676434583736,test4.py,1.1.5 for 2021-2022 @t1,,e,,,,Student1,test4.py
+118,File.Edit,l,,25.0,1676434583871,test4.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test4.py
+119,X-Keystroke,l,,26.0,1676434583871,test4.py,1.1.5 for 2021-2022 @t1,,l,,,,Student1,test4.py
+120,File.Edit,l,,26.0,1676434584018,test4.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test4.py
+121,X-Keystroke,l,,27.0,1676434584019,test4.py,1.1.5 for 2021-2022 @t1,,l,,,,Student1,test4.py
+122,File.Edit,o,,27.0,1676434584173,test4.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test4.py
+123,X-Keystroke,o,,28.0,1676434584174,test4.py,1.1.5 for 2021-2022 @t1,,o,,,,Student1,test4.py
+124,File.Edit, ,,28.0,1676434584318,test4.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test4.py
+125,X-Keystroke, ,,29.0,1676434584319,test4.py,1.1.5 for 2021-2022 @t1,, ,,,,Student1,test4.py
+126,File.Edit,w,,29.0,1676434584513,test4.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test4.py
+127,X-Keystroke,w,,30.0,1676434584514,test4.py,1.1.5 for 2021-2022 @t1,,w,,,,Student1,test4.py
+128,File.Edit,o,,30.0,1676434584623,test4.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test4.py
+129,X-Keystroke,o,,31.0,1676434584624,test4.py,1.1.5 for 2021-2022 @t1,,o,,,,Student1,test4.py
+130,File.Edit,r,,31.0,1676434584734,test4.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test4.py
+131,X-Keystroke,r,,32.0,1676434584735,test4.py,1.1.5 for 2021-2022 @t1,,r,,,,Student1,test4.py
+132,File.Edit,l,,32.0,1676434584811,test4.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test4.py
+133,X-Keystroke,l,,33.0,1676434584812,test4.py,1.1.5 for 2021-2022 @t1,,l,,,,Student1,test4.py
+134,File.Edit,d,,33.0,1676434584884,test4.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test4.py
+135,X-Keystroke,d,,34.0,1676434584884,test4.py,1.1.5 for 2021-2022 @t1,,d,,,,Student1,test4.py
+136,X-Keystroke,',,23.0,1676434582738,test4.py,1.1.5 for 2021-2022 @t1,,',,,,Student1,test4.py
+137,X-Keystroke,h,,24.0,1676434583644,test4.py,1.1.5 for 2021-2022 @t1,,h,,,,Student1,test4.py
+138,X-Keystroke,e,,25.0,1676434583736,test4.py,1.1.5 for 2021-2022 @t1,,e,,,,Student1,test4.py
+139,X-Keystroke,l,,26.0,1676434583871,test4.py,1.1.5 for 2021-2022 @t1,,l,,,,Student1,test4.py
+140,X-Keystroke,l,,27.0,1676434584019,test4.py,1.1.5 for 2021-2022 @t1,,l,,,,Student1,test4.py
+141,X-Keystroke,o,,28.0,1676434584174,test4.py,1.1.5 for 2021-2022 @t1,,o,,,,Student1,test4.py
+142,X-Keystroke, ,,29.0,1676434584319,test4.py,1.1.5 for 2021-2022 @t1,, ,,,,Student1,test4.py
+143,X-Keystroke,w,,30.0,1676434584514,test4.py,1.1.5 for 2021-2022 @t1,,w,,,,Student1,test4.py
+144,X-Keystroke,o,,31.0,1676434584623,test4.py,1.1.5 for 2021-2022 @t1,,o,,,,Student1,test4.py
+145,X-Keystroke,r,,32.0,1676434584735,test4.py,1.1.5 for 2021-2022 @t1,,r,,,,Student1,test4.py
+146,X-Keystroke,l,,33.0,1676434584812,test4.py,1.1.5 for 2021-2022 @t1,,l,,,,Student1,test4.py
+147,X-Keystroke,d,,34.0,1676434584884,test4.py,1.1.5 for 2021-2022 @t1,,d,,,,Student1,test4.py
+148,X-Action,Creating file /Users/edwards/PycharmProjects/correspondence/test5.py,,,1676564453725,test4.py,1.1.5 for 2021-2022 @t1,,Creating file /Users/edwards/PycharmProjects/correspondence/test5.py,,,,Student1,test4.py
+149,File.Edit,a,,0.0,1676564457498,test5.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test5.py
+150,X-Keystroke,a,,1.0,1676564457500,test5.py,1.1.5 for 2021-2022 @t1,,a,,,,Student1,test5.py
+151,X-Keystroke,a,,1.0,1676564457499,test5.py,1.1.5 for 2021-2022 @t1,,a,,,,Student1,test5.py
+152,File.Edit,i,,0.0,1676564460864,test5.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test5.py
+153,X-Keystroke,i,,1.0,1676564460921,test5.py,1.1.5 for 2021-2022 @t1,,i,,,,Student1,test5.py
+154,File.Edit,f,,1.0,1676564461194,test5.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test5.py
+155,X-Keystroke,f,,2.0,1676564461218,test5.py,1.1.5 for 2021-2022 @t1,,f,,,,Student1,test5.py
+156,File.Edit, ,,2.0,1676564461652,test5.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test5.py
+157,X-Keystroke, ,,3.0,1676564461652,test5.py,1.1.5 for 2021-2022 @t1,, ,,,,Student1,test5.py
+158,X-Action,Right,,,1676564462542,test5.py,1.1.5 for 2021-2022 @t1,,Right,,,,Student1,test5.py
+159,File.Edit,;,,4.0,1676564463566,test5.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test5.py
+160,X-Keystroke,;,,5.0,1676564463568,test5.py,1.1.5 for 2021-2022 @t1,,;,,,,Student1,test5.py
+161,X-Keystroke,i,,1.0,1676564460921,test5.py,1.1.5 for 2021-2022 @t1,,i,,,,Student1,test5.py
+162,X-Keystroke,f,,2.0,1676564461218,test5.py,1.1.5 for 2021-2022 @t1,,f,,,,Student1,test5.py
+163,X-Keystroke, ,,3.0,1676564461652,test5.py,1.1.5 for 2021-2022 @t1,, ,,,,Student1,test5.py
+164,X-Keystroke,;,,5.0,1676564463568,test5.py,1.1.5 for 2021-2022 @t1,,;,,,,Student1,test5.py
+165,X-Action,Backspace,,,1676564464432,test5.py,1.1.5 for 2021-2022 @t1,,Backspace,,,,Student1,test5.py
+166,File.Edit,,;,4.0,1676564464442,test5.py,1.1.5 for 2021-2022 @t1,Delete,,,,,Student1,test5.py
+167,File.Edit,:,,4.0,1676564464911,test5.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test5.py
+168,X-Keystroke,:,,5.0,1676564464912,test5.py,1.1.5 for 2021-2022 @t1,,:,,,,Student1,test5.py
+169,X-Action,Enter,,,1676564466165,test5.py,1.1.5 for 2021-2022 @t1,,Enter,,,,Student1,test5.py
+170,File.Edit,"
+",,5.0,1676564466186,test5.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test5.py
+171,File.Edit,    ,,6.0,1676564466201,test5.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test5.py
+172,X-Keystroke,:,,5.0,1676564464912,test5.py,1.1.5 for 2021-2022 @t1,,:,,,,Student1,test5.py
+173,X-Keystroke,b,,11.0,1676564468498,test5.py,1.1.5 for 2021-2022 @t1,,b,,,,Student1,test5.py
+174,File.Edit,b,,10.0,1676564468498,test5.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test5.py
+175,X-Keystroke,b,,11.0,1676564468499,test5.py,1.1.5 for 2021-2022 @t1,,b,,,,Student1,test5.py
+176,X-Action,Creating file /Users/edwards/PycharmProjects/correspondence/test6.py,,,1676572207018,test5.py,1.1.5 for 2021-2022 @t1,,Creating file /Users/edwards/PycharmProjects/correspondence/test6.py,,,,Student1,test5.py
+177,File.Edit,a,,0.0,1676572210552,test6.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test6.py
+178,X-Keystroke,a,,1.0,1676572210555,test6.py,1.1.5 for 2021-2022 @t1,,a,,,,Student1,test6.py
+179,File.Edit,i,,0.0,1676572212833,test6.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test6.py
+180,X-Keystroke,i,,1.0,1676572212858,test6.py,1.1.5 for 2021-2022 @t1,,i,,,,Student1,test6.py
+181,X-Keystroke,a,,1.0,1676572210554,test6.py,1.1.5 for 2021-2022 @t1,,a,,,,Student1,test6.py
+182,X-Keystroke,i,,1.0,1676572212858,test6.py,1.1.5 for 2021-2022 @t1,,i,,,,Student1,test6.py
+183,File.Edit,g,,1.0,1676572214092,test6.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test6.py
+184,X-Keystroke,g,,2.0,1676572214106,test6.py,1.1.5 for 2021-2022 @t1,,g,,,,Student1,test6.py
+185,X-Action,Backspace,,,1676572214804,test6.py,1.1.5 for 2021-2022 @t1,,Backspace,,,,Student1,test6.py
+186,File.Edit,,g,1.0,1676572214811,test6.py,1.1.5 for 2021-2022 @t1,Delete,,,,,Student1,test6.py
+187,File.Edit,f,,1.0,1676572215664,test6.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test6.py
+188,X-Keystroke,f,,2.0,1676572215679,test6.py,1.1.5 for 2021-2022 @t1,,f,,,,Student1,test6.py
+189,X-Keystroke,g,,2.0,1676572214106,test6.py,1.1.5 for 2021-2022 @t1,,g,,,,Student1,test6.py
+190,X-Keystroke,f,,2.0,1676572215678,test6.py,1.1.5 for 2021-2022 @t1,,f,,,,Student1,test6.py
+191,X-Keystroke, ,,3.0,1676572217108,test6.py,1.1.5 for 2021-2022 @t1,, ,,,,Student1,test6.py
+192,File.Edit, ,,2.0,1676572217107,test6.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test6.py
+193,X-Keystroke, ,,3.0,1676572217108,test6.py,1.1.5 for 2021-2022 @t1,, ,,,,Student1,test6.py
+194,X-Action,Right,,,1676572218325,test6.py,1.1.5 for 2021-2022 @t1,,Right,,,,Student1,test6.py
+195,File.Edit,;,,4.0,1676572219052,test6.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test6.py
+196,X-Keystroke,;,,5.0,1676572219053,test6.py,1.1.5 for 2021-2022 @t1,,;,,,,Student1,test6.py
+197,X-Action,Backspace,,,1676572219413,test6.py,1.1.5 for 2021-2022 @t1,,Backspace,,,,Student1,test6.py
+198,File.Edit,,;,4.0,1676572219418,test6.py,1.1.5 for 2021-2022 @t1,Delete,,,,,Student1,test6.py
+199,File.Edit,:,,4.0,1676572219907,test6.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test6.py
+200,X-Keystroke,:,,5.0,1676572219907,test6.py,1.1.5 for 2021-2022 @t1,,:,,,,Student1,test6.py
+201,X-Keystroke,;,,5.0,1676572219053,test6.py,1.1.5 for 2021-2022 @t1,,;,,,,Student1,test6.py
+202,X-Keystroke,:,,5.0,1676572219907,test6.py,1.1.5 for 2021-2022 @t1,,:,,,,Student1,test6.py
+203,X-Action,Enter,,,1676572221745,test6.py,1.1.5 for 2021-2022 @t1,,Enter,,,,Student1,test6.py
+204,File.Edit,"
+",,5.0,1676572221752,test6.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test6.py
+205,File.Edit,    ,,6.0,1676572221761,test6.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test6.py
+206,File.Edit,b,,10.0,1676572222436,test6.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test6.py
+207,X-Keystroke,b,,11.0,1676572222437,test6.py,1.1.5 for 2021-2022 @t1,,b,,,,Student1,test6.py
+208,X-Keystroke,b,,11.0,1676572222437,test6.py,1.1.5 for 2021-2022 @t1,,b,,,,Student1,test6.py
+209,X-Action,Creating file /Users/edwards/PycharmProjects/correspondence/test7.py,,,1676667172347,test6.py,1.1.5 for 2021-2022 @t1,,Creating file /Users/edwards/PycharmProjects/correspondence/test7.py,,,,Student1,test6.py
+210,X-Keystroke,a,,1.0,1676667176106,test7.py,1.1.5 for 2021-2022 @t1,,a,,,,Student1,test7.py
+211,X-Keystroke,(,,2.0,1676667177014,test7.py,1.1.5 for 2021-2022 @t1,,(,,,,Student1,test7.py
+212,X-Keystroke,),,3.0,1676667178679,test7.py,1.1.5 for 2021-2022 @t1,,),,,,Student1,test7.py
+213,File.Edit,a,,0.0,1676667176105,test7.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test7.py
+214,X-Keystroke,a,,1.0,1676667176106,test7.py,1.1.5 for 2021-2022 @t1,,a,,,,Student1,test7.py
+215,File.Edit,(,,1.0,1676667177007,test7.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test7.py
+216,File.Edit,),,2.0,1676667177014,test7.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test7.py
+217,X-Keystroke,(,,2.0,1676667177014,test7.py,1.1.5 for 2021-2022 @t1,,(,,,,Student1,test7.py
+218,X-Keystroke,),,3.0,1676667178679,test7.py,1.1.5 for 2021-2022 @t1,,),,,,Student1,test7.py
+219,X-Action,Left,,,1676667179569,test7.py,1.1.5 for 2021-2022 @t1,,Left,,,,Student1,test7.py
+220,File.Edit,b,,2.0,1676667179898,test7.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test7.py
+221,X-Keystroke,b,,3.0,1676667179899,test7.py,1.1.5 for 2021-2022 @t1,,b,,,,Student1,test7.py
+222,X-Keystroke,b,,3.0,1676667179899,test7.py,1.1.5 for 2021-2022 @t1,,b,,,,Student1,test7.py
+223,File.Edit,c,,3.0,1676667184570,test7.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test7.py
+224,X-Keystroke,c,,4.0,1676667184584,test7.py,1.1.5 for 2021-2022 @t1,,c,,,,Student1,test7.py
+225,X-Keystroke,c,,4.0,1676667184584,test7.py,1.1.5 for 2021-2022 @t1,,c,,,,Student1,test7.py
+226,X-Action,Creating file /Users/edwards/PycharmProjects/correspondence/test8.py,,,1676667193181,test7.py,1.1.5 for 2021-2022 @t1,,Creating file /Users/edwards/PycharmProjects/correspondence/test8.py,,,,Student1,test7.py
+227,File.Edit,i,,0.0,1676667195867,test8.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test8.py
+228,X-Keystroke,i,,1.0,1676667195868,test8.py,1.1.5 for 2021-2022 @t1,,i,,,,Student1,test8.py
+229,File.Edit,f,,1.0,1676667195950,test8.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test8.py
+230,X-Keystroke,f,,2.0,1676667195950,test8.py,1.1.5 for 2021-2022 @t1,,f,,,,Student1,test8.py
+231,X-Keystroke,i,,1.0,1676667195868,test8.py,1.1.5 for 2021-2022 @t1,,i,,,,Student1,test8.py
+232,X-Keystroke,f,,2.0,1676667195950,test8.py,1.1.5 for 2021-2022 @t1,,f,,,,Student1,test8.py
+233,X-Keystroke, ,,3.0,1676667196620,test8.py,1.1.5 for 2021-2022 @t1,, ,,,,Student1,test8.py
+234,X-Keystroke,a,,4.0,1676667197006,test8.py,1.1.5 for 2021-2022 @t1,,a,,,,Student1,test8.py
+235,X-Keystroke,:,,5.0,1676667197402,test8.py,1.1.5 for 2021-2022 @t1,,:,,,,Student1,test8.py
+236,File.Edit, ,,2.0,1676667196619,test8.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test8.py
+237,X-Keystroke, ,,3.0,1676667196620,test8.py,1.1.5 for 2021-2022 @t1,, ,,,,Student1,test8.py
+238,File.Edit,a,,3.0,1676667197005,test8.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test8.py
+239,X-Keystroke,a,,4.0,1676667197006,test8.py,1.1.5 for 2021-2022 @t1,,a,,,,Student1,test8.py
+240,File.Edit,:,,4.0,1676667197402,test8.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test8.py
+241,X-Keystroke,:,,5.0,1676667197403,test8.py,1.1.5 for 2021-2022 @t1,,:,,,,Student1,test8.py
+242,X-Action,Move Caret to Line Start,,,1676667198436,test8.py,1.1.5 for 2021-2022 @t1,,Move Caret to Line Start,,,,Student1,test8.py
+243,X-Action,Enter,,,1676667198913,test8.py,1.1.5 for 2021-2022 @t1,,Enter,,,,Student1,test8.py
+244,File.Edit,"
+",,0.0,1676667198919,test8.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test8.py
+245,X-Action,Enter,,,1676667199504,test8.py,1.1.5 for 2021-2022 @t1,,Enter,,,,Student1,test8.py
+246,File.Edit,"
+",,0.0,1676667199512,test8.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test8.py
+247,X-Action,Up,,,1676667199833,test8.py,1.1.5 for 2021-2022 @t1,,Up,,,,Student1,test8.py
+248,X-Action,Up,,,1676667199950,test8.py,1.1.5 for 2021-2022 @t1,,Up,,,,Student1,test8.py
+249,File.Edit,i,,0.0,1676667200701,test8.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test8.py
+250,X-Keystroke,i,,1.0,1676667200702,test8.py,1.1.5 for 2021-2022 @t1,,i,,,,Student1,test8.py
+251,File.Edit,m,,1.0,1676667200833,test8.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test8.py
+252,X-Keystroke,m,,2.0,1676667200860,test8.py,1.1.5 for 2021-2022 @t1,,m,,,,Student1,test8.py
+253,File.Edit, ,,2.0,1676667200957,test8.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test8.py
+254,X-Keystroke, ,,3.0,1676667200958,test8.py,1.1.5 for 2021-2022 @t1,, ,,,,Student1,test8.py
+255,X-Action,Backspace,,,1676667201426,test8.py,1.1.5 for 2021-2022 @t1,,Backspace,,,,Student1,test8.py
+256,File.Edit,, ,2.0,1676667201436,test8.py,1.1.5 for 2021-2022 @t1,Delete,,,,,Student1,test8.py
+257,File.Edit,p,,2.0,1676667201688,test8.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test8.py
+258,X-Keystroke,p,,3.0,1676667201689,test8.py,1.1.5 for 2021-2022 @t1,,p,,,,Student1,test8.py
+259,File.Edit,o,,3.0,1676667201779,test8.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test8.py
+260,X-Keystroke,o,,4.0,1676667201791,test8.py,1.1.5 for 2021-2022 @t1,,o,,,,Student1,test8.py
+261,File.Edit,r,,4.0,1676667201918,test8.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test8.py
+262,X-Keystroke,r,,5.0,1676667201925,test8.py,1.1.5 for 2021-2022 @t1,,r,,,,Student1,test8.py
+263,File.Edit,t,,5.0,1676667202055,test8.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test8.py
+264,X-Keystroke,t,,6.0,1676667202061,test8.py,1.1.5 for 2021-2022 @t1,,t,,,,Student1,test8.py
+265,File.Edit, ,,6.0,1676667202249,test8.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test8.py
+266,X-Keystroke, ,,7.0,1676667202249,test8.py,1.1.5 for 2021-2022 @t1,, ,,,,Student1,test8.py
+267,File.Edit,t,,7.0,1676667202648,test8.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test8.py
+268,X-Keystroke,t,,8.0,1676667202648,test8.py,1.1.5 for 2021-2022 @t1,,t,,,,Student1,test8.py
+269,File.Edit,u,,8.0,1676667202813,test8.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test8.py
+270,X-Keystroke,u,,9.0,1676667202830,test8.py,1.1.5 for 2021-2022 @t1,,u,,,,Student1,test8.py
+271,X-Keystroke,i,,1.0,1676667200702,test8.py,1.1.5 for 2021-2022 @t1,,i,,,,Student1,test8.py
+272,X-Keystroke,m,,2.0,1676667200860,test8.py,1.1.5 for 2021-2022 @t1,,m,,,,Student1,test8.py
+273,X-Keystroke, ,,3.0,1676667200958,test8.py,1.1.5 for 2021-2022 @t1,, ,,,,Student1,test8.py
+274,X-Keystroke,p,,3.0,1676667201689,test8.py,1.1.5 for 2021-2022 @t1,,p,,,,Student1,test8.py
+275,X-Keystroke,o,,4.0,1676667201791,test8.py,1.1.5 for 2021-2022 @t1,,o,,,,Student1,test8.py
+276,X-Keystroke,r,,5.0,1676667201925,test8.py,1.1.5 for 2021-2022 @t1,,r,,,,Student1,test8.py
+277,X-Keystroke,t,,6.0,1676667202061,test8.py,1.1.5 for 2021-2022 @t1,,t,,,,Student1,test8.py
+278,X-Keystroke, ,,7.0,1676667202249,test8.py,1.1.5 for 2021-2022 @t1,, ,,,,Student1,test8.py
+279,X-Keystroke,t,,8.0,1676667202648,test8.py,1.1.5 for 2021-2022 @t1,,t,,,,Student1,test8.py
+280,X-Keystroke,u,,9.0,1676667202830,test8.py,1.1.5 for 2021-2022 @t1,,u,,,,Student1,test8.py
+281,X-Keystroke,r,,10.0,1676667202923,test8.py,1.1.5 for 2021-2022 @t1,,r,,,,Student1,test8.py
+282,X-Keystroke,t,,11.0,1676667203348,test8.py,1.1.5 for 2021-2022 @t1,,t,,,,Student1,test8.py
+283,X-Keystroke,l,,12.0,1676667203524,test8.py,1.1.5 for 2021-2022 @t1,,l,,,,Student1,test8.py
+284,X-Keystroke,e,,13.0,1676667203615,test8.py,1.1.5 for 2021-2022 @t1,,e,,,,Student1,test8.py
+285,File.Edit,r,,9.0,1676667202914,test8.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test8.py
+286,X-Keystroke,r,,10.0,1676667202923,test8.py,1.1.5 for 2021-2022 @t1,,r,,,,Student1,test8.py
+287,File.Edit,t,,10.0,1676667203334,test8.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test8.py
+288,X-Keystroke,t,,11.0,1676667203349,test8.py,1.1.5 for 2021-2022 @t1,,t,,,,Student1,test8.py
+289,File.Edit,l,,11.0,1676667203518,test8.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test8.py
+290,X-Keystroke,l,,12.0,1676667203524,test8.py,1.1.5 for 2021-2022 @t1,,l,,,,Student1,test8.py
+291,File.Edit,e,,12.0,1676667203610,test8.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test8.py
+292,X-Keystroke,e,,13.0,1676667203615,test8.py,1.1.5 for 2021-2022 @t1,,e,,,,Student1,test8.py
+293,X-Action,Escape,,,1676667205833,test8.py,1.1.5 for 2021-2022 @t1,,Escape,,,,Student1,test8.py
+294,X-Action,Down,,,1676667206215,test8.py,1.1.5 for 2021-2022 @t1,,Down,,,,Student1,test8.py
+295,X-Action,Down,,,1676667206383,test8.py,1.1.5 for 2021-2022 @t1,,Down,,,,Student1,test8.py
+296,X-Action,Down,,,1676667206552,test8.py,1.1.5 for 2021-2022 @t1,,Down,,,,Student1,test8.py
+297,X-Action,Enter,,,1676667207817,test8.py,1.1.5 for 2021-2022 @t1,,Enter,,,,Student1,test8.py
+298,File.Edit,"
+",,20.0,1676667207825,test8.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test8.py
+299,File.Edit,    ,,21.0,1676667207836,test8.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test8.py
+300,File.Edit,b,,25.0,1676667208221,test8.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test8.py
+301,X-Keystroke,b,,26.0,1676667208222,test8.py,1.1.5 for 2021-2022 @t1,,b,,,,Student1,test8.py
+302,X-Keystroke,b,,26.0,1676667208222,test8.py,1.1.5 for 2021-2022 @t1,,b,,,,Student1,test8.py
+303,X-Action,EditorChange,,,1676667317435,test8.py,1.1.5 for 2021-2022 @t1,,EditorChange,,,,Student1,test8.py
+304,File.Edit,",",,3.0,1676667319948,test7.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test7.py
+305,X-Keystroke,",",,4.0,1676667319949,test7.py,1.1.5 for 2021-2022 @t1,,",",,,,Student1,test7.py
+306,X-Keystroke,",",,4.0,1676667319949,test7.py,1.1.5 for 2021-2022 @t1,,",",,,,Student1,test7.py
+307,X-Action,Creating file /Users/edwards/PycharmProjects/correspondence/test9.py,,,1676667665735,test8.py,1.1.5 for 2021-2022 @t1,,Creating file /Users/edwards/PycharmProjects/correspondence/test9.py,,,,Student1,test8.py
+308,X-Keystroke,p,,1.0,1676667669162,test9.py,1.1.5 for 2021-2022 @t1,,p,,,,Student1,test9.py
+309,File.Edit,p,,0.0,1676667669161,test9.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test9.py
+310,X-Keystroke,p,,1.0,1676667669162,test9.py,1.1.5 for 2021-2022 @t1,,p,,,,Student1,test9.py
+311,File.Edit,r,,1.0,1676667676914,test9.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test9.py
+312,X-Keystroke,r,,2.0,1676667676925,test9.py,1.1.5 for 2021-2022 @t1,,r,,,,Student1,test9.py
+313,File.Edit,i,,2.0,1676667678816,test9.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test9.py
+314,X-Keystroke,i,,3.0,1676667678831,test9.py,1.1.5 for 2021-2022 @t1,,i,,,,Student1,test9.py
+315,File.Edit,n,,3.0,1676667678860,test9.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test9.py
+316,X-Keystroke,n,,4.0,1676667678874,test9.py,1.1.5 for 2021-2022 @t1,,n,,,,Student1,test9.py
+317,X-Keystroke,r,,2.0,1676667676925,test9.py,1.1.5 for 2021-2022 @t1,,r,,,,Student1,test9.py
+318,X-Keystroke,i,,3.0,1676667678831,test9.py,1.1.5 for 2021-2022 @t1,,i,,,,Student1,test9.py
+319,X-Keystroke,n,,4.0,1676667678874,test9.py,1.1.5 for 2021-2022 @t1,,n,,,,Student1,test9.py
+320,File.Edit,(,,4.0,1676667680510,test9.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test9.py
+321,File.Edit,),,5.0,1676667680515,test9.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test9.py
+322,X-Keystroke,(,,5.0,1676667680516,test9.py,1.1.5 for 2021-2022 @t1,,(,,,,Student1,test9.py
+323,X-Keystroke,),,6.0,1676667680547,test9.py,1.1.5 for 2021-2022 @t1,,),,,,Student1,test9.py
+324,X-Action,Enter,,,1676667682454,test9.py,1.1.5 for 2021-2022 @t1,,Enter,,,,Student1,test9.py
+325,File.Edit,"
+",,6.0,1676667682462,test9.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test9.py
+326,File.Edit,p,,7.0,1676667682988,test9.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test9.py
+327,X-Keystroke,p,,8.0,1676667682989,test9.py,1.1.5 for 2021-2022 @t1,,p,,,,Student1,test9.py
+328,File.Edit,r,,8.0,1676667683159,test9.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test9.py
+329,X-Keystroke,r,,9.0,1676667683168,test9.py,1.1.5 for 2021-2022 @t1,,r,,,,Student1,test9.py
+330,File.Edit,i,,9.0,1676667683262,test9.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test9.py
+331,X-Keystroke,i,,10.0,1676667683274,test9.py,1.1.5 for 2021-2022 @t1,,i,,,,Student1,test9.py
+332,File.Edit,n,,10.0,1676667683362,test9.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test9.py
+333,X-Keystroke,n,,11.0,1676667683380,test9.py,1.1.5 for 2021-2022 @t1,,n,,,,Student1,test9.py
+334,File.Edit,t,,11.0,1676667683415,test9.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test9.py
+335,X-Keystroke,t,,12.0,1676667683422,test9.py,1.1.5 for 2021-2022 @t1,,t,,,,Student1,test9.py
+336,X-Keystroke,(,,5.0,1676667680516,test9.py,1.1.5 for 2021-2022 @t1,,(,,,,Student1,test9.py
+337,X-Keystroke,),,6.0,1676667680547,test9.py,1.1.5 for 2021-2022 @t1,,),,,,Student1,test9.py
+338,X-Keystroke,p,,8.0,1676667682989,test9.py,1.1.5 for 2021-2022 @t1,,p,,,,Student1,test9.py
+339,X-Keystroke,r,,9.0,1676667683167,test9.py,1.1.5 for 2021-2022 @t1,,r,,,,Student1,test9.py
+340,X-Keystroke,i,,10.0,1676667683273,test9.py,1.1.5 for 2021-2022 @t1,,i,,,,Student1,test9.py
+341,X-Keystroke,n,,11.0,1676667683380,test9.py,1.1.5 for 2021-2022 @t1,,n,,,,Student1,test9.py
+342,X-Keystroke,t,,12.0,1676667683422,test9.py,1.1.5 for 2021-2022 @t1,,t,,,,Student1,test9.py
+343,X-Action,Backspace,,,1676667684430,test9.py,1.1.5 for 2021-2022 @t1,,Backspace,,,,Student1,test9.py
+344,File.Edit,,t,11.0,1676667684439,test9.py,1.1.5 for 2021-2022 @t1,Delete,,,,,Student1,test9.py
+345,File.Edit,),,11.0,1676667685035,test9.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test9.py
+346,X-Keystroke,),,12.0,1676667685036,test9.py,1.1.5 for 2021-2022 @t1,,),,,,Student1,test9.py
+347,X-Action,Backspace,,,1676667685714,test9.py,1.1.5 for 2021-2022 @t1,,Backspace,,,,Student1,test9.py
+348,File.Edit,,),11.0,1676667685721,test9.py,1.1.5 for 2021-2022 @t1,Delete,,,,,Student1,test9.py
+349,File.Edit,(,,11.0,1676667686026,test9.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test9.py
+350,File.Edit,),,12.0,1676667686033,test9.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test9.py
+351,X-Keystroke,(,,12.0,1676667686033,test9.py,1.1.5 for 2021-2022 @t1,,(,,,,Student1,test9.py
+352,X-Keystroke,),,13.0,1676667686057,test9.py,1.1.5 for 2021-2022 @t1,,),,,,Student1,test9.py
+353,X-Action,Enter,,,1676667686943,test9.py,1.1.5 for 2021-2022 @t1,,Enter,,,,Student1,test9.py
+354,File.Edit,"
+",,13.0,1676667686949,test9.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test9.py
+355,File.Edit,p,,14.0,1676667687313,test9.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test9.py
+356,X-Keystroke,p,,15.0,1676667687314,test9.py,1.1.5 for 2021-2022 @t1,,p,,,,Student1,test9.py
+357,X-Keystroke,),,12.0,1676667685036,test9.py,1.1.5 for 2021-2022 @t1,,),,,,Student1,test9.py
+358,X-Keystroke,(,,12.0,1676667686033,test9.py,1.1.5 for 2021-2022 @t1,,(,,,,Student1,test9.py
+359,X-Keystroke,),,13.0,1676667686057,test9.py,1.1.5 for 2021-2022 @t1,,),,,,Student1,test9.py
+360,X-Keystroke,p,,15.0,1676667687314,test9.py,1.1.5 for 2021-2022 @t1,,p,,,,Student1,test9.py
+361,X-Keystroke,r,,16.0,1676667687465,test9.py,1.1.5 for 2021-2022 @t1,,r,,,,Student1,test9.py
+362,X-Keystroke,i,,17.0,1676667687604,test9.py,1.1.5 for 2021-2022 @t1,,i,,,,Student1,test9.py
+363,X-Keystroke,n,,18.0,1676667687661,test9.py,1.1.5 for 2021-2022 @t1,,n,,,,Student1,test9.py
+364,File.Edit,r,,15.0,1676667687458,test9.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test9.py
+365,X-Keystroke,r,,16.0,1676667687465,test9.py,1.1.5 for 2021-2022 @t1,,r,,,,Student1,test9.py
+366,File.Edit,i,,16.0,1676667687594,test9.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test9.py
+367,X-Keystroke,i,,17.0,1676667687604,test9.py,1.1.5 for 2021-2022 @t1,,i,,,,Student1,test9.py
+368,File.Edit,n,,17.0,1676667687651,test9.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test9.py
+369,X-Keystroke,n,,18.0,1676667687661,test9.py,1.1.5 for 2021-2022 @t1,,n,,,,Student1,test9.py
+370,File.Edit,(,,18.0,1676667688072,test9.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test9.py
+371,File.Edit,),,19.0,1676667688076,test9.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test9.py
+372,X-Keystroke,(,,19.0,1676667688077,test9.py,1.1.5 for 2021-2022 @t1,,(,,,,Student1,test9.py
+373,X-Keystroke,),,20.0,1676667688111,test9.py,1.1.5 for 2021-2022 @t1,,),,,,Student1,test9.py
+374,X-Action,Up,,,1676667690022,test9.py,1.1.5 for 2021-2022 @t1,,Up,,,,Student1,test9.py
+375,X-Action,Up,,,1676667690171,test9.py,1.1.5 for 2021-2022 @t1,,Up,,,,Student1,test9.py
+376,X-Keystroke,(,,19.0,1676667688077,test9.py,1.1.5 for 2021-2022 @t1,,(,,,,Student1,test9.py
+377,X-Keystroke,),,20.0,1676667688111,test9.py,1.1.5 for 2021-2022 @t1,,),,,,Student1,test9.py
+378,X-Action,Left,,,1676667690548,test9.py,1.1.5 for 2021-2022 @t1,,Left,,,,Student1,test9.py
+379,X-Action,Left,,,1676667690836,test9.py,1.1.5 for 2021-2022 @t1,,Left,,,,Student1,test9.py
+380,X-Action,Shrink Selection,,,1676667692932,test9.py,1.1.5 for 2021-2022 @t1,,Shrink Selection,,,,Student1,test9.py
+381,X-Action,Shrink Selection,,,1676667693471,test9.py,1.1.5 for 2021-2022 @t1,,Shrink Selection,,,,Student1,test9.py
+382,X-Action,Shrink Selection,,,1676667693853,test9.py,1.1.5 for 2021-2022 @t1,,Shrink Selection,,,,Student1,test9.py
+383,X-Action,Shrink Selection,,,1676667694006,test9.py,1.1.5 for 2021-2022 @t1,,Shrink Selection,,,,Student1,test9.py
+384,File.Edit,t,,4.0,1676667700244,test9.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test9.py
+385,File.Edit,t,,12.0,1676667700250,test9.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test9.py
+386,File.Edit,t,,20.0,1676667700255,test9.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test9.py
+387,X-Keystroke,t,,5.0,1676667700256,test9.py,1.1.5 for 2021-2022 @t1,,t,,,,Student1,test9.py
+388,X-Keystroke,t,,13.0,1676667700256,test9.py,1.1.5 for 2021-2022 @t1,,t,,,,Student1,test9.py
+389,X-Keystroke,t,,21.0,1676667700256,test9.py,1.1.5 for 2021-2022 @t1,,t,,,,Student1,test9.py
+390,X-Keystroke,t,,5.0,1676667700255,test9.py,1.1.5 for 2021-2022 @t1,,t,,,,Student1,test9.py
+391,X-Keystroke,t,,13.0,1676667700255,test9.py,1.1.5 for 2021-2022 @t1,,t,,,,Student1,test9.py
+392,X-Keystroke,t,,21.0,1676667700255,test9.py,1.1.5 for 2021-2022 @t1,,t,,,,Student1,test9.py
+393,X-Action,ShowYourWork Init,,,1679074433410,,1.1.5 for 2021-2022 @t1,,Init,,,,Student1,
+394,X-Action,ShowYourWork Init,,,1680652341978,,1.1.5 for 2021-2022 @t1,,Init,,,,Student1,
+395,X-Action,ShowYourWork Init,,,1683043646863,,1.1.5 for 2021-2022 @t1,,Init,,,,Student1,
+396,File.Edit,a,,0.0,1683043699224,test10.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test10.py
+397,X-Keystroke,a,,1.0,1683043699262,test10.py,1.1.5 for 2021-2022 @t1,,a,,,,Student1,test10.py
+398,File.Edit,i,,0.0,1683043700443,test10.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test10.py
+399,X-Keystroke,i,,1.0,1683043700449,test10.py,1.1.5 for 2021-2022 @t1,,i,,,,Student1,test10.py
+400,File.Edit,g,,1.0,1683043700524,test10.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test10.py
+401,X-Keystroke,g,,2.0,1683043700530,test10.py,1.1.5 for 2021-2022 @t1,,g,,,,Student1,test10.py
+402,X-Action,Backspace,,,1683043701273,test10.py,1.1.5 for 2021-2022 @t1,,Backspace,,,,Student1,test10.py
+403,File.Edit,,g,1.0,1683043701290,test10.py,1.1.5 for 2021-2022 @t1,Delete,,,,,Student1,test10.py
+404,File.Edit,f,,1.0,1683043704392,test10.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test10.py
+405,X-Keystroke,f,,2.0,1683043704415,test10.py,1.1.5 for 2021-2022 @t1,,f,,,,Student1,test10.py
+406,File.Edit, ,,2.0,1683043704592,test10.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test10.py
+407,X-Keystroke, ,,3.0,1683043704602,test10.py,1.1.5 for 2021-2022 @t1,, ,,,,Student1,test10.py
+408,X-Action,Right,,,1683043705440,test10.py,1.1.5 for 2021-2022 @t1,,Right,,,,Student1,test10.py
+409,File.Edit,;,,4.0,1683043726481,test10.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test10.py
+410,X-Keystroke,;,,5.0,1683043726486,test10.py,1.1.5 for 2021-2022 @t1,,;,,,,Student1,test10.py
+411,X-Action,Backspace,,,1683043727147,test10.py,1.1.5 for 2021-2022 @t1,,Backspace,,,,Student1,test10.py
+412,File.Edit,,;,4.0,1683043727152,test10.py,1.1.5 for 2021-2022 @t1,Delete,,,,,Student1,test10.py
+413,File.Edit,:,,4.0,1683043727589,test10.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test10.py
+414,X-Keystroke,:,,5.0,1683043727595,test10.py,1.1.5 for 2021-2022 @t1,,:,,,,Student1,test10.py
+415,X-Action,Enter,,,1683043728122,test10.py,1.1.5 for 2021-2022 @t1,,Enter,,,,Student1,test10.py
+416,File.Edit,"
+",,5.0,1683043728149,test10.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test10.py
+417,File.Edit,    ,,6.0,1683043728193,test10.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test10.py
+418,File.Edit,b,,10.0,1683043728867,test10.py,1.1.5 for 2021-2022 @t1,Insert,,,,,Student1,test10.py
+419,X-Keystroke,b,,11.0,1683043728873,test10.py,1.1.5 for 2021-2022 @t1,,b,,,,Student1,test10.py
