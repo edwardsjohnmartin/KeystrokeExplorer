@@ -43,8 +43,8 @@ export class Data {
 
     constructor() {
         // this.file = require("/static/sample.csv");
-        // this.file = require("/static/correspondence.csv");
-        this.file = require("/static/no-subject-assignment.csv");
+        this.file = require("/static/correspondence.csv");
+        // this.file = require("/static/no-subject-assignment.csv");
         this.fileLoaded();
 
         setInterval(async () => {

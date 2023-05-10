@@ -75,7 +75,7 @@ export class TemporalHierarchy {
         this.idxInLastCompilable = this.idxInLastSnapshot.slice();
         this.allIdxInLastCompilable.push(this.idxInLastCompilable);
 
-        if (eventNumber > 0 && !this.allCompilable.at(-1)) {
+        if (eventNumber > 0 && !this.allCompilable.at(-2)) {
             for (let k = 0; k < this.idxInLastCompilable.length; ++k) {
                 // If the character was not inserted, get the index from the
                 // idxInLastCompilable from the last snapshot.
@@ -93,7 +93,6 @@ export class TemporalHierarchy {
         // this point.
         this.set_tids(ast);
         if (this.asts.length > 0) {
-            // this.set_all_tparents(asts.at(-1), cur_ast, idxInLastSnapshot);
             set_all_tparents(this.asts.at(-1), ast, this.idxInLastCompilable);
         }
         this.asts.push(ast);
