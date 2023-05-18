@@ -8,13 +8,17 @@ export class Main {
     /* Routing HAS to be inside this class -- no choice */
     static routes: IRoute[] = [
         {
-            path: ["", "tree"],
+            path: [""],
+            redirectTo: "tree",
+        },
+        {
+            path: ["tree"],
             title: "tree",
             component: import("./dashboard/tree/tree"),
         },
         {
-            path: ["other"],
-            title: "other",
+            path: ["codeProcess"],
+            title: "codeProcess",
             component: import("./dashboard/other/other"),
         },
     ]

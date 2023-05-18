@@ -43,8 +43,8 @@ export class Data {
 
     constructor() {
         // this.file = require("/static/sample.csv");
-        this.file = require("/static/correspondence.csv");
-        // this.file = require("/static/no-subject-assignment.csv");
+        // this.file = require("/static/correspondence.csv");
+        this.file = require("/static/no-subject-assignment.csv");
         this.fileLoaded();
 
         setInterval(async () => {
@@ -58,21 +58,31 @@ export class Data {
     fileLoaded() {
         this.filteredFile = new DataFrame(this.file).where(row => row.EventType == "File.Edit");
 
-        // TODO: add columns for student and assignment ID if they are missing
-        console.log(this.filteredFile);
-
+        this.createFakeStudent();
         this.cacheStudentAssignments();
 
         this.file = null;
         this.filteredFile = null;
     }
 
+    private createFakeStudent() {
+        (this.filteredFile.where(row => row.SubjectID === null)).forEach(row => {
+            row.SubjectID = "";
+        });
+        (this.filteredFile.where(row => row.AssignmentID === null)).forEach(row => {
+            row.AssignmentID = "";
+        });
+        (this.filteredFile.where(row => row.TaskID === null)).forEach(row => {
+            row.TaskID = "";
+        });
+    }
+
     // this will be called by the dashboard when the webpage loads
     // and we know what student to show
     public studentFileLoaded() {
-        if (this.subjectId == null) return;
-        if (this.assignmentId == null) return;
-        if (this.taskId == null) return;
+        if (this.subjectId === null) return;
+        if (this.assignmentId === null) return;
+        if (this.taskId === null) return;
 
         this.extractStudentData();
     }
@@ -87,10 +97,12 @@ export class Data {
         this.precompiledAsts = [];
         this.astParseErrors = [];
 
-        this.temporalHierarchy.reset();
+        this.temporalHierarchy = new TemporalHierarchy();
 
+        let treeNumber = -1;
         selection.forEach((row: any, eventNumber: number) => {
             let i = row.SourceLocation;
+            treeNumber += 1;
 
             let insertText = row.InsertText != null ? String(row.InsertText) : "";
             let deleteText = row.DeleteText != null ? String(row.DeleteText) : "";
@@ -109,7 +121,7 @@ export class Data {
             let ast: AstNode = null;
             try {
                 let codeState = state;
-                ast = AstBuilder.createAst(codeState, eventNumber);
+                ast = AstBuilder.createAst(codeState, eventNumber, treeNumber);
 
                 this.precompiledAsts.push(ast);
                 this.astParseErrors.push("");
@@ -141,6 +153,7 @@ export class Data {
                 if (node.tparent !== undefined) {
                     tid2node[node.tparent].tchildren.push(node.tid);
                 }
+                // node.eventNum
                 cur = gen.next();
             }
         });

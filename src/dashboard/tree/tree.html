@@ -1,5 +1,20 @@
 <import from="../nodechart/nodechart"></import>
 
+<div if.bind="tid !== undefined" class="border-solid border-2 border-gray-400 rounded-sm p-2 absolute min-w-[10rem]">
+  <div class="w-full"> ${nodeName} </div>
+  <div class="w-full"> tid: ${tid} </div>
+  <div class="w-full"> first tid: ${firstTid} </div>
+  <div class="w-full"> previous tid: ${previousTid} </div>
+  <div class="w-full"> next tid: ${nextTid} </div>
+  <div class="w-full"> last tid: ${lastTid} </div>
+  <div class="w-full flex justify-between">
+    <span click.trigger="gotoFirstTid()" class="font-medium text-blue-600 hover:underline"> ⭰ </span>
+    <span click.trigger="gotoPreviousTid()" class="font-medium text-blue-600 hover:underline"> ⭠ </span>
+    <span click.trigger="gotoInitialTid()" class="font-medium text-blue-600 hover:underline"> ● </span>
+    <span click.trigger="gotoNextTid()" class="font-medium text-blue-600 hover:underline"> ⭢ </span>
+    <span click.trigger="gotoLastTid()" class="font-medium text-blue-600 hover:underline"> ⭲ </span>
+  </div>
+</div>
 <svg id="tree" class="w-full h-3/4">
   <g id="tree"></g>
 </svg>

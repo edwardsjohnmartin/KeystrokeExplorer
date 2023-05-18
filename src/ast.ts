@@ -17,6 +17,7 @@ export class AstNode {
 
     // The event number
     public eventNum: number;
+    public treeNumber: number;
 
     // text-position attributes -- compute later.
     public startLine: number;
@@ -138,7 +139,9 @@ export function printAst(ast: AstNode) {
 // AstBuilder
 //-------------------------------------------------
 export abstract class AstBuilder {
-    static createAst(codeState: string, eventNum: number) {
+    static treeNumber = 0;
+
+    static createAst(codeState: string, eventNum: number, treeNumber: number) {
         let parse = null;
         try {
             // first argument is file-name (pointless)
@@ -147,6 +150,7 @@ export abstract class AstBuilder {
             throw SyntaxError(`Error on line ${error.traceback[0].lineno}`);
         }
 
+        AstBuilder.treeNumber = treeNumber;
         const ast = Sk.astFromParse(parse.cst, "", parse.flags);
         const root = this.createAstNode(ast, eventNum);
         this.updateRegions(root, codeState);
@@ -158,8 +162,9 @@ export abstract class AstBuilder {
     // Main function
     //------------------------------------------------------------
     static createAstNode(ast: any, eventNum: number) {
-        let node: AstNode;
         // console.log(ast);
+
+        let node: AstNode;
 
         switch (ast._astname) {
             case "Call":
@@ -244,6 +249,7 @@ export abstract class AstBuilder {
         if (node.name === undefined)
             node.name = ast._astname;
 
+        node.treeNumber = AstBuilder.treeNumber;
         node.descendants = node.children.length;
         node.children.forEach(child => node.descendants += child.descendants);
 
@@ -271,9 +277,9 @@ export abstract class AstBuilder {
             val = ast.func.value.id.v + ".";
         }
         if (ast.func.id !== undefined) {
-            node.name = "call " + val + ast.func.id.v;
+            node.name = val + ast.func.id.v + "()";
         } else {
-            node.name = "call " + val + ast.func.attr.v;
+            node.name = val + ast.func.attr.v + "()";
         }
 
         // Arguments
