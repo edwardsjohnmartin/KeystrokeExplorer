@@ -49,7 +49,7 @@ export class TemporalHierarchy {
         this.idxInLastSnapshot = Array<number>();
         this.allIdxInLastSnapshot = Array<Array<number>>();
 
-        this.idxInLastCompilable = Array<number>();
+        // this.idxInLastCompilable = Array<number>();
         this.allIdxInLastCompilable = Array<Array<number>>();
 
         this.allCompilable = Array<boolean>();
@@ -72,17 +72,20 @@ export class TemporalHierarchy {
         this.idxInLastSnapshot = beforeInsert.concat(inserted).concat(afterInsert);
         this.allIdxInLastSnapshot.push(this.idxInLastSnapshot);
 
-        this.idxInLastCompilable = this.idxInLastSnapshot.slice();
-        this.allIdxInLastCompilable.push(this.idxInLastCompilable);
+        // this.idxInLastCompilable = this.idxInLastSnapshot.slice();
+        // this.allIdxInLastCompilable.push(this.idxInLastCompilable);
+        this.allIdxInLastCompilable.push(this.idxInLastSnapshot.slice());
 
         if (eventNumber > 0 && !this.allCompilable.at(-2)) {
-            for (let k = 0; k < this.idxInLastCompilable.length; ++k) {
+            // for (let k = 0; k < this.idxInLastCompilable.length; ++k) {
+            for (let k = 0; k < this.allIdxInLastCompilable.at(-1).length; ++k) {
                 // If the character was not inserted, get the index from the
                 // idxInLastCompilable from the last snapshot.
                 const pk = this.idxInLastSnapshot[k];
 
                 if (pk != -1) {
-                    this.idxInLastCompilable[k] = this.allIdxInLastCompilable.at(-2)[pk];
+                    // this.idxInLastCompilable[k] = this.allIdxInLastCompilable.at(-2)[pk];
+                    this.allIdxInLastCompilable.at(-1)[k] = this.allIdxInLastCompilable.at(-2)[pk];
                 }
             }
         }
@@ -93,7 +96,12 @@ export class TemporalHierarchy {
         // this point.
         this.set_tids(ast);
         if (this.asts.length > 0) {
-            set_all_tparents(this.asts.at(-1), ast, this.idxInLastCompilable);
+            // set_all_tparents(this.asts.at(-1), ast, this.idxInLastCompilable);
+            // set_all_tparents(this.asts.at(-1), ast, this.allIdxInLastCompilable);
+            // console.log('*********************');
+            // console.log(this.allIdxInLastSnapshot);
+            // console.log(this.allIdxInLastCompilable);
+            set_all_tparents(this.asts, ast, this.allIdxInLastCompilable, this.allCompilable);
         }
         this.asts.push(ast);
 
@@ -192,17 +200,13 @@ function setNumEdits(node: AstNode, allIdxInLastSnapshot: Array<Array<number>>, 
     });
 }
 
-// This function takes an ast node, its start and end indices,
-// and finds the corresponding start and end indices in
-// the last compilable code.
-function prev_start_end(node: AstNode, idxInLastSnapshot: Array<number>): Array<number> {
-    if (node.start === undefined) {
-        throw new Error("node.start undefined in prev_start_end");
-    }
+function prev_start_end_impl(start: number, end: number, idxInLastSnapshot: Array<number>): Array<number> {
 
     const n: number = idxInLastSnapshot.length;
-    let i: number = node.start;
-    let j: number = node.end - 1; // node.end is one past the last character, so get the last character
+    // let i: number = node.start;
+    // let j: number = node.end - 1; // node.end is one past the last character, so get the last character
+    let i: number = start;
+    let j: number = end - 1; // node.end is one past the last character, so get the last character
     // Iterate past newly-added characters to the beginning then the end of the node
     while (idxInLastSnapshot[i] == -1 && i < j) {
         i += 1;
@@ -228,21 +232,51 @@ function prev_start_end(node: AstNode, idxInLastSnapshot: Array<number>): Array<
     }
 }
 
+    // This function takes an ast node, its start and end indices,
+// and finds the corresponding start and end indices in
+// the last compilable code.
+function prev_start_end(node: AstNode, idxInLastSnapshot: Array<number>): Array<number> {
+    if (node.start === undefined) {
+        throw new Error("node.start undefined in prev_start_end");
+    }
+
+    return prev_start_end_impl(node.start, node.end, idxInLastSnapshot);
+}
+
 // Uses index correspondences to set tparents
-function set_all_tparents(prev: AstNode, cur: AstNode, idxInLastSnapshot: Array<number>) {
+function set_all_tparents(asts: Array<AstNode>, cur: AstNode, allIdxInLastCompilable: Array<Array<number>>,
+     allCompilable: Array<boolean>) {
     if (cur.start === undefined) {
         throw new Error("cur.start undefined in set_all_parents");
     }
     // curStartInPrevCoords and curEndInPrevCoords are the start and end indices in the code
     // as it was when the prev ast was created.
-    const [curStartInPrevCoords, curEndInPrevCoords] = prev_start_end(cur, idxInLastSnapshot);
+    let curStartInPrevCoords: number, curEndInPrevCoords: number;
+    [curStartInPrevCoords, curEndInPrevCoords] = prev_start_end(cur, allIdxInLastCompilable.at(-1));
 
     // traverses through prev looking for a tparent for cur
-    set_cur_tparent(prev, cur, curStartInPrevCoords, curEndInPrevCoords);
+    set_cur_tparent(asts.at(-1), cur, curStartInPrevCoords, curEndInPrevCoords);
 
-    // Make recursive call for all of cur"s children
+    // If no tparent was set but it has previous coordinates then it is likely commented out
+    // in the previous tree. Iterate back until we either end up with -1 coordinates or find
+    // a tparent.
+    let k = -1;
+    let l = -1;
+    while (cur.tparent === undefined && cur.name != "Module" && curStartInPrevCoords > -1) {
+        if (curEndInPrevCoords == -1) {
+            throw new Error("Unexpected -1 prev coords");
+        }
+        k -= 1;
+        l -= 1;
+        while (l >= -allCompilable.length && !allCompilable.at(l)) l -= 1;
+        // console.log('*****', k, l, curStartInPrevCoords, curEndInPrevCoords, cur.start, cur.end, cur);
+        [curStartInPrevCoords, curEndInPrevCoords] = prev_start_end_impl(curStartInPrevCoords, curEndInPrevCoords, allIdxInLastCompilable.at(l));
+        set_cur_tparent(asts.at(k), cur, curStartInPrevCoords, curEndInPrevCoords);
+    }
+
+    // Make recursive call for all of cur's children
     cur.children?.forEach((n: AstNode) => {
-        set_all_tparents(prev, n, idxInLastSnapshot);
+        set_all_tparents(asts, n, allIdxInLastCompilable, allCompilable);
     });
 }
 
@@ -258,7 +292,7 @@ function set_cur_tparent(prev: AstNode, cur: AstNode, curStartInPrevCoords: numb
     let deeper: boolean = true;
     const pstarti: number = prev.start;
     const pendi: number = prev.end;
-    if (pstarti <= curStartInPrevCoords && pendi >= curEndInPrevCoords) {
+    if (prev.name != "Module" && pstarti <= curStartInPrevCoords && pendi >= curEndInPrevCoords) {
         cur.tparent = prev.tid;
     }
     // Go deeper if the current node is smaller then the prev node

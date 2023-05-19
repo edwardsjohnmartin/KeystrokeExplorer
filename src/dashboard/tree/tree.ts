@@ -16,6 +16,8 @@ export class Tree {
     public tids: Array<AstNode>;
     public nodeName: string;
     public tid: number;
+    public start: number;
+    public end: number;
     public firstTid: number;
     public previousTid: number;
     public nextTid: number;
@@ -36,6 +38,8 @@ export class Tree {
         this.tids = undefined;
         this.nodeName = undefined;
         this.tid = undefined;
+        this.start = undefined;
+        this.end = undefined;
         this.firstTid = undefined;
         this.previousTid = undefined;
         this.nextTid = undefined;
@@ -169,6 +173,8 @@ export class Tree {
         }
 
         this.tid = node.tid;
+        this.start = node.start;
+        this.end = node.end;
         this.firstTid = firstTid;
         this.previousTid = node.tparent;
         this.nextTid = node.tchildren.at(-1);

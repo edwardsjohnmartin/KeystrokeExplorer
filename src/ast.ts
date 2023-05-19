@@ -413,7 +413,7 @@ export abstract class AstBuilder {
         node.start = this.getIndex(node.startLine, node.startCol, lineLengthCumSum);
         node.end = this.getIndex(node.endLine, node.endCol, lineLengthCumSum);
 
-        // console.log('test***', node.name, node);
+        // TODO: (bug) We pull off whitespace but we don't remove comments. See test12.py.
         // Ignore whitespace at end
         let s = code.substring(node.start, node.end);
         let trim = s.length - s.trimEnd().length;
