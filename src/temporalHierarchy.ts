@@ -293,7 +293,10 @@ function set_cur_tparent(prev: AstNode, cur: AstNode, curStartInPrevCoords: numb
     const pstarti: number = prev.start;
     const pendi: number = prev.end;
     if (prev.name != "Module" && pstarti <= curStartInPrevCoords && pendi >= curEndInPrevCoords) {
-        cur.tparent = prev.tid;
+        // Only set the parent if the types are the same or if one of them is an identifier
+        if (prev.type === cur.type || (prev.type === 'Name' || cur.type === 'Name')) {
+            cur.tparent = prev.tid;
+        }
     }
     // Go deeper if the current node is smaller then the prev node
     deeper = (curStartInPrevCoords >= pstarti && curEndInPrevCoords <= pendi);

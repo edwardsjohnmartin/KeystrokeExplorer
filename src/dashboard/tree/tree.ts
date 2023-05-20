@@ -128,7 +128,7 @@ export class Tree {
 
         // console.log(node.name, 'tid=' + node.tid, 'eventNum=' + node.eventNum,
         //     'tparent=' + node.tparent, 'edits=' + node.totalEdits(tid2node));
-        // console.log(node);
+        console.log(node);
 
         // Find the root parent
         let n: AstNode = node;

@@ -413,11 +413,18 @@ export abstract class AstBuilder {
         node.start = this.getIndex(node.startLine, node.startCol, lineLengthCumSum);
         node.end = this.getIndex(node.endLine, node.endCol, lineLengthCumSum);
 
-        // TODO: (bug) We pull off whitespace but we don't remove comments. See test12.py.
-        // Ignore whitespace at end
+        // Ignore whitespace and comments at end
         let s = code.substring(node.start, node.end);
-        let trim = s.length - s.trimEnd().length;
-        node.end -= trim;
+        // Pull whitespace off the end of the string
+        s = s.trimEnd();
+        // Remove comments from end
+        let l = s.split("\n");
+        while (l.at(-1).trimStart()[0] == '#') {
+            l.pop();
+        }
+        s = l.join('\n');
+        node.end = node.start + s.length;
+
         // Set start and end for each child. We have to iterate backwards.
         let children: Array<AstNode> = [...node.children];
         children.reverse();
