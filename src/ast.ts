@@ -45,8 +45,10 @@ export class AstNode {
     public tchildren: Array<number> = [];
 
     // The number of new characters since the last compilable state
-    public numNewChars: number = -1;
-    // public num_edits: number = -1;
+    public numNewChars: number = 0;
+    public numEdits: number = 0;
+    public numInserts: number = 0;
+    public numDeletes: number = 0;
 
     constructor(src, eventNum: number) {
         this.descendants = 0;

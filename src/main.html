@@ -34,19 +34,33 @@
     <div class="w-full text-sm font-medium text-center text-gray-500 border-b border-gray-200 border-b-2">
       <ul class="flex flex-wrap -mb-px">
         <li class="mr-2">
-          <a load="tree" class="inline-block p-4 text-blue-600 border-b-2 border-blue-600 rounded-t-lg active"
-            aria-current="page"> Tree </a>
+          <a load="tree" click.trigger="dashboardChanged('tree')" class="inline-block p-4 border-b-2 rounded-t-lg"
+            class.bind="
+            dashboardTitle === 'tree' ?
+              'text-blue-600 border-blue-600 active' :
+              'border-transparent hover:text-gray-600 hover:border-gray-300'">
+            Tree
+          </a>
         </li>
         <li class="mr-2">
-          <a load="codeProcess"
-            class="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300">
-            Code Process (wip) </a>
+          <a load="codeProcess" click.trigger="dashboardChanged('codeProcess')"
+            class="inline-block p-4 border-b-2 rounded-t-lg" class.bind="
+            dashboardTitle === 'codeProcess' ?
+            'text-blue-600 border-blue-600 active' :
+            'border-transparent hover:text-gray-600 hover:border-gray-300'">
+            Code Process (wip)
+          </a>
+        </li>
+        <li class="mr-2">
+          <a load="studentStruggle" click.trigger="dashboardChanged('studentStruggle')"
+            class="inline-block p-4 border-b-2 rounded-t-lg" class.bind="
+            dashboardTitle === 'studentStruggle' ?
+            'text-blue-600 border-blue-600 active' :
+            'border-transparent hover:text-gray-600 hover:border-gray-300'">
+            Student Struggle (wip)
+          </a>
         </li>
         <!-- <li class="mr-2">
-          <a href="#"
-            class="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300">Settings</a>
-        </li>
-        <li class="mr-2">
           <a href="#"
             class="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300">Contacts</a>
         </li>

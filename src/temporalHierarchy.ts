@@ -6,7 +6,7 @@ export class TemporalHierarchy {
     private next_tid: number = 0
     private tid2node_inc: number = 64;
 
-    private tid2node = new Array(this.tid2node_inc);
+    private tid2node: Array<AstNode> = new Array(this.tid2node_inc);
 
     // idxInLastSnapshot[i] contains the index in the last snapshot (last edit)
     // for the character currently at index i. -1 if the character was just
@@ -26,7 +26,7 @@ export class TemporalHierarchy {
     private asts: Array<AstNode> = [];
 
     private set_tids(node: AstNode) {
-        if (node == null) return;
+        if (node === null) return;
 
         if (node.tid === undefined) {
             node.tid = this.next_tid;
@@ -71,22 +71,18 @@ export class TemporalHierarchy {
         // Create the new array.
         this.idxInLastSnapshot = beforeInsert.concat(inserted).concat(afterInsert);
         this.allIdxInLastSnapshot.push(this.idxInLastSnapshot);
-
-        // this.idxInLastCompilable = this.idxInLastSnapshot.slice();
-        // this.allIdxInLastCompilable.push(this.idxInLastCompilable);
         this.allIdxInLastCompilable.push(this.idxInLastSnapshot.slice());
 
-        if (eventNumber > 0 && !this.allCompilable.at(-2)) {
-            // for (let k = 0; k < this.idxInLastCompilable.length; ++k) {
-            for (let k = 0; k < this.allIdxInLastCompilable.at(-1).length; ++k) {
-                // If the character was not inserted, get the index from the
-                // idxInLastCompilable from the last snapshot.
-                const pk = this.idxInLastSnapshot[k];
+        // exit if this is the first event, or the last tree was compilable
+        if (eventNumber === 0 || this.allCompilable.at(-2)) return;
 
-                if (pk != -1) {
-                    // this.idxInLastCompilable[k] = this.allIdxInLastCompilable.at(-2)[pk];
-                    this.allIdxInLastCompilable.at(-1)[k] = this.allIdxInLastCompilable.at(-2)[pk];
-                }
+        for (let k = 0; k < this.allIdxInLastCompilable.at(-1).length; ++k) {
+            // If the character was not inserted, get the index from the
+            // idxInLastCompilable from the last snapshot.
+            const pk = this.idxInLastSnapshot[k];
+
+            if (pk !== -1) {
+                this.allIdxInLastCompilable.at(-1)[k] = this.allIdxInLastCompilable.at(-2)[pk];
             }
         }
     }
@@ -194,19 +190,20 @@ function setNumEdits(node: AstNode, allIdxInLastSnapshot: Array<Array<number>>, 
             end = idxInLastSnapshot.at(end - 1) + 1;
         }
     } while (!stop && !allCompilable.at(i - 1));
-    // node.num_edits = node.num_new_chars;
+
     node.children?.forEach((n: AstNode) => {
         setNumEdits(n, allIdxInLastSnapshot, allCompilable);
     });
+
+    node.numEdits += node.numNewChars;
 }
 
 function prev_start_end_impl(start: number, end: number, idxInLastSnapshot: Array<number>): Array<number> {
 
     const n: number = idxInLastSnapshot.length;
-    // let i: number = node.start;
-    // let j: number = node.end - 1; // node.end is one past the last character, so get the last character
     let i: number = start;
     let j: number = end - 1; // node.end is one past the last character, so get the last character
+
     // Iterate past newly-added characters to the beginning then the end of the node
     while (idxInLastSnapshot[i] == -1 && i < j) {
         i += 1;
@@ -232,7 +229,7 @@ function prev_start_end_impl(start: number, end: number, idxInLastSnapshot: Arra
     }
 }
 
-    // This function takes an ast node, its start and end indices,
+// This function takes an ast node, its start and end indices,
 // and finds the corresponding start and end indices in
 // the last compilable code.
 function prev_start_end(node: AstNode, idxInLastSnapshot: Array<number>): Array<number> {
@@ -245,7 +242,7 @@ function prev_start_end(node: AstNode, idxInLastSnapshot: Array<number>): Array<
 
 // Uses index correspondences to set tparents
 function set_all_tparents(asts: Array<AstNode>, cur: AstNode, allIdxInLastCompilable: Array<Array<number>>,
-     allCompilable: Array<boolean>) {
+    allCompilable: Array<boolean>) {
     if (cur.start === undefined) {
         throw new Error("cur.start undefined in set_all_parents");
     }

@@ -85,6 +85,7 @@ export class Data {
         if (this.taskId === null) return;
 
         this.extractStudentData();
+        this.setNodeEdits();
     }
 
     private extractStudentData() {
@@ -98,6 +99,9 @@ export class Data {
         this.astParseErrors = [];
 
         this.temporalHierarchy = new TemporalHierarchy();
+
+        let inserts = 0;
+        let deletes = 0;
 
         let treeNumber = -1;
         selection.forEach((row: any, eventNumber: number) => {
@@ -114,6 +118,9 @@ export class Data {
 
             this.codeStates.push(state);
             this.edits.push(new Edit(i, insertText, deleteText));
+
+            inserts += insertText.length;
+            deletes += deleteText.length;
 
             //------------------------------------------------------------
             // AST Parsing
@@ -140,6 +147,9 @@ export class Data {
         // initial file load, show first state
         this.playback = 0;
         this.playbackChanged();
+
+        console.log("Inserts: ", inserts);
+        console.log("Deletes: ", deletes);
     }
 
     private setTchildren() {
@@ -156,6 +166,17 @@ export class Data {
                 // node.eventNum
                 cur = gen.next();
             }
+        });
+    }
+
+    private setNodeEdits() {
+        const tid2node = this.temporalHierarchy.getTid();
+
+        tid2node.forEach((node: AstNode) => {
+            if (node.tparent === undefined) return;
+            node.numEdits += tid2node[node.tparent].numEdits;
+            node.numInserts += tid2node[node.tparent].numInserts;
+            node.numDeletes += tid2node[node.tparent].numDeletes;
         });
     }
 
