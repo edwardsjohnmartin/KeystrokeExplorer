@@ -8,26 +8,43 @@ export class Main {
     /* Routing HAS to be inside this class -- no choice */
     static routes: IRoute[] = [
         {
-            path: ["", "tree"],
+            path: [""],
+            redirectTo: "tree",
+        },
+        {
+            path: ["tree"],
             title: "tree",
             component: import("./dashboard/tree/tree"),
         },
         {
-            path: ["other"],
-            title: "other",
+            path: ["codeProcess"],
+            title: "codeProcess",
             component: import("./dashboard/other/other"),
+        },
+        {
+            path: ["studentStruggle"],
+            title: "studentStruggle",
+            component: import("./dashboard/studentStruggle/studentStruggle"),
         },
     ]
 
     private data: Data;
+    private dashboardTitle: string;
 
     constructor(data: Data) {
         this.data = data;
         window.addEventListener("keydown", this.keyPressHandler.bind(this));
+
+        // TODO: get current route as name
+        this.dashboardTitle = "";
     }
 
     dispose() {
         window.removeEventListener("keydown", this.keyPressHandler.bind(this))
+    }
+
+    private dashboardChanged(dashboardTitle: string) {
+        this.dashboardTitle = dashboardTitle;
     }
 
     /*
@@ -41,7 +58,7 @@ export class Main {
 
         // Don't handle keypresses inside input fields
         //  BUT -- allow sliders to be handled
-        if ((event.target as HTMLInputElement).type == "text") return;
+        if ((event.target as HTMLInputElement).type === "text") return;
 
         switch (event.key) {
             case "ArrowRight":

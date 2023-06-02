@@ -1,3 +1,4 @@
+import { assert } from "console";
 import { AnyARecord } from "dns";
 import * as Sk from "skulpt";
 
@@ -16,14 +17,15 @@ export class AstNode {
 
     // The event number
     public eventNum: number;
+    public treeNumber: number;
 
-    // text-position attributes -- compute later
+    // text-position attributes -- compute later.
     public startLine: number;
     public startCol: number;
     public endLine: number;
     public endCol: number;
     public start: number;
-    public end: number;
+    public end: number; // one past the last character of the node
 
     // Temporal relationships. These attributes describe a node's
     // ancestry and posterity in time. Using them we can answer questions
@@ -31,20 +33,22 @@ export class AstNode {
     // were spent on this node?"
 
     // tid - a unique "temporal ID"
-    public tid: number|undefined = undefined;
+    public tid: number | undefined = undefined;
     // tparent - temporal parent - the node from which this node
     // was created
-    public tparent: number|undefined = undefined;
+    public tparent: number | undefined = undefined;
     // tchildren - temporal children - nodes created out of this
     // node. The reason this is an array of ids and not nodes themselves
     // (as is the children attribute) is because having references to
     // the nodes themselves would require all ASTs for a program to be
     // in memory.
     public tchildren: Array<number> = [];
-    public starti: number|undefined = undefined;
-    public endi: number|undefined = undefined;
-    public num_edits: number = -1;
-    public num_new_chars: number = -1;
+
+    // The number of new characters since the last compilable state
+    public numNewChars: number = 0;
+    public numEdits: number = 0;
+    public numInserts: number = 0;
+    public numDeletes: number = 0;
 
     constructor(src, eventNum: number) {
         this.descendants = 0;
@@ -54,11 +58,19 @@ export class AstNode {
         this.src = src;
         this.eventNum = eventNum;
 
-        this.startLine = src.lineno-1;
+        this.startLine = src.lineno - 1;
         this.startCol = src.col_offset;
         this.type = src._astname;
 
         // console.log('** constructor:', this.starti);
+    }
+
+    // Not really. Actually the number of new characters since its inception
+    public totalEdits(tid2node: Array<AstNode>): number {
+        if (this.tparent > 0) {
+            return this.numNewChars + tid2node[this.tparent].totalEdits(tid2node);
+        }
+        return this.numNewChars;
     }
 }
 
@@ -71,23 +83,23 @@ export type AstGeneratorValue = {
     level: number;
 }
 
-export function* AstGenerator(node:AstNode, level:number=0): Generator<AstGeneratorValue, null, any> {
+export function* AstGenerator(node: AstNode, level: number = 0): Generator<AstGeneratorValue, null, any> {
     if (node) {
-        yield {node:node, level:level};
-        for (let i:number = 0; i < node.children?.length; ++i) {
-            let n:AstNode = node.children[i];
-            yield* AstGenerator(n, level+1);
+        yield { node: node, level: level };
+        for (let i: number = 0; i < node.children?.length; ++i) {
+            let n: AstNode = node.children[i];
+            yield* AstGenerator(n, level + 1);
         }
     }
     return null;
 }
 
-export function* AstTemporalGenerator(node: AstNode, tid2node: Array<AstNode>, level: number=0): Generator<AstGeneratorValue, null, any> {
+export function* AstTemporalGenerator(node: AstNode, tid2node: Array<AstNode>, level: number = 0): Generator<AstGeneratorValue, null, any> {
     if (node) {
-        yield {node:node, level:level};
-        for (let i:number = 0; i < node.tchildren.length; ++i) {
-            let n:AstNode = tid2node[node.tchildren[i]];
-            yield* AstTemporalGenerator(n, tid2node, level+1);
+        yield { node: node, level: level };
+        for (let i: number = 0; i < node.tchildren.length; ++i) {
+            let n: AstNode = tid2node[node.tchildren[i]];
+            yield* AstTemporalGenerator(n, tid2node, level + 1);
         }
     }
     return null;
@@ -96,28 +108,28 @@ export function* AstTemporalGenerator(node: AstNode, tid2node: Array<AstNode>, l
 //-------------------------------------------------
 // printAst
 //-------------------------------------------------
-export function printAst2(ast:AstNode) {
+export function printAst2(ast: AstNode) {
     const gen = AstGenerator(ast);
     let cur = gen.next();
     while (!cur.done) {
-        const node:AstNode = cur.value.node;
-        const prefix:string = ''.padStart(cur.value.level*2, ' ');
+        const node: AstNode = cur.value.node;
+        const prefix: string = ''.padStart(cur.value.level * 2, ' ');
         console.log(prefix, node);
         cur = gen.next();
     }
 }
 
-export function printAst(ast:AstNode) {
+export function printAst(ast: AstNode) {
     const gen = AstGenerator(ast);
     let cur = gen.next();
     while (!cur.done) {
-        const node:AstNode = cur.value.node;
-        const prefix:string = ''.padStart(cur.value.level*2, ' ');
+        const node: AstNode = cur.value.node;
+        const prefix: string = ''.padStart(cur.value.level * 2, ' ');
 
-        const tid:string = (node.tid !== undefined) ? `tid=${node.tid}` : '';
-        const tparent:string = (node.tparent !== undefined) ? `tparent=${node.tparent}` : '';
-        const location:string = (node.starti !== undefined) ? `loc=${node.starti}-${node.endi}` : '';
-        const new_chars:string = (node.num_new_chars !== undefined) ? `new_chars=${node.num_new_chars}` : '';
+        const tid: string = (node.tid !== undefined) ? `tid=${node.tid}` : '';
+        const tparent: string = (node.tparent !== undefined) ? `tparent=${node.tparent}` : '';
+        const location: string = (node.start !== undefined) ? `loc=${node.start}-${node.end}` : '';
+        const new_chars: string = (node.numNewChars !== undefined) ? `new_chars=${node.numNewChars}` : '';
 
         console.log(`${prefix}${node.name} ${tid} ${tparent} ${location} ${new_chars}`);
 
@@ -129,7 +141,9 @@ export function printAst(ast:AstNode) {
 // AstBuilder
 //-------------------------------------------------
 export abstract class AstBuilder {
-    static createAst(codeState: string, eventNum: number) {
+    static treeNumber = 0;
+
+    static createAst(codeState: string, eventNum: number, treeNumber: number) {
         let parse = null;
         try {
             // first argument is file-name (pointless)
@@ -138,6 +152,7 @@ export abstract class AstBuilder {
             throw SyntaxError(`Error on line ${error.traceback[0].lineno}`);
         }
 
+        AstBuilder.treeNumber = treeNumber;
         const ast = Sk.astFromParse(parse.cst, "", parse.flags);
         const root = this.createAstNode(ast, eventNum);
         this.updateRegions(root, codeState);
@@ -149,8 +164,9 @@ export abstract class AstBuilder {
     // Main function
     //------------------------------------------------------------
     static createAstNode(ast: any, eventNum: number) {
-        let node:AstNode;
         // console.log(ast);
+
+        let node: AstNode;
 
         switch (ast._astname) {
             case "Call":
@@ -235,6 +251,7 @@ export abstract class AstBuilder {
         if (node.name === undefined)
             node.name = ast._astname;
 
+        node.treeNumber = AstBuilder.treeNumber;
         node.descendants = node.children.length;
         node.children.forEach(child => node.descendants += child.descendants);
 
@@ -262,9 +279,9 @@ export abstract class AstBuilder {
             val = ast.func.value.id.v + ".";
         }
         if (ast.func.id !== undefined) {
-            node.name = "call " + val + ast.func.id.v;
+            node.name = val + ast.func.id.v + "()";
         } else {
-            node.name = "call " + val + ast.func.attr.v;
+            node.name = val + ast.func.attr.v + "()";
         }
 
         // Arguments
@@ -374,17 +391,15 @@ export abstract class AstBuilder {
     static updateRegions(node: AstNode, code: string) {
         // Get the number of characters on each line
         const lines = code.split("\n");
-        const lineLengths = new Array(lines.length);
-        lines.forEach((line, i) => {
-            // +1 to account for the newline character
-            lineLengths[i] = line.length;
-        });
+        // +1 to account for the newline character
+        const lineLengths: Array<number> = lines.map(line => line.length + 1);
+        // Account for the fact that the last string doesn't have a newline character
+        // at the end
+        lineLengths[lineLengths.length - 1] -= 1;
 
         let lineLengthCumSum = lineLengths.map((sum => value => sum += value)(0));
         lineLengthCumSum = [0].concat(lineLengthCumSum);
 
-        // node.lineno = 1;
-        // node.col_offset = 0;
         node.startLine = 0;
         node.startCol = 0;
         this.updateRegionsImpl(node, code, lines, lineLengthCumSum, lines.length - 1, lineLengths[lines.length - 1]);
@@ -400,13 +415,20 @@ export abstract class AstBuilder {
         node.start = this.getIndex(node.startLine, node.startCol, lineLengthCumSum);
         node.end = this.getIndex(node.endLine, node.endCol, lineLengthCumSum);
 
-        // console.log('test***', node.name, node);
-        // Ignore whitespace at end
+        // Ignore whitespace and comments at end
         let s = code.substring(node.start, node.end);
-        let trim = s.length - s.trimEnd().length;
-        node.end -= trim;
+        // Pull whitespace off the end of the string
+        s = s.trimEnd();
+        // Remove comments from end
+        let l = s.split("\n");
+        while (l.at(-1).trimStart()[0] == '#') {
+            l.pop();
+        }
+        s = l.join('\n');
+        node.end = node.start + s.length;
+
         // Set start and end for each child. We have to iterate backwards.
-        let children:Array<AstNode> = [...node.children];
+        let children: Array<AstNode> = [...node.children];
         children.reverse();
         children.forEach(child => {
             this.updateRegionsImpl(child, code, lines, lineLengthCumSum, endLine, endCol);

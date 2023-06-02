@@ -1,0 +1,8 @@
+playback box
+fix far-left and far-right arrows not working on (mac/safari/...?)
+
+struggle rate: some measure of additions over deletions
+  ☑ struggle rate for student+assignment (console log)
+  struggle rate for student+assignment per node type (console log)
+  struggle rate per node type across all files for the student
+  struggle rate for entire keystrok.csv file
