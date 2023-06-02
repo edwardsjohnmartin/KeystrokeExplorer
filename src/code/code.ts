@@ -104,9 +104,7 @@ export class Code {
         this.monacoEditor.setValue(this.data.code);
         this.monacoEditor.revealPositionInCenter({ lineNumber: lineNumber, column: column });
 
-        this.monacoEditor.createDecorationsCollection(codeHighlights.concat([
-            highlightRow,
-            editEvent
-        ]));
+        const combinedHighlights = codeHighlights.concat([highlightRow, editEvent])
+        this.monacoEditor.createDecorationsCollection(combinedHighlights);
     }
 }

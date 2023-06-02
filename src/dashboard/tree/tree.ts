@@ -102,19 +102,6 @@ export class Tree {
             .append("g")
             .attr("transform", d => `translate(${d.y}, ${d.x})`)
             .append("circle")
-            .on('mouseover', (_, datum) => {
-                const node = datum.data;
-                console.log('hovering over', node)
-                this.data.codeHighlights = [{
-                    startLineNumber: node.startLine,
-                    startColumn: node.startCol,
-                    endLineNumber: node.endLine,
-                    endColumn: node.endCol
-                }]
-            })
-            .on("mouseout", () => {
-                this.data.codeHighlights = []
-            })
             .attr("r", d => {
                 return this.tancestry.has(d.data.tid) || this.tposterity.has(d.data.tid) ? 9 : 5;
             })
@@ -122,11 +109,19 @@ export class Tree {
                 return this.tancestry.has(d.data.tid) ? "#ff0000" :
                     this.tposterity.has(d.data.tid) ? "#00ff00" : "#364e74";
             })
-            .on("mouseover", function () {
+            .on("mouseover", function (event, d) {
                 d3.select(this).transition().duration(2).attr("r", 9);
+                self.data.codeHighlights = [{
+                    startLineNumber: d.data.startLine,
+                    startColumn: d.data.startCol,
+                    endLineNumber: d.data.endLine,
+                    endColumn: d.data.endCol
+                }]
             })
             .on("mouseout", function () {
                 d3.select(this).transition().duration(2).attr("r", 5);
+                // TODO - this should probably just remove the single highlight for the moused-out node
+                self.data.codeHighlights = []
             })
             .on("click", (_, d) => {
                 this.selectNewNode(d.data);
