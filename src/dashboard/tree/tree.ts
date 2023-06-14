@@ -112,10 +112,10 @@ export class Tree {
             .on("mouseover", function (event, d) {
                 d3.select(this).transition().duration(2).attr("r", 9);
                 self.data.codeHighlights = [{
-                    startLineNumber: d.data.startLine,
-                    startColumn: d.data.startCol,
-                    endLineNumber: d.data.endLine,
-                    endColumn: d.data.endCol
+                    startLineNumber: d.data.startLine + 1,
+                    startColumn: d.data.startCol + 1,
+                    endLineNumber: d.data.endLine + 1,
+                    endColumn: d.data.endCol + 1
                 }]
             })
             .on("mouseout", function () {
@@ -123,7 +123,7 @@ export class Tree {
                 // TODO - this should probably just remove the single highlight for the moused-out node
                 self.data.codeHighlights = []
             })
-            .on("click", (_, d) => {
+            .on("click", (event, d) => {
                 this.selectNewNode(d.data);
                 this.treeNodeClick(d);
             })
