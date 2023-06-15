@@ -40,9 +40,27 @@ export class Code {
     }
 
     @watch("data.code")
+    @watch("data.codeHighlights")
     colorCode() {
         const lastEdit = this.data.edits[this.data.playback];
         const { lineNumber, column } = this.monacoEditor.getModel().getPositionAt(lastEdit.location);
+
+        const codeHighlights: Array<any> = []
+
+        this.data.codeHighlights.forEach(highlight => {
+            codeHighlights.push({
+                range: new monaco.Range(
+                    highlight.startLineNumber,
+                    highlight.startColumn,
+                    highlight.endLineNumber,
+                    highlight.endColumn
+                ),
+                options: {
+                    isWholeLine: false,
+                    className: "highlighHovered"
+                }
+            })
+        });
 
         const insertEvent = {
             range: new monaco.Range(
@@ -86,9 +104,7 @@ export class Code {
         this.monacoEditor.setValue(this.data.code);
         this.monacoEditor.revealPositionInCenter({ lineNumber: lineNumber, column: column });
 
-        this.monacoEditor.createDecorationsCollection([
-            highlightRow,
-            editEvent
-        ]);
+        const combinedHighlights = codeHighlights.concat([highlightRow, editEvent])
+        this.monacoEditor.createDecorationsCollection(combinedHighlights);
     }
 }
