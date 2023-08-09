@@ -64,6 +64,12 @@
       </select>
     </div>
 
+    <div class="flex flex-row place-content-center">
+      <button class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded" click.trigger="createCsv()">
+        Download Data
+      </button>
+    </div>
+
     <!-- TODO: Anchor to code-text instead of bottom-right. Breaks when minimized -->
     <div class="absolute bottom-0 right-0 h-16 w-32 pt-12 text-md text-red-800 rounded-lg">
       ${parseError}

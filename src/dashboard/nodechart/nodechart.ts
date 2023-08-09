@@ -22,6 +22,8 @@ export class NodeChart {
 
     @watch("data.taskId")
     buildNodeChart() {
+        if (d3.select("svg#nodeChart").node() === null) return;
+
         const data = this.data.precompiledAsts;
 
         const nodeChart = d3.select("svg#nodeChart");

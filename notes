@@ -1,8 +1,38 @@
 playback box
 fix far-left and far-right arrows not working on (mac/safari/...?)
+the old cache remains so loading new files keeps adding new cached items
 
-struggle rate: some measure of additions over deletions
-  ☑ struggle rate for student+assignment (console log)
-  struggle rate for student+assignment per node type (console log)
-  struggle rate per node type across all files for the student
-  struggle rate for entire keystrok.csv file
+bug fix with tchildren not being correct (module and when node types change [ie = to +=])
+bug fix with splitting children
+bug fix inserts and deletes on uncompilable states not carrying through to next state
+  do-while loop at line 169 in temporalHierarchy
+  playback(12-14) on test9.py
+
+# first snapshot is error
+# timeout on ast temporal generator taking too long
+
+FAILED:
+  STUDENT43, ASSIGN9, TASK1.py
+  STUDENT44, ASSIGN10, TEST.PY
+  STUDENT44, ASSIGN12, TASK2.PY
+
+
+PRIORITY:
+  get static parent for nodes
+
+1.2
+is struggle rate correlated with time taken and keystrokes made
+  get number of 5min+ breaks, normalize by number of keystrokes. compare to struggle rate
+  make a distribution to look at
+
+2.x
+detected what blocks were commented
+
+3.0
+do students who debug with print statements do better or worse?
+  observation on few instances on this. we figure there would be more.
+correlate with time taken, or throw away print calls that were deleted and all their temporal ancestors
+
+
+
+Student27, Assign13, task2.py failed -- regression

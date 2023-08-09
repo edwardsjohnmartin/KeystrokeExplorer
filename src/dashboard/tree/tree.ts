@@ -15,6 +15,8 @@ export class Tree {
 
     public tids: Array<AstNode>;
     public nodeName: string;
+    public inserts: number;
+    public deletes: number;
     public tid: number;
     public start: number;
     public end: number;
@@ -37,6 +39,8 @@ export class Tree {
     reset() {
         this.tids = undefined;
         this.nodeName = undefined;
+        this.inserts = undefined;
+        this.deletes = undefined;
         this.tid = undefined;
         this.start = undefined;
         this.end = undefined;
@@ -159,25 +163,27 @@ export class Tree {
         // find the first tid
         let firstTid = node.tid;
         let parentTid = node.tparent;
-        while (parentTid !== undefined) {
+        while (this.tids[parentTid] !== undefined) {
             firstTid = parentTid;
             parentTid = this.tids[parentTid].tparent;
         }
 
         // find the last tid
         let lastTid = node.tid;
-        let childTid = node.tchildren.at(-1);
-        while (childTid !== undefined) {
+        let childTid = node.tchildren;
+        while (this.tids[childTid] !== undefined) {
             lastTid = childTid;
-            childTid = this.tids[childTid].tchildren.at(-1);
+            childTid = this.tids[childTid].tchildren;
         }
 
         this.tid = node.tid;
+        this.inserts = node.numInserts;
+        this.deletes = node.numDeletes;
         this.start = node.start;
         this.end = node.end;
         this.firstTid = firstTid;
-        this.previousTid = node.tparent;
-        this.nextTid = node.tchildren.at(-1);
+        this.previousTid = node.tparent ?? node.tid;
+        this.nextTid = node.tchildren ?? node.tid;
         this.lastTid = lastTid;
     }
 

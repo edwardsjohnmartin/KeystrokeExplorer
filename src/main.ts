@@ -1,7 +1,8 @@
-import { IRoute } from '@aurelia/router';
 import { Data } from './data';
 
 import { inject } from 'aurelia';
+import { IRoute } from '@aurelia/router';
+
 
 @inject(Data)
 export class Main {

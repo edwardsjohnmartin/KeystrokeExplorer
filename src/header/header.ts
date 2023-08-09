@@ -39,6 +39,10 @@ export class Header {
         this.data.subjectId = null;
     }
 
+    public async createCsv() {
+        await this.data.createCsv();
+    }
+
     @watch("data.subjectId")
     newSubjectSelected() {
         if (this.data.subjectId === null) return;

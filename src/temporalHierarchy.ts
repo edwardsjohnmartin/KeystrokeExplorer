@@ -1,18 +1,16 @@
-import { AstBuilder, AstNode, AstGenerator, printAst } from "./ast";
+import { AstBuilder, AstNode, AstGenerator, printAst, createEmptyAst } from "./ast";
 
 export class TemporalHierarchy {
 
     // don't reset this value
     private next_tid: number = 0
-    private tid2node_inc: number = 64;
-
-    private tid2node: Array<AstNode> = new Array(this.tid2node_inc);
+    private tid2node: Array<AstNode> = new Array();
 
     // idxInLastSnapshot[i] contains the index in the last snapshot (last edit)
     // for the character currently at index i. -1 if the character was just
     // inserted.
     private idxInLastSnapshot = Array<number>();
-    private allIdxInLastSnapshot = Array<Array<number>>();
+    private allIdxInLastSnapshot = Array<Array<number>>();  // TODO: use this
 
     // idxInLastCompilable[i] contains the index in the last compilable snapshot
     // for the character currently at index i. -1 if the character was inserted
@@ -92,117 +90,119 @@ export class TemporalHierarchy {
         // this point.
         this.set_tids(ast);
         if (this.asts.length > 0) {
-            // set_all_tparents(this.asts.at(-1), ast, this.idxInLastCompilable);
-            // set_all_tparents(this.asts.at(-1), ast, this.allIdxInLastCompilable);
-            // console.log('*********************');
-            // console.log(this.allIdxInLastSnapshot);
-            // console.log(this.allIdxInLastCompilable);
             set_all_tparents(this.asts, ast, this.allIdxInLastCompilable, this.allCompilable);
         }
         this.asts.push(ast);
 
+        // the root (module) gets the wrong TID so fix it here
+        let moduleIndex = this.tid2node.length - 1;
+        while (moduleIndex > 0 && this.tid2node[moduleIndex].type !== "Module") {
+            moduleIndex -= 1;
+        }
+        if (moduleIndex !== -1) {
+            ast.tparent = moduleIndex;
+            this.tid2node[ast.tparent].tchildren = ast.tid;
+        }
+
         // Set number of edits since last compilable state for each ast node
         // Note: this currently gets the number of edits since the last snapshot only.
-        setNumEdits(ast, this.allIdxInLastSnapshot, this.allCompilable);
-
-        // Gather nodes by tid and type
-        // gather_by_type(cur_ast, type2nodes)
+        this.setNumEdits(ast);
 
         // Update tid2node
         const gen = AstGenerator(ast);
         let cur = gen.next();
         while (!cur.done) {
             let node: AstNode = cur.value.node;
-            if (node.tid >= this.tid2node.length) {
-                // Dynamically increase size of tid2node if necessary
-                this.tid2node = this.tid2node.concat(new Array(this.tid2node_inc));
-                this.tid2node_inc *= 2;
-            }
             this.tid2node[node.tid] = node;
             cur = gen.next();
         }
     }
-}
 
-// In this editDistance function, only insertions and deletions are considered.
-// Substitutions are considered a deletion and then insertion.
-function editDistance(idxInLastSnapshot: Array<number>) {
-    // Suppose the change looks like this:
-    //    for
-    //    fler
-    // So the "o" was deleted and "le" was inserted, for a distance of three.
-    // The idxInLastSnapshot looks like this:
-    //    0 -1 -1 2
-    // The edit distance between indices [0, 4) is three: the two -1s are insertions
-    // and (4-0)-(2-0)-1=1 indicates there was a deletion.
-    // The edit distance between indices [0, 3) is undefined.
-    // Note: I am abandoning this approach for now because of the problem of undefined
-    // distances.
-}
+    public setNumEdits(node: AstNode) {
+        if (node.start === undefined) {
+            throw new Error("node.start is undefined");
+        }
 
-// Suppose the change looks like this:
-//    for
-//    fler
-// So the "o" was deleted and "le" was inserted.
-// The idxInLastSnapshot looks like this:
-//    0 -1 -1 2
-// The number of insertions between indices [0, 4) is two, one for each -1.
-// The number of insertions between indices [1, 3) is two.
-// The number of insertions between indices [0, 3) is one.
-// The number of insertions between indices [0, 1) is zero.
-function numInsertions(idxInLastSnapshot: Array<number>, start: number, end: number) {
-    return idxInLastSnapshot.slice(start, end).filter(x => x == -1).length;
-}
+        // initial program state
+        if (this.allCompilable.length === 1 && this.allCompilable[0] === true) {
+            node.numInserts = 0;
+        }
 
-function setNumEdits(node: AstNode, allIdxInLastSnapshot: Array<Array<number>>, allCompilable: Array<boolean>) {
-    if (node.start === undefined) {
-        throw new Error("node.start unexpectedly undefined");
+        // new node
+        else if (node.tparent === undefined) {
+            node.numInserts += (node.end - node.start) + 1;
+        }
+
+        // lastest state is compilable
+        else if (this.allCompilable[this.allCompilable.length - 2]) {
+            const oldLength = this.tid2node[node.tparent].end - this.tid2node[node.tparent].start;
+            const newLength = node.end - node.start;
+
+            node.numInserts += Math.max(0, newLength - oldLength);
+            node.numDeletes += Math.max(0, oldLength - newLength);
+        }
+
+        // last state is uncompilable
+        else {
+            let finalState = this.allCompilable.length - 1;
+            let firstState = this.allCompilable.length - 2;
+            while (!this.allCompilable[firstState]) firstState--;
+
+            // forward pass (start -> end) for deletions
+            let start = this.tid2node[node.tparent].start;
+            let end = this.tid2node[node.tparent].end;
+            let oldSize = (end - start) + 1;
+
+            for (let index = firstState + 1; index <= finalState; ++index) {
+                const idxInLastSnapshot = this.allIdxInLastSnapshot.at(index);
+
+                // shrink the start & end so they fit in the selection
+                let startIndex = idxInLastSnapshot.findIndex((element) => element === start);
+                let endIndex = idxInLastSnapshot.findIndex((element) => element === end);
+                while (startIndex === -1) {
+                    start += 1;
+                    startIndex = idxInLastSnapshot.findIndex((element) => element === start);
+                    if (start > end) throw new Error();
+                }
+                while (endIndex === -1) {
+                    end -= 1;
+                    endIndex = idxInLastSnapshot.findIndex((element) => element === end);
+                    if (start > end) throw new Error();
+                }
+
+                // expand the edges so we gobble up any -1s on the edges
+                //   [0, 1, 2] -> [0, 1, 2, -1, -1]
+                while (idxInLastSnapshot.at(startIndex - 1) === -1 && (startIndex - 1) >= 0) {
+                    startIndex -= 1;
+                }
+                while (idxInLastSnapshot.at(endIndex + 1) === -1 && (endIndex + 1) < idxInLastSnapshot.length) {
+                    endIndex += 1;
+                }
+
+                let selection = idxInLastSnapshot.slice(startIndex, endIndex + 1);
+                const newSize = selection.length;
+                node.numInserts += Math.max(0, newSize - oldSize);
+                node.numDeletes += Math.max(0, oldSize - newSize);
+                oldSize = newSize;
+                start = startIndex;
+                end = endIndex;
+            }
+        }
+
+        node.children?.forEach((n: AstNode) => {
+            this.setNumEdits(n);
+        });
     }
-    let i: number = 0;
-    let start = node.start;
-    let end = node.end;
-    node.numNewChars = 0;
-    let stop = false;
-
-    // Iterate through previous snapshots until we hit a compilable snapshot. Add up
-    // the number of edits for each.
-    do {
-        i--;
-        const idxInLastSnapshot = allIdxInLastSnapshot.at(i);
-        node.numNewChars += numInsertions(idxInLastSnapshot, start, end);
-        // Update start and end. If either one is -1 then find a subset. Example:
-        //    for
-        //    fler
-        // The idxInLastSnapshot looks like this:
-        //    0 -1 -1 2
-        // If (start,end) are (0, 2) then the new start and end as we back up to
-        // a previous snapshot would be (0,-1). Since -1 isn"t a valid index
-        while (idxInLastSnapshot.at(start) == -1 && start < end) {
-            start++;
-        }
-        while (idxInLastSnapshot.at(end - 1) == -1 && start < end) {
-            end--;
-        }
-        if (start == end) {
-            stop = true;
-        } else {
-            start = idxInLastSnapshot.at(start);
-            end = idxInLastSnapshot.at(end - 1) + 1;
-        }
-    } while (!stop && !allCompilable.at(i - 1));
-
-    node.children?.forEach((n: AstNode) => {
-        setNumEdits(n, allIdxInLastSnapshot, allCompilable);
-    });
-
-    node.numEdits += node.numNewChars;
 }
 
 function prev_start_end_impl(start: number, end: number, idxInLastSnapshot: Array<number>): Array<number> {
 
-    const n: number = idxInLastSnapshot.length;
+    if (end < start) {
+        throw new Error("End indicie comes before the start");
+    }
+
     let i: number = start;
-    let j: number = end - 1; // node.end is one past the last character, so get the last character
+    let j: number = end;
 
     // Iterate past newly-added characters to the beginning then the end of the node
     while (idxInLastSnapshot[i] == -1 && i < j) {
@@ -221,8 +221,9 @@ function prev_start_end_impl(start: number, end: number, idxInLastSnapshot: Arra
         }
         return [prev_start, prev_end_minus_one + 1];
     } else {
-        if (prev_start == -1 || prev_end_minus_one == -1) {
+        if (prev_start === -1 || prev_end_minus_one === -1) {
             // Either both indices must be -1 (a new node) or they must both point to valid character
+            console.log(start, end, i, j, prev_start, prev_end_minus_one, idxInLastSnapshot);
             throw new Error("Illegal previous indices");
         }
         return [prev_start, prev_end_minus_one + 1];
@@ -241,11 +242,16 @@ function prev_start_end(node: AstNode, idxInLastSnapshot: Array<number>): Array<
 }
 
 // Uses index correspondences to set tparents
-function set_all_tparents(asts: Array<AstNode>, cur: AstNode, allIdxInLastCompilable: Array<Array<number>>,
-    allCompilable: Array<boolean>) {
+function set_all_tparents(
+    asts: Array<AstNode>,
+    cur: AstNode,
+    allIdxInLastCompilable: Array<Array<number>>,
+    allCompilable: Array<boolean>
+) {
     if (cur.start === undefined) {
         throw new Error("cur.start undefined in set_all_parents");
     }
+
     // curStartInPrevCoords and curEndInPrevCoords are the start and end indices in the code
     // as it was when the prev ast was created.
     let curStartInPrevCoords: number, curEndInPrevCoords: number;
@@ -259,15 +265,20 @@ function set_all_tparents(asts: Array<AstNode>, cur: AstNode, allIdxInLastCompil
     // a tparent.
     let k = -1;
     let l = -1;
-    while (cur.tparent === undefined && cur.name != "Module" && curStartInPrevCoords > -1) {
+    while (cur.tparent === undefined && curStartInPrevCoords > -1) {
         if (curEndInPrevCoords == -1) {
             throw new Error("Unexpected -1 prev coords");
         }
         k -= 1;
         l -= 1;
         while (l >= -allCompilable.length && !allCompilable.at(l)) l -= 1;
-        // console.log('*****', k, l, curStartInPrevCoords, curEndInPrevCoords, cur.start, cur.end, cur);
-        [curStartInPrevCoords, curEndInPrevCoords] = prev_start_end_impl(curStartInPrevCoords, curEndInPrevCoords, allIdxInLastCompilable.at(l));
+
+        try {
+            [curStartInPrevCoords, curEndInPrevCoords] = prev_start_end_impl(curStartInPrevCoords, curEndInPrevCoords, allIdxInLastCompilable.at(l));
+        } catch (error) {
+            console.log(cur)
+            throw error;
+        }
         set_cur_tparent(asts.at(k), cur, curStartInPrevCoords, curEndInPrevCoords);
     }
 
@@ -279,27 +290,51 @@ function set_all_tparents(asts: Array<AstNode>, cur: AstNode, allIdxInLastCompil
 
 // traverse through prev looking for a tparent for cur
 function set_cur_tparent(prev: AstNode, cur: AstNode, curStartInPrevCoords: number, curEndInPrevCoords: number) {
+
+    // the first state is uncompilable
+    // if (prev === undefined) throw new Error("Uncompilable first state");
+    if (prev === undefined) prev = createEmptyAst();
     if (prev.start === undefined) {
         throw new Error("prev.start undefined");
     }
-    if (cur.name == "Module") {
-        return;
+
+    const contains: boolean = (
+        prev.start <= curStartInPrevCoords
+    );
+    if (!contains) return;
+
+    if (prev.tchildren === undefined) {
+
+        // if we are the same type, take priority over names
+        if (prev.type === cur.type) {
+            cur.tparent = prev.tid;
+            prev.tchildren = cur.tid;
+            cur.intermediateLength = prev.intermediateLength;
+        }
+
+        // special case for assignment -> aug assign
+        if ((prev.type === "AugAssign" || prev.type === "Assign") && (cur.type === "AugAssign" || cur.type === "Assign")) {
+            cur.tparent = prev.tid;
+            prev.tchildren = cur.tid;
+            cur.intermediateLength = prev.intermediateLength;
+        }
+
+        // if the node already has a better-fit parent, skip this check
+        //  * this is only valid if the node starts at the EXACT same spot
+        if (
+            cur.tparent === undefined &&
+            (prev.type === "Name" || cur.type === "Name") &&
+            prev.start === curStartInPrevCoords
+        ) {
+            cur.tparent = prev.tid;
+            prev.tchildren = cur.tid;
+            cur.intermediateLength = prev.intermediateLength;
+        }
+
     }
 
-    let deeper: boolean = true;
-    const pstarti: number = prev.start;
-    const pendi: number = prev.end;
-    if (prev.name != "Module" && pstarti <= curStartInPrevCoords && pendi >= curEndInPrevCoords) {
-        // Only set the parent if the types are the same or if one of them is an identifier
-        if (prev.type === cur.type || (prev.type === 'Name' || cur.type === 'Name')) {
-            cur.tparent = prev.tid;
-        }
-    }
-    // Go deeper if the current node is smaller then the prev node
-    deeper = (curStartInPrevCoords >= pstarti && curEndInPrevCoords <= pendi);
-    if (deeper) {
-        prev.children?.forEach((n: AstNode) => {
-            set_cur_tparent(n, cur, curStartInPrevCoords, curEndInPrevCoords);
-        });
-    }
+    // go deeper to see if there is a better fit
+    prev.children?.forEach((n: AstNode) => {
+        set_cur_tparent(n, cur, curStartInPrevCoords, curEndInPrevCoords);
+    });
 }
