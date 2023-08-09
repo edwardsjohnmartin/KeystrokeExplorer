@@ -106,6 +106,9 @@ export class Tree {
             .append("g")
             .attr("transform", d => `translate(${d.y}, ${d.x})`)
             .append("circle")
+            .attr("id", d => {
+                return `tid-${d.data.tid}`
+            })
             .attr("r", d => {
                 return this.tancestry.has(d.data.tid) || this.tposterity.has(d.data.tid) ? 9 : 5;
             })
@@ -113,13 +116,42 @@ export class Tree {
                 return this.tancestry.has(d.data.tid) ? "#ff0000" :
                     this.tposterity.has(d.data.tid) ? "#00ff00" : "#364e74";
             })
-            .on("mouseover", function () {
+            .on("mouseover", function (event, d) {
                 d3.select(this).transition().duration(2).attr("r", 9);
+
+                // add highlights for corresponding chunk of code
+                self.data.codeHighlights = [{
+                    startLineNumber: d.data.startLine + 1,
+                    startColumn: d.data.startCol + 1,
+                    endLineNumber: d.data.endLine + 1,
+                    endColumn: d.data.endCol + 1
+                }]
+                console.log('mouseover', d)
+
+                // add temporary styling to parents of hovered node
+                let parent = d.parent;
+                while(parent) {
+                    d3.select(`#tid-${parent.data.tid}`)
+                        .attr("r", 9)
+                        .attr("fill", "purple")
+                        .classed("highlighted-parent", true)
+                        ;
+                    parent = parent.parent
+                }
             })
             .on("mouseout", function () {
                 d3.select(this).transition().duration(2).attr("r", 5);
+                // TODO - this should probably just remove the single highlight for the moused-out node
+                self.data.codeHighlights = []
+
+                // remove parent highlights
+                d3.selectAll(".highlighted-parent")
+                    .attr("r", 5)
+                    .attr("fill", "#364e74")
+                    .classed("highlighted-parent", false)
+                    ;
             })
-            .on("click", (_, d) => {
+            .on("click", (event, d) => {
                 this.selectNewNode(d.data);
                 this.treeNodeClick(d);
             })

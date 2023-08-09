@@ -18,6 +18,12 @@ export class Edit {
     }
 }
 
+export class CodeHighlight {
+    public startLineNumber: number = 0;
+    public startColumn: number = 0;
+    public endLineNumber: number = 0;
+    public endColumn: number = 0;
+}
 
 export class Data {
     public file: any;
@@ -35,6 +41,7 @@ export class Data {
     public playback: number = 0;
     public code: string = "";
     public edits: Array<Edit> = [];
+    public codeHighlights: Array<CodeHighlight> = [];
 
     public fileLoading: boolean = false;
     public estimatedLoadTime: number = 0;
