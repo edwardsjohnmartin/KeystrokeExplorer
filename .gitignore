@@ -36,3 +36,4 @@ test/benchmarking-apps/runner/cosmos.config.json
 **/webdriver-ts/traces
 
 .turbo
+static/keystrokes.csv
