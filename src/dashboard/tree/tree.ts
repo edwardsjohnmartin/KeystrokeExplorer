@@ -23,9 +23,14 @@ export class Tree {
     public nextTid: number;
     public lastTid: number;
 
+    private highlightParentColors: any;
+    
+
     constructor(data: Data) {
         this.data = data;
         this.reset();
+        this.highlightParentColors = d3.scaleLinear().domain([1,5])
+            .range(["purple", "lightgrey"])
     }
 
     attached() {
@@ -125,14 +130,16 @@ export class Tree {
                 console.log('mouseover', d)
 
                 // add temporary styling to parents of hovered node
+                let i = 1;
                 let parent = d.parent;
                 while(parent) {
                     d3.select(`#tid-${parent.data.tid}`)
                         .attr("r", 9)
-                        .attr("fill", "purple")
+                        .attr("fill", self.highlightParentColors(i))
                         .classed("highlighted-parent", true)
                         ;
-                    parent = parent.parent
+                    parent = parent.parent;
+                    i += 1;
                 }
             })
             .on("mouseout", function () {
