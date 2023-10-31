@@ -58,7 +58,7 @@ export class Data {
     private testJson() {
 
         interface TreeNode {
-            children: TreeNode;
+            children: Array<TreeNode>;
             id: number;
             reference: boolean;
             startIndex: number;
