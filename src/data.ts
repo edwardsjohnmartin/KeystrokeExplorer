@@ -1,9 +1,14 @@
-import { AstBuilder, AstNode, AstGenerator, printAst } from "./ast";
+import { AstBuilder, AstNode, AstGenerator } from "./ast";
 import { DataFrame, IDataFrame, ISeries } from "data-forge";
 import { ExportToCsv } from "export-to-csv";
 
+import { CharStream, CommonTokenStream } from "antlr4";
+import Python3Lexer from "./parser/Python3Lexer";
+import Python3Parser from "./parser/Python3Parser";
+
 import { watch } from "@aurelia/runtime-html";
 import { TemporalHierarchy } from "./temporalHierarchy";
+import { Python3ParserVisitor } from "./parser/Python3ParserVisitor";
 
 
 export class Edit {
@@ -30,8 +35,6 @@ export class Data {
     public filteredFile: IDataFrame;
     public codeStates: Array<string> = [""];
 
-    private range = -30;
-
     public cachedSubjects: any = {};
     public subjectId: string;
     public assignmentId: string;
@@ -51,10 +54,30 @@ export class Data {
 
     public temporalHierarchy: TemporalHierarchy = new TemporalHierarchy();
 
+    // test our new json
+    private testJson() {
+
+        interface TreeNode {
+            children: TreeNode;
+            id: number;
+            reference: boolean;
+            startIndex: number;
+            tparent: number;
+        }
+
+        let jsonFile = require("/static/trees.json");
+        let trees: Array<TreeNode> = jsonFile.trees;
+
+        console.log(trees);
+    }
+
     constructor() {
         // this.file = require("/static/keystrokes.csv");
         this.file = require("/static/correspondence.csv");
         this.fileLoaded();
+
+        // TODO: Remove -- testing
+        this.testJson();
 
         setInterval(() => {
             if (!this.playbackEnabled) return;
@@ -85,7 +108,7 @@ export class Data {
                     tchild: node.tchildren,
                     num_children: node.children?.length,
                     playback_index: node.treeNumber,
-                    event_number: node.eventNum,
+                    event_number: node.treeNumber,
                     type: node.type,
                     name: node.name,
                     deletes: node.numDeletes,
@@ -130,7 +153,8 @@ export class Data {
         }
 
         console.log(`Total Tasks: ${combinations.length}`)
-        for (const index of [1007, 1011, 1012, 1069, 144, 169, 191, 209, 20, 223, 258, 272, 294, 314, 333, 344, 419, 432, 445, 450, 453, 490, 535, 553, 631, 632, 650, 758, 785, 81, 84, 861, 881, 886, 891, 8, 909, 910, 963, 972, 986, 989, 993, 99]) {
+        // for (const index of [1007, 1011, 1012, 1069, 144, 169, 191, 209, 20, 223, 258, 272, 294, 314, 333, 344, 419, 432, 445, 450, 453, 490, 535, 553, 631, 632, 650, 758, 785, 81, 84, 861, 881, 886, 891, 8, 909, 910, 963, 972, 986, 989, 993, 99]) {
+        for (let index = 1067; index < 1084; index++) {
             let [subjectId, assignmentId, taskId] = combinations[index];
             try {
                 let data = createDataEntry(subjectId, assignmentId, taskId, this);
@@ -192,8 +216,9 @@ export class Data {
 
         this.temporalHierarchy = new TemporalHierarchy();
 
-        let treeNumber = -1;
-        selection.forEach((row: any, eventNumber: number) => {
+        const start = performance.now();
+
+        selection.forEach((row: any, treeNumber: number) => {
             let i = row.SourceLocation;
             treeNumber += 1;
 
@@ -212,10 +237,11 @@ export class Data {
             //------------------------------------------------------------
             let ast: AstNode = null;
             try {
-                ast = AstBuilder.createAst(state, eventNumber, treeNumber);
+                ast = AstBuilder.createAst(state, treeNumber);
                 this.astParseErrors.push("");
             } catch (error) {
                 this.astParseErrors.push(error.message);
+                // console.log(error);
             }
 
             // set timestamps for each event
@@ -228,11 +254,14 @@ export class Data {
             }
 
             this.precompiledAsts.push(ast);
-            this.temporalHierarchy.pushCompilableTree(ast !== null);
 
-            this.temporalHierarchy.temporalCorrespondence(i, eventNumber, insertText, deleteText);
+            this.temporalHierarchy.pushCompilableTree(ast !== null);
+            this.temporalHierarchy.temporalCorrespondence(i, treeNumber, insertText, deleteText);
             if (ast !== null) this.temporalHierarchy.temporalHierarchy(ast);
         });
+
+        const end = performance.now();
+        console.log(`Parse time: ${end - start}ms`);
     }
 
     private setNodeEdits() {

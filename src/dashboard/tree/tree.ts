@@ -121,16 +121,16 @@ export class Tree {
 
                 // add highlights for corresponding chunk of code
                 self.data.codeHighlights = [{
-                    startLineNumber: d.data.startLine + 1,
-                    startColumn: d.data.startCol + 1,
+                    startLineNumber: d.data.startLine,
+                    startColumn: d.data.startCol,
                     endLineNumber: d.data.endLine + 1,
                     endColumn: d.data.endCol + 1
                 }]
-                console.log('mouseover', d)
+                // console.log('mouseover', d)
 
                 // add temporary styling to parents of hovered node
                 let parent = d.parent;
-                while(parent) {
+                while (parent) {
                     d3.select(`#tid-${parent.data.tid}`)
                         .attr("r", 9)
                         .attr("fill", "purple")

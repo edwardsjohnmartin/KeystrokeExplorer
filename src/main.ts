@@ -9,7 +9,7 @@ export class Main {
     /* Routing HAS to be inside this class -- no choice */
     static routes: IRoute[] = [
         {
-            path: [""],
+            path: ["", "*"],
             redirectTo: "tree",
         },
         {

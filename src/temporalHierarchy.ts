@@ -1,4 +1,4 @@
-import { AstBuilder, AstNode, AstGenerator, printAst, createEmptyAst } from "./ast";
+import { AstBuilder, AstNode, AstGenerator, createEmptyAst } from "./ast";
 
 export class TemporalHierarchy {
 
@@ -10,12 +10,11 @@ export class TemporalHierarchy {
     // for the character currently at index i. -1 if the character was just
     // inserted.
     private idxInLastSnapshot = Array<number>();
-    private allIdxInLastSnapshot = Array<Array<number>>();  // TODO: use this
+    private allIdxInLastSnapshot = Array<Array<number>>();
 
     // idxInLastCompilable[i] contains the index in the last compilable snapshot
     // for the character currently at index i. -1 if the character was inserted
     // since the last compilable event.
-    private idxInLastCompilable = Array<number>();
     private allIdxInLastCompilable = Array<Array<number>>();
 
     // Whether the last code snapshot was compilable
@@ -159,15 +158,13 @@ export class TemporalHierarchy {
                 // shrink the start & end so they fit in the selection
                 let startIndex = idxInLastSnapshot.findIndex((element) => element === start);
                 let endIndex = idxInLastSnapshot.findIndex((element) => element === end);
-                while (startIndex === -1) {
+                while (startIndex === -1 && start < end) {
                     start += 1;
                     startIndex = idxInLastSnapshot.findIndex((element) => element === start);
-                    if (start > end) throw new Error();
                 }
-                while (endIndex === -1) {
+                while (endIndex === -1 && start < end) {
                     end -= 1;
                     endIndex = idxInLastSnapshot.findIndex((element) => element === end);
-                    if (start > end) throw new Error();
                 }
 
                 // expand the edges so we gobble up any -1s on the edges
@@ -205,27 +202,22 @@ function prev_start_end_impl(start: number, end: number, idxInLastSnapshot: Arra
     let j: number = end;
 
     // Iterate past newly-added characters to the beginning then the end of the node
-    while (idxInLastSnapshot[i] == -1 && i < j) {
+    while (idxInLastSnapshot[i] === -1 && i < j) {
         i += 1;
     }
-    while (idxInLastSnapshot[j] == -1 && i < j) {
+    while (idxInLastSnapshot[j] === -1 && i < j) {
         j -= 1;
     }
 
     let prev_start: number = idxInLastSnapshot[i];
     let prev_end_minus_one: number = idxInLastSnapshot[j];
 
-    if (prev_start == prev_end_minus_one) {
-        if (prev_start == -1) {
+    if (prev_start === prev_end_minus_one) {
+        if (prev_start === -1) {
             return [-1, -1];
         }
         return [prev_start, prev_end_minus_one + 1];
     } else {
-        if (prev_start === -1 || prev_end_minus_one === -1) {
-            // Either both indices must be -1 (a new node) or they must both point to valid character
-            console.log(start, end, i, j, prev_start, prev_end_minus_one, idxInLastSnapshot);
-            throw new Error("Illegal previous indices");
-        }
         return [prev_start, prev_end_minus_one + 1];
     }
 }
@@ -237,6 +229,9 @@ function prev_start_end(node: AstNode, idxInLastSnapshot: Array<number>): Array<
     if (node.start === undefined) {
         throw new Error("node.start undefined in prev_start_end");
     }
+
+    // this occurs when the file is deleted -- prevent errors
+    if (node.end < node.start) node.end = 0;
 
     return prev_start_end_impl(node.start, node.end, idxInLastSnapshot);
 }
@@ -255,7 +250,12 @@ function set_all_tparents(
     // curStartInPrevCoords and curEndInPrevCoords are the start and end indices in the code
     // as it was when the prev ast was created.
     let curStartInPrevCoords: number, curEndInPrevCoords: number;
-    [curStartInPrevCoords, curEndInPrevCoords] = prev_start_end(cur, allIdxInLastCompilable.at(-1));
+    try {
+        [curStartInPrevCoords, curEndInPrevCoords] = prev_start_end(cur, allIdxInLastCompilable.at(-1));
+    } catch (error) {
+        console.log(cur)
+        throw error;
+    }
 
     // traverses through prev looking for a tparent for cur
     set_cur_tparent(asts.at(-1), cur, curStartInPrevCoords, curEndInPrevCoords);
@@ -299,14 +299,22 @@ function set_cur_tparent(prev: AstNode, cur: AstNode, curStartInPrevCoords: numb
     }
 
     const contains: boolean = (
-        prev.start <= curStartInPrevCoords
+        prev.start <= curStartInPrevCoords &&
+        prev.end >= curStartInPrevCoords
     );
     if (!contains) return;
 
     if (prev.tchildren === undefined) {
 
         // if we are the same type, take priority over names
-        if (prev.type === cur.type) {
+        if (prev.type === cur.type && prev.type !== "BinOp") {
+            cur.tparent = prev.tid;
+            prev.tchildren = cur.tid;
+            cur.intermediateLength = prev.intermediateLength;
+        }
+
+        // special case with binary operations
+        if (prev.type === cur.type && prev.type === "BinOp" && cur.tparent === undefined) {
             cur.tparent = prev.tid;
             prev.tchildren = cur.tid;
             cur.intermediateLength = prev.intermediateLength;

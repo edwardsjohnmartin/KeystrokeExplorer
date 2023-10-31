@@ -1,66 +1,61 @@
 "EventType","InsertText","DeleteText","SourceLocation","ClientTimestamp","CodeStateSection","ToolInstances","EditType","X-Metadata","CodeStateID","X-Compilable","EventID","SubjectID","AssignmentID"
+"File.Edit","if x is True:
+    print('true')
+else:
+    print('false')
+","","0","1676048939078","test6.py","1.1.5 for 2021-2022 @t1","Insert",,,,,,
+
+
+"File.Edit","a","","0","1676048939078","test5.py","1.1.5 for 2021-2022 @t1","Insert",,,,,,
+"File.Edit"," ","","1","1676048939078","test5.py","1.1.5 for 2021-2022 @t1","Insert",,,,,,
+"File.Edit","=","","2","1676048939078","test5.py","1.1.5 for 2021-2022 @t1","Insert",,,,,,
+"File.Edit"," ","","3","1676048939078","test5.py","1.1.5 for 2021-2022 @t1","Insert",,,,,,
+"File.Edit","(","","4","1676048939078","test5.py","1.1.5 for 2021-2022 @t1","Insert",,,,,,
+"File.Edit","8","","5","1676048939078","test5.py","1.1.5 for 2021-2022 @t1","Insert",,,,,,
+"File.Edit"," ","","6","1676048939078","test5.py","1.1.5 for 2021-2022 @t1","Insert",,,,,,
+"File.Edit","/","","7","1676048939078","test5.py","1.1.5 for 2021-2022 @t1","Insert",,,,,,
+"File.Edit"," ","","8","1676048939078","test5.py","1.1.5 for 2021-2022 @t1","Insert",,,,,,
+"File.Edit","2","","9","1676048939078","test5.py","1.1.5 for 2021-2022 @t1","Insert",,,,,,
+"File.Edit",")","","10","1676048939078","test5.py","1.1.5 for 2021-2022 @t1","Insert",,,,,,
+"File.Edit"," ","","11","1676048939078","test5.py","1.1.5 for 2021-2022 @t1","Insert",,,,,,
+"File.Edit","*","","12","1676048939078","test5.py","1.1.5 for 2021-2022 @t1","Insert",,,,,,
+"File.Edit","*","","13","1676048939078","test5.py","1.1.5 for 2021-2022 @t1","Insert",,,,,,
+"File.Edit"," ","","14","1676048939078","test5.py","1.1.5 for 2021-2022 @t1","Insert",,,,,,
+"File.Edit","2","","15","1676048939078","test5.py","1.1.5 for 2021-2022 @t1","Insert",,,,,,
 
 "File.Edit","
-from random import randint
+from math import pi
 
-# Remember how to use this kind of variable?
-count = 0
+class Blobber:
+    def __init__(self, name, color, radius, height):
+        self.__name = name
+        self.__color = color
+        self.__radius = radius
+        self.__height = height
+        initialHeight = height
 
-def main():
-    print('Welcome to Recursion Fun')
+    def getVolume(self):
+        return pi * self.__radius ** 2 * self.__height
 
-    # aggienacci calculation
-    value = eval(input('Enter a number to find its aggienacci value: '))
-    def aggienacci(n, i, num1, num2):
-        num3 = num1 + num2
-        if i == n - 2:  # Base case is very similar to loop conditions on lines 60 and 46
-            return num3
-        elif i == 1 and n == 1 or n == 2:  # Base case is similar to base cases on lines 65 and 51
-            return 1
-        return aggienacci(n, i + 1, num2, num3)
-    
-    def aggienacci(value):
-        num1
-        num4 = num3 + num2 / num1
-        
-    print('The aggienacci value of ' + str(value) + ' is ' + str(round(aggienacci(value), 4)))
-
-    print()
-
-    # Recursive search and sort
-    key = eval(input('Enter a number to search for: '))
-    numList = []
-    for i in range(200000):
-        if randint(0, 2) == 0:
-            numList.append(i)
-
-    numPos = binarySearch(numList, key)
-
-    if numPos == -1:
-        print('Your number, ' + str(key) + ', is not in the list')
-    else:
-        print('Your number, ' + str(key) + ', is in the list at position ' + str(numPos))
-
-    print('Total recursive calls: ' + str(count))
-
-
-
-
-main()
-
-#from study session
-
-# This one counts up from the first numbers in the sequence until it hits the number you want
-def fibCountUpWithRecursion(n, i, num1, num2):
-    num3 = num1 + num2
-    if i == n-2:  # Base case is very similar to loop conditions on lines 60 and 46
-        return num3
-    elif i == 1 and n == 1 or n == 2:  # Base case is similar to base cases on lines 65 and 51
-        return 1
-    return fibCountUpWithRecursion(n, i + 1, num2, num3)  # Recursive call
-","","51","1676048939078","test3.py","1.1.5 for 2021-2022 @t1","Insert",,,,,,
-"File.Edit","
-","","15000","1676048939078","test3.py","1.1.5 for 2021-2022 @t1","Insert",,,,,,
+    def vitalsOk(self):
+        vitals = pi * self.__radius ** 2 * self.__height
+        blobberOK = 90 < vitals and vitals < 110
+        return vitals, blobberOK
+","","0","1676048939078","test3.py","1.1.5 for 2021-2022 @t1","Insert",,,,,,
+"File.Edit","b","","0","1676048939078","test3.py","1.1.5 for 2021-2022 @t1","Insert",,,,,,
+"File.Edit","l","","1","1676048939078","test3.py","1.1.5 for 2021-2022 @t1","Insert",,,,,,
+"File.Edit","o","","2","1676048939078","test3.py","1.1.5 for 2021-2022 @t1","Insert",,,,,,
+"File.Edit","b","","3","1676048939078","test3.py","1.1.5 for 2021-2022 @t1","Insert",,,,,,
+"File.Edit","=","","4","1676048939078","test3.py","1.1.5 for 2021-2022 @t1","Insert",,,,,,
+"File.Edit","B","","5","1676048939078","test3.py","1.1.5 for 2021-2022 @t1","Insert",,,,,,
+"File.Edit","l","","6","1676048939078","test3.py","1.1.5 for 2021-2022 @t1","Insert",,,,,,
+"File.Edit","o","","7","1676048939078","test3.py","1.1.5 for 2021-2022 @t1","Insert",,,,,,
+"File.Edit","b","","8","1676048939078","test3.py","1.1.5 for 2021-2022 @t1","Insert",,,,,,
+"File.Edit","b","","9","1676048939078","test3.py","1.1.5 for 2021-2022 @t1","Insert",,,,,,
+"File.Edit","e","","10","1676048939078","test3.py","1.1.5 for 2021-2022 @t1","Insert",,,,,,
+"File.Edit","r","","11","1676048939078","test3.py","1.1.5 for 2021-2022 @t1","Insert",,,,,,
+"File.Edit","(","","12","1676048939078","test3.py","1.1.5 for 2021-2022 @t1","Insert",,,,,,
+"File.Edit",")","","13","1676048939078","test3.py","1.1.5 for 2021-2022 @t1","Insert",,,,,,
 
 
 "File.Edit","a3","","0","1676048939078","test2.py","1.1.5 for 2021-2022 @t1","Insert",,,,,,

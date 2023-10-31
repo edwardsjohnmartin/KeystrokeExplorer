@@ -1,9 +1,7 @@
-import * as Sk from "skulpt";
-
-
-Sk.configure({
-    __future__: Sk.python3
-});
+import { ErrorListener, CharStream, CommonTokenStream } from "antlr4";
+import Python3Lexer from "./parser/Python3Lexer";
+import Python3Parser from "./parser/Python3Parser";
+import { Python3ParserVisitor } from "./parser/Python3ParserVisitor";
 
 export class AstNode {
     // base attributes
@@ -12,11 +10,10 @@ export class AstNode {
     public name: string;
     public children: Array<AstNode>;
     public parent: AstNode;
-    public src;
+    public ctx;
 
     // The event
     public timestamp: number;
-    public eventNum: number;
     public treeNumber: number;
 
     // text-position attributes -- compute later.
@@ -49,28 +46,18 @@ export class AstNode {
     public numLocalInserts: number = 0;
     public numLocalDeletes: number = 0;
 
-    constructor(src, eventNum: number, parent: AstNode) {
-        this.descendants = 0;
-        this.type = "ERROR PARSING";
-        this.name = undefined;
+    constructor(ctx: any, type: string, name: string) {
+        this.type = type;
+        this.name = name;
         this.children = []
-        this.src = src;
-        this.eventNum = eventNum;
-        this.parent = parent;
+        this.ctx = ctx;
 
-        this.startLine = src.lineno - 1;
-        this.startCol = src.col_offset;
-        this.type = src._astname;
-
-        // console.log('** constructor:', this.starti);
-    }
-
-    // Not really. Actually the number of new characters since its inception
-    public totalEdits(tid2node: Array<AstNode>): number {
-        if (this.tparent > 0) {
-            return this.numNewChars + tid2node[this.tparent].totalEdits(tid2node);
-        }
-        return this.numNewChars;
+        this.startCol = ctx.start.column;
+        this.startLine = ctx.start.line;
+        this.endCol = ctx.stop.column;
+        this.endLine = ctx.stop.line;
+        this.start = ctx.start.start;
+        this.end = ctx.stop.stop;
     }
 }
 
@@ -103,38 +90,24 @@ export function* AstTemporalGenerator(node: AstNode, tid2node: Array<AstNode>, l
 }
 
 export function createEmptyAst() {
-    return AstBuilder.createAst("", -1, -1);
+    return AstBuilder.createAst("", -1);
 }
 
-//-------------------------------------------------
-// printAst
-//-------------------------------------------------
-export function printAst2(ast: AstNode) {
-    const gen = AstGenerator(ast);
-    let cur = gen.next();
-    while (!cur.done) {
-        const node: AstNode = cur.value.node;
-        const prefix: string = ''.padStart(cur.value.level * 2, ' ');
-        console.log(prefix, node);
-        cur = gen.next();
+export class AntlrErrorWatcher extends ErrorListener<any> {
+    syntaxError(recognizer, offendingSymbol, line, column, msg, err) {
+        throw new Error(`line ${line}, col ${column}: ${msg}`);
     }
-}
 
-export function printAst(ast: AstNode) {
-    const gen = AstGenerator(ast);
-    let cur = gen.next();
-    while (!cur.done) {
-        const node: AstNode = cur.value.node;
-        const prefix: string = ''.padStart(cur.value.level * 2, ' ');
+    reportAmbiguity(recognizer, dfa, startIndex, stopIndex, exact, ambigAlts, configs) {
+        throw new Error(`start ${startIndex}, stop ${stopIndex}: ${exact}`);
+    }
 
-        const tid: string = (node.tid !== undefined) ? `tid=${node.tid}` : '';
-        const tparent: string = (node.tparent !== undefined) ? `tparent=${node.tparent}` : '';
-        const location: string = (node.start !== undefined) ? `loc=${node.start}-${node.end}` : '';
-        const new_chars: string = (node.numNewChars !== undefined) ? `new_chars=${node.numNewChars}` : '';
+    reportAttemptingFullContext(recognizer, dfa, startIndex, stopIndex, conflictingAlts, configs) {
+        throw new Error(`start ${startIndex}, stop ${stopIndex}, alts ${conflictingAlts}`);
+    }
 
-        console.log(`${prefix}${node.name} ${tid} ${tparent} ${location} ${new_chars}`);
-
-        cur = gen.next();
+    reportContextSensitivity(recognizer, dfa, startIndex, stopIndex, prediction, configs) {
+        throw new Error(`start ${startIndex}, stop ${stopIndex}, pred ${prediction}`);
     }
 }
 
@@ -144,249 +117,77 @@ export function printAst(ast: AstNode) {
 export abstract class AstBuilder {
     static treeNumber = 0;
 
-    static createAst(codeState: string, eventNum: number, treeNumber: number) {
-        let parse = null;
-        try {
-            // first argument is file-name (pointless)
-            parse = Sk.parse("", codeState);
-        } catch (error) {
-            throw SyntaxError(`Error on line ${error.traceback[0].lineno}`);
-        }
+    static lexer: Python3Lexer = null;
+    static parser: Python3Parser = null;
+    static visitor: Python3ParserVisitor = null;
+    static errorListener = new ErrorListener();
 
-        AstBuilder.treeNumber = treeNumber;
-        const ast = Sk.astFromParse(parse.cst, "", parse.flags);
-        const root = this.createAstNode(ast, eventNum, undefined);
-        this.updateRegions(root, codeState);
+    static setup() {
+        this.lexer = new Python3Lexer(new CharStream("\n"));
+        this.parser = new Python3Parser(new CommonTokenStream(this.lexer));
+        this.visitor = new Python3ParserVisitor();
 
-        return root;
+        this.parser.removeErrorListeners();
+        this.parser.addErrorListener(new AntlrErrorWatcher());
+
+        // warm up the parser
+        const tree = this.parser.file_input();
+        const visitor = new Python3ParserVisitor();
+        visitor.visitFile_input(tree);
     }
 
-    //------------------------------------------------------------
-    // Main function
-    //------------------------------------------------------------
-    static createAstNode(ast: any, eventNum: number, parent: AstNode) {
-        // console.log(ast);
+    static createAst(codeState: string, treeNumber: number) {
+        const chars = new CharStream(codeState + "\n");
 
-        let node: AstNode;
+        this.lexer = new Python3Lexer(chars);
+        this.parser.setTokenStream(new CommonTokenStream(this.lexer));
 
-        switch (ast._astname) {
-            case "Call":
-                node = this.createCall(ast, eventNum, parent);
-                break;
-            case "BinOp":
-                node = this.createBinOp(ast, eventNum, parent);
-                break;
-            case "Expr":
-                node = this.createAstNode(ast.value, eventNum, node);
-                break;
-            case "FunctionDef":
-                node = this.createFunctionDef(ast, eventNum, parent);
-                break;
-            case "Name":
-                node = new AstNode(ast, eventNum, parent);
-                node.name = ast.id.v;
-                node.endLine = node.startLine;
-                node.endCol = node.startCol + node.name.length;
-                break;
-            case "Num":
-                node = new AstNode(ast, eventNum, parent);
-                node.endLine = node.startLine;
-                node.endCol = node.startCol + ast.n.v.toString().length;
-                break;
-            case "Compare":
-                node = this.createCompare(ast, eventNum, parent);
-                break;
-            case "Assign":
-                node = this.createAssign(ast, eventNum, parent);
-                break;
-            case "AugAssign":
-                node = this.createAugDecAssign(ast, true, eventNum, parent);
-                break;
-            case "DecAssign":
-                node = this.createAugDecAssign(ast, false, eventNum, parent);
-                break;
-            case "For":
-                node = this.createFor(ast, eventNum, parent);
-                break;
-            case "Return":
-                node = this.createReturn(ast, eventNum, parent);
-                break;
-            case "Else":
-                node = new AstNode(ast, eventNum, parent);
-                node.name = "Else";
-                node.children.push(this.createAstNode(ast.body[0], eventNum, node));
-                break;
-            default: {
-                node = new AstNode(ast, eventNum, parent);
+        const tree = this.parser.file_input();
+        const result = this.visitor.visitFile_input(tree);
 
-                // Loop, conditional, etc
-                if (ast.test !== undefined) {
-                    node.children.splice(node.children.length, 0, this.createAstNode(ast.test, eventNum, node))
-                }
+        const gen = AstGenerator(result);
+        let cur = gen.next();
+        while (!cur.done) {
+            let node: AstNode = cur.value.node;
+            node.treeNumber = treeNumber;
+            cur = gen.next();
+        }
 
-                // Body of a function, loop, conditional, etc
-                if (ast.body !== undefined) {
-                    ast.body.forEach((child: any) => {
-                        node.children.splice(node.children.length, 0, this.createAstNode(child, eventNum, node))
-                    });
-                }
+        return result;
+    }
 
-                // Conditional else -- split the ast off into a new one
-                if (ast.orelse !== undefined && ast.orelse.length > 0) {
-                    let orelse = ast.orelse[0];
-                    if (orelse._astname === "If") {
-                        orelse._astname = "Elif";
-                    } else {
-                        orelse = {
-                            lineno: orelse.lineno,
-                            col_offset: orelse.col_offset,
-                            _astname: "Else",
-                            body: [ast.orelse[0]],
-                        }
-                    }
-                    node.parent.children.splice(node.parent.children.length, 0, this.createAstNode(orelse, eventNum, parent));
-                }
+    static swapParents(newParent: AstNode, oldParent: AstNode) {
+        newParent.children = oldParent.children;
+
+        oldParent.children.forEach(child => {
+            child.parent = newParent;
+        });
+
+        oldParent = null;
+    }
+
+    static condenseAst(node: AstNode) {
+        // base-case
+        if (node.children.length === 0) return;
+
+        // skip parents with multiple children
+        if (node.children.length === 1) {
+            const child = node.children[0];
+
+            // if this passes, they occupy the same space
+            if (
+                (child.startCol === node.startCol) &&
+                (child.startLine === node.startLine) &&
+                (child.endCol === node.endCol) &&
+                (child.endLine === node.endLine)
+            ) {
+                AstBuilder.swapParents(node, child);
             }
         }
 
-        // default name is the type
-        if (node.name === undefined) {
-            node.name = ast._astname;
-        }
-
-        // rename NameConstants to be one of [True, False, None]
-        if (node.name == "NameConstant") {
-            if (node.src.value.v === 1) node.name = "True";
-            if (node.src.value.v === 0) node.name = "False";
-            if (node.src.value.v === null) node.name = "None";
-        }
-
-        node.treeNumber = AstBuilder.treeNumber;
-        node.descendants = node.children.length;
-        node.children.forEach(child => node.descendants += child.descendants);
-
-        return node;
-    }
-
-    //------------------------------------------------------------
-    // Functions to recursively create our format of AST from
-    // the Skulpt format.
-    //------------------------------------------------------------
-    static createBinOp(ast: any, eventNum: number, parent: AstNode) {
-        let node = new AstNode(ast, eventNum, parent);
-
-        node.children.splice(node.children.length, 0, this.createAstNode(ast.left, eventNum, node));
-        node.children.splice(node.children.length, 0, this.createAstNode(ast.right, eventNum, node));
-
-        // this breaks identifying the correct parent node with nested BinOps
-        // node.startCol = ast.left.col_offset;
-        return node;
-    }
-
-    static createCall(ast: any, eventNum: number, parent: AstNode) {
-        let node = new AstNode(ast, eventNum, parent);
-
-        let val = "";
-        if (ast.func.value !== undefined && ast.func.value != null && ast.func.value.id.v.length > 0) {
-            val = ast.func.value.id.v + ".";
-        }
-        if (ast.func.id !== undefined) {
-            node.name = val + ast.func.id.v + "()";
-        } else {
-            node.name = val + ast.func.attr.v + "()";
-        }
-
-        // Arguments
-        if (ast.args != null) {
-            ast.args.forEach((child: any) => {
-                node.children.splice(node.children.length, 0, this.createAstNode(child, eventNum, node));
-            });
-        }
-
-        return node;
-    }
-
-    static createFunctionDef(ast: any, eventNum: number, parent: AstNode) {
-        let node = new AstNode(ast, eventNum, parent);
-        node.name = "def " + ast.name.v + "(";
-
-        ast.args.args.forEach(element => {
-            node.name += element.arg.v + ",";
+        node.children.forEach(child => {
+            AstBuilder.condenseAst(child);
         });
-        if (ast.args.args.length > 0) node.name = node.name.slice(0, -1);
-        node.name += ")";
-
-        // Arguments -- skip
-        // if (ast.args.args.length > 0) {
-        //     node.children.splice(node.children.length, 0, this.createAstNode(ast.args, eventNum));
-        // }
-
-        // Body of a function, loop, conditional, etc
-        if (ast.body !== undefined) {
-            ast.body.forEach((child: any) => {
-                node.children.splice(node.children.length, 0, this.createAstNode(child, eventNum, node));
-            });
-        }
-
-        return node;
-    }
-
-    static createCompare(ast: any, eventNum: number, parent: AstNode) {
-        let node = new AstNode(ast, eventNum, parent);
-
-        const lhs = ast.left;
-        const rhs = ast.comparators[0];
-        const op = ast.ops[0].prototype;
-
-        node.children.splice(node.children.length, 0, this.createAstNode(lhs, eventNum, node));
-        ast._astname = op._astname;
-        node.children.splice(node.children.length, 0, this.createAstNode(rhs, eventNum, node));
-
-        return node;
-    }
-
-    static createAssign(ast: any, eventNum: number, parent: AstNode) {
-        let node = new AstNode(ast, eventNum, parent);
-        node.name = "=";
-
-        ast.targets.forEach((target: any) => {
-            node.children.splice(node.children.length, 0, this.createAstNode(target, eventNum, node));
-        });
-        node.children.splice(node.children.length, 0, this.createAstNode(ast.value, eventNum, node));
-
-        return node;
-    }
-
-    static createAugDecAssign(ast: any, aug: boolean, eventNum: number, parent: AstNode) {
-        let node = new AstNode(ast, eventNum, parent);
-        node.name = aug ? "+=" : "-=";
-
-        node.children.splice(node.children.length, 0, this.createAstNode(ast.target, eventNum, node));
-        node.children.splice(node.children.length, 0, this.createAstNode(ast.value, eventNum, node));
-
-        return node;
-    }
-
-    static createFor(ast: any, eventNum: number, parent: AstNode) {
-        let node = new AstNode(ast, eventNum, parent);
-
-        node.children.splice(node.children.length, 0, this.createAstNode(ast.target, eventNum, node));
-        node.children.splice(node.children.length, 0, this.createAstNode(ast.iter, eventNum, node));
-        ast.body.forEach((child: any) => {
-            node.children.splice(node.children.length, 0, this.createAstNode(child, eventNum, node));
-        });
-
-        return node;
-    }
-
-    static createReturn(ast: any, eventNum: number, parent: AstNode) {
-        let node = new AstNode(ast, eventNum, parent);
-
-        if (ast.value != null) {
-            node.children.splice(node.children.length, 0, this.createAstNode(ast.value, eventNum, node));
-        }
-
-        return node;
     }
 
     static getIndex(line: number, col: number, lineLengthCumSum: Array<any>) {
@@ -431,14 +232,16 @@ export abstract class AstBuilder {
 
         // Ignore whitespace and comments at end
         let s = code.substring(node.start, node.end);
+
         // Pull whitespace off the end of the string
         s = s.trimEnd();
+
         // Remove comments from end
         let l = s.split("\n");
-        while (l.at(-1).trimStart()[0] == '#') {
+        while (l.at(-1)?.trimStart().startsWith("#")) {
             l.pop();
         }
-        s = l.join('\n');
+        s = l.join("\n");
         node.end = node.start + s.length - 1;
 
         // delete child attribute if there are no children
@@ -447,8 +250,4 @@ export abstract class AstBuilder {
             node.children = undefined;
         }
     }
-
-    // private static setNodeRegions(node: AstNode, startLine: number, startCol: number, endLine: number, endCol: number, lineLengthCumSum: any[], code: string) {
-
-    // }
 }

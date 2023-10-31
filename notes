@@ -35,4 +35,24 @@ correlate with time taken, or throw away print calls that were deleted and all t
 
 
 
-Student27, Assign13, task2.py failed -- regression
+FAILED (356 / 1083): Student22, Assign12, task3.py
+FAILED (877 / 1083): Student40, Assign9, task1.py
+
+
+Look at through time for students, if their for loops decrease over time.
+
+Get examples of where parse trees are better than asts
+  explain why Asts will not work for our objective
+Email steve about fixing code highlighting
+Finish up the remaining parsing
+
+
+A parse tree is used to match input text whereas syntax trees record only the structure of the input text.
+ASTs abstract away certain non-terminal tokens which makes attribution of code edits to the correct code structure impossible. For example, if you have an argument list inside of a function
+  foo(x, y)
+  and need to change it to
+  foo(x  y)
+  foo(x + y)
+  the edits will be picked up as a variable edit and function edit when using ASTs. Changing the name 'foo' to 'fum' will also produce two function edits. These edits are quite different in the problem being solved, but an AST will suggest they are the same problem as the edit type is identical between them. Both have variables being changed, and both have function calls being changed.
+
+#2) syntactical changes don't get picked up in AST

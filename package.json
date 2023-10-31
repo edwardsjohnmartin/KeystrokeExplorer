@@ -9,6 +9,7 @@
   "license": "UNLICENSED",
   "dependencies": {
     "@aurelia/router": "latest",
+    "antlr4": "^4.13.0",
     "aurelia": "latest",
     "copy-webpack-plugin": "^11.0.0",
     "csv-loader": "^3.0.5",
@@ -54,7 +55,9 @@
     "lint:html": "htmlhint -c .htmlhintrc src",
     "lint": "npm run lint:js && npm run lint:html && npm run lint:css",
     "start": "webpack serve",
+    "start-prod": "webpack --env production serve",
     "build": "rimraf dist && webpack --env production",
-    "analyze": "rimraf dist && webpack --env production --analyze"
+    "analyze": "rimraf dist && webpack --env production --analyze",
+    "antlr": "java -jar antlr-4.13.0-complete.jar -Dlanguage=TypeScript -lib src/parser -o src/parser -visitor -Xexact-output-dir src/parser/Python3Parser.g4"
   }
 }
