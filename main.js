@@ -76,11 +76,11 @@ function clearEntries() {
 function updatedfall() {
   // Everything was read in
   if (Object.keys(key2chunks).length == 0) return true;
-  
+
   let subjectID = subjectsWidget.value;
   let assignmentID = assignmentsWidget.value;
   let file = filesWidget.value;
-  
+
   let chunks = key2chunks[subjectID+assignmentID+file];
 
   // Already in memory
@@ -172,7 +172,7 @@ function onKeyPress(event) {
   let incCheck = 'g';
   let decCheck = 's';
   let stringSearch = 'S';
-  
+
   if (event.key == incCheck) {
     if (slider.value == slider.max) {
       if (incFile(1)) {
@@ -290,7 +290,7 @@ function onKeyDown(event) {
     // let s = parseInt(codeWidget.style.fontSize.replace("px", ""));
     // s += 1;
     // codeWindow.style.fontSize = s + "px"
-  }    
+  }
 }
 
 //-----------------------------------------------------------------------------
@@ -298,7 +298,7 @@ function onKeyDown(event) {
 //-----------------------------------------------------------------------------
 function onload() {
   spreadsheet = new Spreadsheet();
-  
+
   // Get the tab with id="defaultOpen" and click on it
   // document.getElementById("defaultOpen").click();
 
@@ -316,7 +316,7 @@ function onload() {
     styleSelectedText: true,
   });
   // textarea.setSize(500, 300);
-  
+
   document.addEventListener("keydown", onKeyDown);
   document.addEventListener("keypress", onKeyPress);
 
@@ -327,11 +327,11 @@ function onload() {
 }
 
 function loadDefaultCSV() {
-  var request = new XMLHttpRequest();  
+  var request = new XMLHttpRequest();
   request.open('GET', './sample.csv', true);
   request.onreadystatechange = function(){
     if (request.readyState === 4){
-      if (request.status === 404) {  
+      if (request.status === 404) {
       } else {
         // Load a file automatically for testing
         $.ajax({
@@ -495,7 +495,7 @@ function fileChanged() {
     return row.SubjectID == subject &&
       row.AssignmentID == assignment &&
       row.CodeStateSection == file &&
-      row.EventType == 'File.Edit';
+      (row.EventType == 'File.Edit' || row.EventType == 'X-FileInit');
   });
 
   slider.max = df.length-1;
@@ -644,7 +644,7 @@ function findString(toFind) {
   if (df.length == 0) {
     return -1;
   }
-  
+
   // Reconstruct the file
   let s = '';
   for (let i = 0; i <= slider.max; ++i) {
@@ -703,7 +703,7 @@ function markText(start, end) {
 
   lastMarkStart = a;
   lastMarkEnd = b;
-  
+
   lastMark = codeWidget.markText(a, b, {className: "styled-background"});
 }
 
@@ -724,10 +724,10 @@ function lineMarkText(start, end) {
   a.ch = 0;
   b.line = a.line+1;
   b.ch = 0;
-  
+
   lineLastMarkStart = a;
   lineLastMarkEnd = b;
-  
+
   lineLastMark = codeWidget.markText(a, b, {className: "line-highlight"});
 }
 
@@ -837,7 +837,7 @@ function reconstruct(df, fromScratch) {
     errorWidget.innerHTML = `Error on line ${errorLineNum}`;
     errorWidget.style.visibility = 'visible';
   }
-  
+
   eventNum = df[slider.value].EventIdx;
   if (eventNumWidget != null) {
     eventNumWidget.innerHTML = eventNum;
@@ -947,7 +947,7 @@ function readAllChunks(file, callback) {
 
       // clearEntries();
       addEntry(rows[0].SubjectID, rows[0].AssignmentID, rows[0].CodeStateSection);
-      
+
       rows.forEach(row => {
         let key = row.SubjectID+row.AssignmentID+row.CodeStateSection;
         if (key != curKey) {
@@ -986,15 +986,15 @@ function readTwoChunks(chunkIdx) {
   var offset = chunkOffsets[chunkIdx];
   var chunkSize = chunkOffsets[chunkIdx+2] - offset;
   var fr = new FileReader();
-  
+
   let subjectIdx = header.findIndex((e) => e=='SubjectID');
   let assignIdx = header.findIndex((e) => e=='AssignmentID');
   let fileIdx = header.findIndex((e) => e=='CodeStateSection');
-  
+
   fr.onload = function() {
     let data = event.target.result;
     var istart = Date.now();
-    
+
     if (offset == 0) {
       dfall = $.csv.toObjects(data);
     } else {
